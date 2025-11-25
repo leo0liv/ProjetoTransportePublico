@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base bootstrap</title>
+
+    <!-- Link arquivos Bootstrap -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!-- Link para CSS específico -->
+    <link rel="stylesheet" href="../css/meu_estilo.css">
+
+
+<style>
+        /* Estilos Customizados que não dependem do Bootstrap */
+        body {
+            background-color: #f8f9fa; /* Fundo leve */
+        }
+
+        header {
+            background-color: #007bff; /* Azul primário do Bootstrap */
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Área do Mapa Simulada */
+        .mapa-simulado {
+            background-color: #e9ecef; 
+            height: 250px;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #6c757d;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sistema de Gestão Operacional</h1>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            
+            <div id="monitoramento" class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h4 mb-0">Área Administrativa/Operacional (Monitoramento)</h2>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div id="login-area">
+                            <p class="alert alert-warning">
+                                <strong>Requer Login</strong> para visualizar localização em tempo real e gerenciar turnos.
+                            </p>
+                            
+                            <form id="login-form">
+                                <div class="mb-3">
+                                    <label for="usuario" class="form-label">Usuário:</label>
+                                    <input type="text" id="usuario" value="admin" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="senha" class="form-label">Senha:</label>
+                                    <input type="password" id="senha" value="123" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Entrar</button>
+                            </form>
+                        </div>
+
+                        <div id="monitoramento-painel" style="display: none;">
+                            <h3 class="mt-0">Localização em Tempo Real (Ônibus 101)</h3>
+                            
+                            <div class="mapa-simulado">
+                                [Área do Mapa - Atualização em tempo real do JavaScript]
+                            </div>
+                            
+                            <p>Status: <strong id="status-gps" class="text-danger">Aguardando dados...</strong></p>
+                            <p>Última Coordenada: <strong id="coordenada-atual">N/A</strong></p>
+                            <p>Velocidade: <strong id="velocidade-atual">0 km/h</strong></p>
+
+                            <hr>
+                            <h4 class="mt-3">Gerenciamento de Turnos</h4>
+                            <p class="text-muted">Aqui estariam as tabelas e botões para gerenciar motoristas e rotas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ponto-motorista" class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-info text-white">
+                        <h2 class="h4 mb-0">Ponto do Motorista</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>Registro de entrada e saída do turno de trabalho.</p>
+
+                        <form>
+                            <div class="mb-3">
+                                <label for="matricula" class="form-label">Matrícula do Motorista:</label>
+                                <input type="text" id="matricula" class="form-control" required>
+                            </div>
+                            
+                            <p class="mt-3"><strong>Ação:</strong></p>
+                            <button type="button" class="btn btn-success" onclick="registrarPonto('entrada')">Registrar ENTRADA</button>
+                            <button type="button" class="btn btn-danger" onclick="registrarPonto('saida')">Registrar SAÍDA</button>
+                        </form>
+
+                        <div id="status-ponto" class="alert alert-light mt-4 text-center">
+                            <p id="mensagem-ponto" class="mb-0">Aguardando registro...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <script>
+        // ===================================
+        // 1. LÓGICA DE SIMULAÇÃO DE LOGIN
+        // ===================================
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o recarregamento da página
+            
+            const user = document.getElementById('usuario').value;
+            const pass = document.getElementById('senha').value;
+            
+            // Simulação de credenciais: admin / 123
+            if (user === 'admin' && pass === '123') {
+                document.getElementById('login-area').style.display = 'none';
+                document.getElementById('monitoramento-painel').style.display = 'block';
+                simularTempoReal();
+            } else {
+                alert('Credenciais incorretas. Use "admin" e "123" para simulação.');
+            }
+        });
+
+        // ===================================
+        // 2. LÓGICA DE SIMULAÇÃO EM TEMPO REAL
+        // ===================================
+        function simularTempoReal() {
+            const statusGps = document.getElementById('status-gps');
+            const coordenadaAtual = document.getElementById('coordenada-atual');
+            const velocidadeAtual = document.getElementById('velocidade-atual');
+            
+            // Simula a conexão bem-sucedida
+            statusGps.innerHTML = '🟢 **ONLINE**';
+            statusGps.classList.remove('text-danger');
+            statusGps.classList.add('text-success');
+
+            // Coordenadas iniciais (Exemplo: São Paulo)
+            let lat = -23.5505; 
+            let lon = -46.6333;
+
+            // Simula o recebimento de novos dados a cada 3 segundos
+            setInterval(() => {
+                // Simula uma pequena variação no movimento (GPS)
+                lat += (Math.random() - 0.5) * 0.0005; 
+                lon += (Math.random() - 0.5) * 0.0005; 
+                
+                const novaCoordenada = `Lat: ${lat.toFixed(6)}, Lon: ${lon.toFixed(6)}`;
+                const novaVelocidade = (Math.random() * 60).toFixed(1); // Velocidade de 0 a 60 km/h
+
+                coordenadaAtual.innerHTML = novaCoordenada;
+                velocidadeAtual.innerHTML = `${novaVelocidade} km/h`;
+            }, 3000); 
+        }
+
+        // ===================================
+        // 3. LÓGICA DE REGISTRO DE PONTO
+        // ===================================
+        function registrarPonto(tipo) {
+            const matricula = document.getElementById('matricula').value;
+            const mensagemDiv = document.getElementById('mensagem-ponto');
+            const statusDiv = document.getElementById('status-ponto');
+            const agora = new Date();
+            const hora = agora.toLocaleTimeString('pt-BR');
+            const data = agora.toLocaleDateString('pt-BR');
+
+            if (matricula.trim() === "") {
+                mensagemDiv.innerHTML = "⚠️ Por favor, insira a **Matrícula** para registrar o ponto.";
+                statusDiv.className = 'alert alert-warning mt-4 text-center'; // Alerta amarelo
+                return;
+            }
+
+            let acao = tipo === 'entrada' ? 'ENTRADA' : 'SAÍDA';
+            mensagemDiv.innerHTML = `✅ Ponto de **${acao}** registrado com sucesso!<br>
+                                     **Motorista:** ${matricula}<br>
+                                     **Data/Hora:** ${data} ${hora}`;
+            
+            // Atualiza a cor de fundo da mensagem de status usando classes do Bootstrap
+            statusDiv.className = tipo === 'entrada' 
+                ? 'alert alert-success mt-4 text-center' // Alerta verde para entrada
+                : 'alert alert-info mt-4 text-center'; // Alerta azul claro para saída
+        }
+    </script>
+
+
+
+
+</head>
+<body>
+    
+    <!-- Link arquivos Bootstrap js -->        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+</body>
+</html>
