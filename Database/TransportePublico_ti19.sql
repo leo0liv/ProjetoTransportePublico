@@ -15,11 +15,11 @@ DROP DATABASE IF EXISTS TransportePublico_ti19;
 
 -- Criar o banco de dados TransportePublico_ti19 se ele não existir
 CREATE DATABASE IF NOT EXISTS TransportePublico_ti19
-    DEFAULT CHATACTER SET utf8
+    DEFAULT CHARACTER SET utf8
     COLLATE utf8_general_ci;
 
 -- Usamos o banco de dados TransportePublico_ti19
-USE TransportePublico_ti19
+USE TransportePublico_ti19;
 
 -- Estrutura de tabela tblinhas
 CREATE TABLE tblinhas (
@@ -31,7 +31,7 @@ CREATE TABLE tblinhas (
 
 -- Estrutura de tabela tbpontos
 CREATE TABLE tbpontos (
-    id_ponto INT PRIMARY KEY,
+    id_ponto INT(11) PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     latitude DECIMAL(10,6) NOT NULL,
     longitude DECIMAL(10,6) NOT NULL
@@ -45,7 +45,7 @@ CREATE TABLE tbveiculos(
     capacidade INT,
 
     -- Chave estrangeira
-    FOREIGN KEY (id_linha) REFERENCES linhas(id_linha)
+    FOREIGN KEY (id_linha) REFERENCES tblinhas(id_linha)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Estrutura de tabela tbrotas
@@ -58,8 +58,8 @@ CREATE TABLE tbrotas (
     UNIQUE (id_linha, id_ponto),
 
     -- chave estrangeira
-    FOREIGN KEY (id_linha) REFERENCES linhas(id_linha),
-    FOREIGN KEY (id_ponto) REFERENCES pontos(id_ponto)
+    FOREIGN KEY (id_linha) REFERENCES tblinhas(id_linha),
+    FOREIGN KEY (id_ponto) REFERENCES tbpontos(id_ponto)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Estrutura de tabela tbhorario_programados
@@ -70,7 +70,7 @@ CREATE TABLE tbhorario_programados (
     horario_partida TIME NOT NULL,
 
     -- chave estrangeira
-    FOREIGN KEY (id_linha) REFERENCES linhas(id_linhas)
+    FOREIGN KEY (id_linha) REFERENCES tblinhas(id_linha)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Estrutura de tabela tblocalizacao_tempo_real
@@ -83,10 +83,10 @@ CREATE TABLE tblocalizacao_tempo_real (
     timestamp_atualizacao DATETIME NOT NULL,
 
     -- chave estrangeira
-    FOREIGN KEY (id_veiculo REFERENCES) veiculos(id_veiculo)
+    FOREIGN KEY (id_veiculo) REFERENCES tbveiculos(id_veiculo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---Estrutura de tabela tbprevisao_chegada
+-- Estrutura de tabela tbprevisao_chegada
 CREATE TABLE tbprevisao_chegada (
     id_previsao INT PRIMARY KEY,
     id_veiculo INT NOT NULL,
@@ -95,8 +95,8 @@ CREATE TABLE tbprevisao_chegada (
     criado_em DATETIME NOT NULL,
 
     -- Chave estrangeira
-    FOREIGN KEY (id_veiculo) REFERENCES veiculos(id_veiculo),
-    FOREIGN KEY (id_ponto ) REFERENCES pontos(id_pontos)
+    FOREIGN KEY (id_veiculo) REFERENCES tbveiculos(id_veiculo),
+    FOREIGN KEY (id_ponto ) REFERENCES tbpontos(id_ponto)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Estrutura de tabela tbusuarios
@@ -109,7 +109,7 @@ CREATE TABLE tbusuarios (
 
 -- Estrutura de tabela tbmotoristas
 CREATE TABLE tbmotoristas (
-    id_motoristas INT PRIMARY KEY,
+    id_motorista INT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(14) UNIQUE NOT NULL,
     foto_url VARCHAR(255),
@@ -128,7 +128,7 @@ CREATE TABLE tbmotoristas_alocados (
     UNIQUE (id_motorista, id_veiculo, data_hora_inicio),
 
     -- chave estrangeira
-    FOREIGN KEY (id_motorista) REFERENCES id_motorista(id_motorista),
-    FOREIGN KEY (id_veiculo)   REFERENCES veiculos(id_veiculo)
+    FOREIGN KEY (id_motorista) REFERENCES tbmotoristas(id_motorista),
+    FOREIGN KEY (id_veiculo)   REFERENCES tbveiculos(id_veiculo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
