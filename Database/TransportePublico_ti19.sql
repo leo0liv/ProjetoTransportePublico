@@ -15,7 +15,7 @@ DROP DATABASE IF EXISTS TransportePublico_ti19;
 
 -- Criar o banco de dados TransportePublico_ti19 se ele não existir
 CREATE DATABASE IF NOT EXISTS TransportePublico_ti19
-    DEFAULT CHATACTER SET utf8
+    DEFAULT CHARACTER SET utf8
     COLLATE utf8_general_ci;
 
 -- Usamos o banco de dados TransportePublico_ti19
