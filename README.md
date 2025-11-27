@@ -15,4 +15,4 @@ As seguintes tecnologias foram utilizadas no projeto:
 
 # Autores
 | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/157486936?s=400&u=d40935b209b9fce43353a0ae8189b14529bf4c10&v=4" width=115><br><sub>Leo</sub>](https://github.com/leo0liv) |  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/213715178?v=4" width=115><br><sub>Kaue</sub>](https://github.com/kaue123475) |  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/208688828?v=4" width=115><br><sub>Pedro</sub>](https://github.com/pdrfxptrem) |
-| [<img loading="lazy" src="https://avatars.githubusercontent.com/u/213715178?v=4" width=115><br><sub>Kaue</sub>](https://github.com/kaue123475) |  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/213714558?v=4" width=115><br><sub>Pedro</sub>](https://github.com/saponoel) | :---: | :---: |
+| [<img loading="lazy" src="https://avatars.githubusercontent.com/u/213715178?v=4" width=115><br><sub>Kaue</sub>](https://github.com/kaue123475) |  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/213714558?v=4" width=115><br><sub>Gabriel B</sub>](https://github.com/saponoel) | :---: | :---: |
