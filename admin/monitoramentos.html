@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base bootstrap</title>
+    <title>Sistema de Gestão Operacional</title>
 
-    <!-- Link arquivos Bootstrap -->
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <!-- Link para CSS específico -->
     <link rel="stylesheet" href="../css/meu_estilo.css">
 
-
-<style>
+    <style>
         /* Estilos Customizados que não dependem do Bootstrap */
         body {
             background-color: #f8f9fa; /* Fundo leve */
@@ -94,7 +91,7 @@
                 </div>
             </div>
 
-            <div id="ponto-motorista" class="col-md-6 mb-4">
+            <div id="ponto-motorista" class="col-md-6 mb-4" style="display: none;">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-info text-white">
                         <h2 class="h4 mb-0">Ponto do Motorista</h2>
@@ -126,9 +123,35 @@
     <script src="../js/bootstrap.min.js"></script>
 
     <script>
-     
+        // Variável global para armazenar o ID do temporizador de logout
+        let logoutTimer;
+        // 3 minutos em milissegundos
+        const TIMEOUT_MILLIS = 3 * 60 * 1000; 
+
+        // Função de Logout: Esconde o monitoramento/ponto e volta para a tela de login
+        function logout(reason) {
+            // 1. Limpa qualquer temporizador pendente
+            clearTimeout(logoutTimer);
+
+            // 2. Esconde os painéis operacionais
+            document.getElementById('monitoramento-painel').style.display = 'none';
+            document.getElementById('ponto-motorista').style.display = 'none';
+
+            // 3. Mostra a área de login
+            document.getElementById('login-area').style.display = 'block';
+
+            // 4. Limpa as senhas (boa prática de segurança e UX)
+            document.getElementById('usuario').value = '';
+            document.getElementById('senha').value = '';
+            
+            // 5. Exibe a mensagem de motivo (se houver)
+            if (reason) {
+                alert(reason);
+            }
+        }
+    
         // 1. LÓGICA DE SIMULAÇÃO DE LOGIN
-     
+    
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Impede o recarregamento da página
             
@@ -139,13 +162,21 @@
             if (user === 'admin' && pass === '123') {
                 document.getElementById('login-area').style.display = 'none';
                 document.getElementById('monitoramento-painel').style.display = 'block';
+                document.getElementById('ponto-motorista').style.display = 'block'; 
+                
                 simularTempoReal();
+                
+                // *** CONFIGURAÇÃO DO TIMEOUT DE 3 MINUTOS ***
+                logoutTimer = setTimeout(function() {
+                    logout('Você excedeu o limite de 3 minutos para registro de ponto. Por favor, faça login novamente.');
+                }, TIMEOUT_MILLIS);
+
             } else {
                 alert('Credenciais incorretas. Use "admin" e "123" para simulação.');
             }
         });
 
-      
+    
         // 2. LÓGICA DE SIMULAÇÃO EM TEMPO REAL
         
         function simularTempoReal() {
@@ -176,7 +207,7 @@
             }, 3000); 
         }
 
-      
+    
         // 3. LÓGICA DE REGISTRO DE PONTO
         
         function registrarPonto(tipo) {
@@ -193,6 +224,12 @@
                 return;
             }
 
+            // Se o ponto foi registrado com sucesso, cancela o temporizador de logout!
+            if (logoutTimer) {
+                clearTimeout(logoutTimer);
+                console.log("Temporizador de 3 minutos cancelado. Ponto registrado.");
+            }
+
             let acao = tipo === 'entrada' ? 'ENTRADA' : 'SAÍDA';
             mensagemDiv.innerHTML = `✅ Ponto de **${acao}** registrado com sucesso!<br>
                                      **Motorista:** ${matricula}<br>
@@ -205,14 +242,5 @@
         }
     </script>
 
-
-
-
-</head>
-<body>
-    
-    <!-- Link arquivos Bootstrap js -->        
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
 </body>
 </html>
