@@ -6,16 +6,16 @@
     <title>Menu - Público</title>
 
     <!-- CSS específico -->
-    <link rel="stylesheet" href="css/meu_estilo.css">
+    <link rel="stylesheet" href="../css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="../css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="css/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/bootstrap-icons.css">
 </head>
 <body>
 
@@ -69,6 +69,6 @@
       </nav>
 
     <!-- Bootstrap JS -->
-    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
