@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bootstrap 5.3 Offline + Font + Ícones</title>
 
+    <!-- CSS específico -->
+    <link rel="stylesheet" href="../css/meu_estilo.css">
+
     <!-- Fonte local -->
-    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="../css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="css/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/bootstrap-icons.css">
 </head>
 <body>
 
@@ -34,6 +37,6 @@
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
