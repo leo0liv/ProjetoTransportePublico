@@ -22,7 +22,8 @@
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container-fluid container-lg">
           <a class="navbar-brand" href="#">
-            <h3><b></b>Transporte Público</h3>
+            <strong class="bi bi-bus-front text-warning"></strong>
+            <strong>Transporte Público</strong>
           </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -30,13 +31,13 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">HOME</a>
+                <a class="nav-link active" aria-current="page" href="#">Mapa</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">DESENVOLVEDORES</a>
+                <a class="nav-link" href="#">Linhas</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">SUPPORT</a>
+                <a class="nav-link" href="#">Previsões</a>
               </li>
             </ul>
             <div class="d-flex">
@@ -61,7 +62,7 @@
                     </button>
                 </form>
                 <a href="#" class="btn btn-secondary btn-info">
-                    <i class="bi bi-person-fill text-white"></i>
+                    <strong class="bi bi-gear text-white">&nbsp;Admin</strong>
                 </a>
             </div>
           </div>
