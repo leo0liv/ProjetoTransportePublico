@@ -135,7 +135,6 @@ CREATE TABLE tbmotoristas_alocados (
 
 
 -- Inserir dados na tabela 'tblinhas'
--- 1. Insere a Linha de Teste
 INSERT INTO tblinhas (codigo, nome) VALUES ('101-A', 'Terminal - Vila Rio Branco');
 
 -- Inserir dados na tabela 'tbpontos'
