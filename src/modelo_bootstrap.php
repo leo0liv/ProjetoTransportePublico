@@ -19,22 +19,6 @@
 </head>
 <body>
 
-    <div class="container mt-5">
-        <h1 class="text-primary mb-4">
-            <i class="bi bi-lightning-charge-fill"></i>
-            Bootstrap 5.3 com ícones e fonte offline!
-        </h1>
-
-        <button class="btn btn-success">
-            <i class="bi bi-check-circle-fill"></i>
-            Botão com ícone
-        </button>
-
-        <p class="mt-3">
-            <i class="bi bi-info-circle-fill"></i>
-            Este texto está usando a fonte Poppins instalada localmente.
-        </p>
-    </div>
 
     <!-- Bootstrap JS -->
     <script src="js/bootstrap.bundle.min.js"></script>
