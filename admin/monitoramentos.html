@@ -3,244 +3,1095 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão Operacional</title>
-
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/meu_estilo.css">
-
+    <title>Sistema de Frota - Gestão e Rastreamento</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Icones Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Estilos Customizados que não dependem do Bootstrap */
+        :root {
+            --primary-color: #0d6efd; /* Bootstrap Blue */
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --info-color: #0dcaf0;
+        }
         body {
-            background-color: #f8f9fa; /* Fundo leve */
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
         }
-
-        header {
-            background-color: #007bff; /* Azul primário do Bootstrap */
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            margin-bottom: 20px;
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
-
-        /* Área do Mapa Simulada */
-        .mapa-simulado {
-            background-color: #e9ecef; 
-            height: 250px;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: none;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+        }
+        /* Estilos do SPA */
+        .page-content {
+            display: none;
+            min-height: 80vh;
+        }
+        .page-content.active {
+            display: block;
+        }
+        /* A página de login só aparece na inicialização */
+        #login-page {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-            text-align: center;
-            color: #6c757d;
+            height: 100vh;
+        }
+        .driver-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .map-placeholder {
+            height: 300px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
+            color: var(--secondary-color);
+            margin-top: 10px;
+        }
+        .alert-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .alert-item:hover {
+            background-color: #f0f8ff;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Sistema de Gestão Operacional</h1>
-    </header>
+<!-- Navegação Global (Exibida após o login) -->
+<nav id="main-nav" class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm" style="display: none;">
+    <div class="container-fluid app-container">
+        <span class="navbar-brand">Transport Publico</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showView('tracking-page')">
+                        <i data-lucide="map" class="me-1" style="width: 18px;"></i>Rastreamento
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showView('admin-area-page')">
+                        <i data-lucide="layout-dashboard" class="me-1" style="width: 18px;"></i>Área Administrativa
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showView('public-info-page')">
+                        <i data-lucide="bell" class="me-1" style="width: 18px;"></i>Avisos e Suporte
+                    </a>
+                </li>
+            </ul>
+            <button class="btn btn-outline-light" onclick="logout()">
+                <i data-lucide="log-out" class="me-1" style="width: 18px;"></i>Sair
+            </button>
+        </div>
+    </div>
+</nav>
 
-    <div class="container">
-        <div class="row">
-            
-            <div id="monitoramento" class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="h4 mb-0">Área Administrativa/Operacional (Monitoramento)</h2>
-                    </div>
-                    <div class="card-body">
-                        
-                        <div id="login-area">
-                            <p class="alert alert-warning">
-                                <strong>Requer Login</strong> para visualizar localização em tempo real e gerenciar turnos.
-                            </p>
-                            
-                            <form id="login-form">
-                                <div class="mb-3">
-                                    <label for="usuario" class="form-label">Usuário:</label>
-                                    <input type="text" id="usuario" value="admin" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="senha" class="form-label">Senha:</label>
-                                    <input type="password" id="senha" value="123" class="form-control" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Entrar</button>
-                            </form>
+<!-- Conteúdo Principal do Aplicativo -->
+<div class="app-container pt-lg-5">
+
+    <!-- 1. PÁGINA DE LOGIN (Área Administrativa) -->
+    <!-- Adicionamos um estilo para ocultar a página de login na inicialização se o corpo não for de tela cheia -->
+    <div id="login-page" class="page-content active" style="display: flex;">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-6 col-lg-4">
+                <div class="card p-4">
+                    <h2 class="card-title text-center mb-4 text-primary">Área Administrativa</h2>
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Usuário</label>
+                            <input type="text" class="form-control rounded-pill" id="username" value="admin" required>
                         </div>
-
-                        <div id="monitoramento-painel" style="display: none;">
-                            <h3 class="mt-0">Localização em Tempo Real (Ônibus 101)</h3>
-                            
-                            <div class="mapa-simulado">
-                                [Área do Mapa - Atualização em tempo real do JavaScript]
-                            </div>
-                            
-                            <p>Status: <strong id="status-gps" class="text-danger">Aguardando dados...</strong></p>
-                            <p>Última Coordenada: <strong id="coordenada-atual">N/A</strong></p>
-                            <p>Velocidade: <strong id="velocidade-atual">0 km/h</strong></p>
-
-                            <hr>
-                            <h4 class="mt-3">Gerenciamento de Turnos</h4>
-                            <p class="text-muted">Aqui estariam as tabelas e botões para gerenciar motoristas e rotas.</p>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Senha</label>
+                            <input type="password" class="form-control rounded-pill" id="password" value="123456" required>
                         </div>
-                    </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                            <i data-lucide="log-in" class="me-2" style="width: 18px;"></i>
+                            Entrar
+                        </button>
+                    </form>
+                    <div id="login-message" class="mt-3 text-danger text-center" style="display: none;">Credenciais inválidas.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. PÁGINA DE ADMINISTRAÇÃO E GESTÃO (2ª Página do fluxo) -->
+    <div id="admin-area-page" class="page-content">
+        <h2 class="text-primary mb-4">Painel de Gestão Operacional</h2>
+
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="drivers-tab" data-bs-toggle="tab" data-bs-target="#drivers-pane" type="button" role="tab" aria-controls="drivers-pane" aria-selected="true">
+                    <i data-lucide="truck" style="width: 18px;"></i> Motoristas
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="schedules-tab" data-bs-toggle="tab" data-bs-target="#schedules-pane" type="button" role="tab" aria-controls="schedules-pane" aria-selected="false">
+                    <i data-lucide="calendar" style="width: 18px;"></i> Escalas e Linhas
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts-pane" type="button" role="tab" aria-controls="alerts-pane" aria-selected="false" onclick="renderAlerts()">
+                    <i data-lucide="alert-triangle" style="width: 18px;"></i> Editor de Avisos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="points-tab" data-bs-toggle="tab" data-bs-target="#points-pane" type="button" role="tab" aria-controls="points-pane" aria-selected="false" onclick="renderStopPoints()">
+                    <i data-lucide="map-pin" style="width: 18px;"></i> Gestão de Pontos
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content border border-top-0 bg-white p-4 card" id="adminTabsContent">
+            <!-- 2.1. TAB: Motoristas -->
+            <div class="tab-pane fade show active" id="drivers-pane" role="tabpanel" aria-labelledby="drivers-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Cadastro de Motoristas</h4>
+                    <button class="btn btn-success" onclick="openDriverModal('new')">
+                        <i data-lucide="plus" style="width: 18px;"></i>
+                        Novo Motorista
+                    </button>
+                </div>
+                <div id="drivers-list" class="list-group">
+                    <!-- Drivers will be listed here -->
                 </div>
             </div>
 
-            <div id="ponto-motorista" class="col-md-6 mb-4" style="display: none;">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-info text-white">
-                        <h2 class="h4 mb-0">Ponto do Motorista</h2>
+            <!-- 2.2. TAB: Escalas e Linhas -->
+            <div class="tab-pane fade" id="schedules-pane" role="tabpanel" aria-labelledby="schedules-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Escalas e Rotas (Linhas)</h4>
+                    <button class="btn btn-success" onclick="openScheduleModal('new')">
+                        <i data-lucide="calendar" style="width: 18px;"></i>
+                        Nova Escala
+                    </button>
+                </div>
+                <div id="schedules-list" class="list-group">
+                    <!-- Schedules will be listed here -->
+                </div>
+            </div>
+
+            <!-- 2.3. TAB: Editor de Avisos/Alertas -->
+            <div class="tab-pane fade" id="alerts-pane" role="tabpanel" aria-labelledby="alerts-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Avisos e Notícias Operacionais</h4>
+                    <button class="btn btn-success" onclick="openAlertModal('new')">
+                        <i data-lucide="megaphone" style="width: 18px;"></i>
+                        Novo Aviso
+                    </button>
+                </div>
+                <div id="alerts-list" class="list-group">
+                    <!-- Alerts will be listed here -->
+                </div>
+            </div>
+
+            <!-- 2.4. TAB: Gestão de Pontos de Parada -->
+            <div class="tab-pane fade" id="points-pane" role="tabpanel" aria-labelledby="points-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Pontos de Parada (Geolocalização Simulada)</h4>
+                    <button class="btn btn-success" onclick="openPointModal('new')">
+                        <i data-lucide="plus-circle" style="width: 18px;"></i>
+                        Novo Ponto
+                    </button>
+                </div>
+                <div id="points-list" class="list-group">
+                    <!-- Stop Points will be listed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PÁGINA DE RASTREAMENTO -->
+    <!-- TERCEIRA PÁGINA (Funcionalidades de Rastreamento) -->
+    <div id="tracking-page" class="page-content">
+        <h2 class="text-primary mb-4">Rastreamento de Frota em Tempo Real</h2>
+        <div class="row">
+            <!-- Coluna de Linhas em Operação -->
+            <div class="col-md-4 mb-4">
+                <div class="card p-3">
+                    <h4 class="card-title">Linhas Ativas</h4>
+                    <div id="routes-tracking-list" class="list-group">
+                        <!-- Active routes will be listed here -->
                     </div>
-                    <div class="card-body">
-                        <p>Registro de entrada e saída do turno de trabalho.</p>
-
-                        <form>
-                            <div class="mb-3">
-                                <label for="matricula" class="form-label">Matrícula do Motorista:</label>
-                                <input type="text" id="matricula" class="form-control" required>
+                </div>
+            </div>
+            <!-- Coluna de Detalhes e Mapa -->
+            <div class="col-md-8 mb-4">
+                <div class="card p-4">
+                    <h4 class="card-title" id="tracking-details-title">Selecione uma Linha para Rastrear</h4>
+                    <div id="tracking-details-content" style="display: none;">
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-auto">
+                                <!-- Foto do motorista -->
+                                <img src="https://placehold.co/100x100/94a3b8/ffffff?text=Motorista" alt="Foto do Motorista" class="driver-photo" id="tracking-driver-photo" style="width: 100px; height: 100px;">
                             </div>
-                            
-                            <p class="mt-3"><strong>Ação:</strong></p>
-                            <button type="button" class="btn btn-success" onclick="registrarPonto('entrada')">Registrar ENTRADA</button>
-                            <button type="button" class="btn btn-danger" onclick="registrarPonto('saida')">Registrar SAÍDA</button>
-                        </form>
-
-                        <div id="status-ponto" class="alert alert-light mt-4 text-center">
-                            <p id="mensagem-ponto" class="mb-0">Aguardando registro...</p>
+                            <div class="col">
+                                <h5 id="tracking-driver-name" class="mb-1 text-primary"></h5>
+                                <p id="tracking-bus-model" class="mb-0 text-muted"></p>
+                            </div>
                         </div>
+
+                        <h5 class="mt-3">Horários da Escala</h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Entrada: <span class="fw-bold" id="tracking-time-entry"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Almoço (Início): <span class="fw-bold" id="tracking-time-lunch-start"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Almoço (Fim): <span class="fw-bold" id="tracking-time-lunch-end"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Saída: <span class="fw-bold" id="tracking-time-exit"></span>
+                            </li>
+                        </ul>
+
+                        <h5 class="mt-3">Localização em Tempo Real (Simulada)</h5>
+                        <div class="map-placeholder">
+                            [Imagem de um mapa com ícones de ônibus e pontos de parada] Simulação de Localização em Tempo Real
+                        </div>
+                        <p class="mb-2"><i data-lucide="locate-fixed" class="me-1 text-success" style="width: 18px;"></i> **Status:** <span class="fw-bold text-success" id="tracking-status">Em Rota</span></p>
+                        <p class="mb-0"><i data-lucide="map-pin" class="me-1 text-warning" style="width: 18px;"></i> **Próximo Ponto:** <span class="fw-bold" id="tracking-next-stop"></span></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
 
-    <script>
-        // Variável global para armazenar o ID do temporizador de logout
-        let logoutTimer;
-        // 3 minutos em milissegundos
-        const TIMEOUT_MILLIS = 3 * 60 * 1000; 
+    <!-- 4. PÁGINA DE INFORMAÇÕES PÚBLICAS (Avisos e Suporte) -->
+    <div id="public-info-page" class="page-content">
+        <h2 class="text-primary mb-4">Avisos, Suporte e Notícias</h2>
+        <div class="row">
+            <!-- Coluna de Avisos -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4 h-100">
+                    <h4 class="border-bottom pb-2 mb-3"><i data-lucide="bell-ring" class="me-2 text-warning" style="width: 20px;"></i> Avisos e Notícias (Alertas de Desvios)</h4>
+                    <div id="public-alerts-list">
+                        <p class="text-muted">Nenhum aviso ativo no momento.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Coluna de Suporte -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4 h-100">
+                    <h4 class="border-bottom pb-2 mb-3"><i data-lucide="help-circle" class="me-2 text-info" style="width: 20px;"></i> Contato e Suporte (FAQ e Canais)</h4>
+                    <p class="fw-bold">FAQ - Perguntas Frequentes:</p>
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Como faço para rastrear meu ônibus?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Basta acessar a seção 'Rastreamento' e clicar na linha desejada para ver a localização em tempo real e o próximo ponto de parada.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    O que significa "Desvio Operacional"?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Indica que a rota do ônibus foi temporariamente alterada devido a obras, acidentes ou eventos. Verifique o aviso para detalhes.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-4 fw-bold">Canais de Atendimento:</p>
+                    <p class="mb-0"><i data-lucide="mail" class="me-2" style="width: 18px;"></i> Email: <a href="mailto:suporte@frota.com">suporte@frota.com</a></p>
+                    <p><i data-lucide="phone" class="me-2" style="width: 18px;"></i> Telefone: (99) 9999-9999</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Função de Logout: Esconde o monitoramento/ponto e volta para a tela de login
-        function logout(reason) {
-            // 1. Limpa qualquer temporizador pendente
-            clearTimeout(logoutTimer);
+</div>
 
-            // 2. Esconde os painéis operacionais
-            document.getElementById('monitoramento-painel').style.display = 'none';
-            document.getElementById('ponto-motorista').style.display = 'none';
+<!-- MODAL DE MOTORISTA -->
+<div class="modal fade" id="driverModal" tabindex="-1" aria-labelledby="driverModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="driverModalLabel">Adicionar Motorista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="driver-form">
+                <div class="modal-body">
+                    <input type="hidden" id="driver-id">
+                    <div class="mb-3">
+                        <label for="driver-name" class="form-label">Nome Completo</label>
+                        <input type="text" class="form-control" id="driver-name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="driver-rg" class="form-label">RG</label>
+                            <input type="text" class="form-control" id="driver-rg" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="driver-cnh" class="form-label">CNH</label>
+                            <input type="text" class="form-control" id="driver-cnh" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="driver-phone" class="form-label">Telefone</label>
+                            <input type="tel" class="form-control" id="driver-phone" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="driver-age" class="form-label">Idade</label>
+                            <input type="number" class="form-control" id="driver-age" min="18" max="99" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="driver-photo-url" class="form-label">URL da Foto (Simulação)</label>
+                        <input type="url" class="form-control" id="driver-photo-url" value="https://placehold.co/100x100/94a3b8/ffffff?text=Motorista">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Motorista</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-            // 3. Mostra a área de login
-            document.getElementById('login-area').style.display = 'block';
+<!-- MODAL DE ESCALA -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel">Adicionar Escala</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="schedule-form">
+                <div class="modal-body">
+                    <input type="hidden" id="schedule-id">
+                    <div class="mb-3">
+                        <label for="schedule-route" class="form-label">Linha/Rota</label>
+                        <input type="text" class="form-control" id="schedule-route" placeholder="Ex: Linha 101 - Centro/Bairro" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="schedule-bus" class="form-label">Ônibus (Modelo/Placa)</label>
+                        <input type="text" class="form-control" id="schedule-bus" placeholder="Ex: Marcopolo B200 / ABC-1234" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="schedule-driver" class="form-label">Motorista Responsável</label>
+                        <select class="form-select" id="schedule-driver" required>
+                            <!-- Drivers will be populated here -->
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="schedule-entry" class="form-label">Entrada</label>
+                            <input type="time" class="form-control" id="schedule-entry" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="schedule-lunch-start" class="form-label">Início Almoço</label>
+                            <input type="time" class="form-control" id="schedule-lunch-start" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="schedule-lunch-end" class="form-label">Fim Almoço (2h depois)</label>
+                            <input type="time" class="form-control" id="schedule-lunch-end" required>
+                            <small class="text-muted">A pausa é fixa em 2h, ajuste manual permitido.</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="schedule-exit" class="form-label">Saída</label>
+                            <input type="time" class="form-control" id="schedule-exit" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Escala</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-            // 4. Limpa as senhas (boa prática de segurança e UX)
-            document.getElementById('usuario').value = '';
-            document.getElementById('senha').value = '';
-            
-            // 5. Exibe a mensagem de motivo (se houver)
-            if (reason) {
-                alert(reason);
-            }
+<!-- MODAL DE AVISOS -->
+<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alertModalLabel">Criar Novo Aviso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="alert-form">
+                <div class="modal-body">
+                    <input type="hidden" id="alert-id">
+                    <div class="mb-3">
+                        <label for="alert-title" class="form-label">Título do Aviso</label>
+                        <input type="text" class="form-control" id="alert-title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alert-type" class="form-label">Tipo de Alerta</label>
+                        <select class="form-select" id="alert-type">
+                            <option value="Desvio Operacional">Desvio Operacional</option>
+                            <option value="Mudança de Horário">Mudança de Horário</option>
+                            <option value="Notícia Geral">Notícia Geral</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alert-content" class="form-label">Conteúdo Detalhado</label>
+                        <textarea class="form-control" id="alert-content" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Publicar Aviso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE PONTOS DE PARADA -->
+<div class="modal fade" id="pointModal" tabindex="-1" aria-labelledby="pointModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pointModalLabel">Adicionar Ponto de Parada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="point-form">
+                <div class="modal-body">
+                    <input type="hidden" id="point-id">
+                    <div class="mb-3">
+                        <label for="point-name" class="form-label">Nome do Ponto</label>
+                        <input type="text" class="form-control" id="point-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="point-line" class="form-label">Linhas que Atendem</label>
+                        <input type="text" class="form-control" id="point-line" placeholder="Ex: 101, 202" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="point-lat" class="form-label">Latitude (Simulada)</label>
+                            <input type="text" class="form-control" id="point-lat" value="-23.5505" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="point-lon" class="form-label">Longitude (Simulada)</label>
+                            <input type="text" class="form-control" id="point-lon" value="-46.6333" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Ponto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5.3 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+    // Inicialização dos ícones Lucide
+    lucide.createIcons();
+
+    // --- VARIÁVEIS DE ESTADO SIMULADAS (Usando localStorage para simular persistência) ---
+    let drivers = JSON.parse(localStorage.getItem('drivers')) || [
+        { id: 'd-1', name: 'João Silva', cnh: '12345678901', rg: 'MG-12.345.678', phone: '(11) 98765-4321', age: 45, photoUrl: 'https://placehold.co/100x100/38bdf8/ffffff?text=J.S' },
+        { id: 'd-2', name: 'Maria Souza', cnh: '98765432109', rg: 'SP-98.765.432', phone: '(21) 91234-5678', age: 38, photoUrl: 'https://placehold.co/100x100/f472b6/ffffff?text=M.S' }
+    ];
+    let schedules = JSON.parse(localStorage.getItem('schedules')) || [
+        { id: 's-1', route: 'Linha 101 - Centro/Bairro A', bus: 'Marcopolo B200 / ABC-1234', driverId: 'd-1', entry: '06:00', lunchStart: '12:00', lunchEnd: '14:00', exit: '18:00' },
+        { id: 's-2', route: 'Linha 202 - Industrial/Praia', bus: 'Comil C300 / XYZ-5678', driverId: 'd-2', entry: '07:30', lunchStart: '13:00', lunchEnd: '15:00', exit: '19:30' }
+    ];
+    let alerts = JSON.parse(localStorage.getItem('alerts')) || [
+        { id: 'a-1', title: 'Ponte Interditada na Linha 101', type: 'Desvio Operacional', content: 'Devido a obras urgentes, a Linha 101 está operando com desvio pela Rua dos Milagres até 18h.', date: new Date().toLocaleDateString('pt-BR') },
+    ];
+    let stopPoints = JSON.parse(localStorage.getItem('stopPoints')) || [
+        { id: 'p-1', name: 'Terminal Central', lines: '101, 202', lat: -23.5505, lon: -46.6333 },
+        { id: 'p-2', name: 'Ponto da Praça', lines: '202', lat: -23.5510, lon: -46.6300 },
+    ];
+
+    // --- FUNÇÕES DE PERSISTÊNCIA E UTILIDADE ---
+
+    function saveState() {
+        localStorage.setItem('drivers', JSON.stringify(drivers));
+        localStorage.setItem('schedules', JSON.stringify(schedules));
+        localStorage.setItem('alerts', JSON.stringify(alerts));
+        localStorage.setItem('stopPoints', JSON.stringify(stopPoints));
+    }
+
+    function generateId(prefix) {
+        return prefix + '-' + (new Date()).getTime();
+    }
+
+    function getDriverById(id) {
+        return drivers.find(d => d.id === id);
+    }
+
+    // --- FUNÇÕES DE NAVEGAÇÃO E AUTENTICAÇÃO ---
+
+    function showView(viewId) {
+        // Oculta todas as páginas de conteúdo
+        document.querySelectorAll('.page-content').forEach(page => {
+            page.classList.remove('active');
+        });
+        // Exibe a página solicitada
+        document.getElementById(viewId).classList.add('active');
+        
+        // Renderiza conteúdo específico ao mudar de view
+        if (viewId === 'admin-area-page') {
+            renderDrivers();
+            renderSchedules();
+        } else if (viewId === 'tracking-page') {
+            renderRoutesForTracking();
+        } else if (viewId === 'public-info-page') {
+            renderPublicAlerts();
         }
-    
-        // 1. LÓGICA DE SIMULAÇÃO DE LOGIN
-    
-        document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede o recarregamento da página
-            
-            const user = document.getElementById('usuario').value;
-            const pass = document.getElementById('senha').value;
-            
-            // Simulação de credenciais: admin / 123
-            if (user === 'admin' && pass === '123') {
-                document.getElementById('login-area').style.display = 'none';
-                document.getElementById('monitoramento-painel').style.display = 'block';
-                document.getElementById('ponto-motorista').style.display = 'block'; 
-                
-                simularTempoReal();
-                
-                // *** CONFIGURAÇÃO DO TIMEOUT DE 3 MINUTOS ***
-                logoutTimer = setTimeout(function() {
-                    logout('Você excedeu o limite de 3 minutos para registro de ponto. Por favor, faça login novamente.');
-                }, TIMEOUT_MILLIS);
+        window.scrollTo(0, 0);
+        lucide.createIcons();
+    }
 
-            } else {
-                alert('Credenciais incorretas. Use "admin" e "123" para simulação.');
+    // Esta função agora lida explicitamente com a ocultação da tela de login
+    function loginSuccess() {
+        // 1. Oculta a página de login
+        document.getElementById('login-page').style.display = 'none'; 
+        
+        // 2. Exibe a navegação principal
+        document.getElementById('main-nav').style.display = 'block';
+        
+        // 3. Exibe a primeira página de conteúdo (Área Administrativa)
+        showView('admin-area-page');
+    }
+
+    function logout() {
+        document.getElementById('main-nav').style.display = 'none';
+        
+        // Exibe a página de login e a torna ativa
+        const loginPage = document.getElementById('login-page');
+        loginPage.style.display = 'flex'; // Volta a exibir em tela cheia
+        loginPage.classList.add('active');
+        
+        // Oculta as outras views
+        document.querySelectorAll('.page-content').forEach(page => {
+            if (page.id !== 'login-page') {
+                page.classList.remove('active');
             }
         });
-
-    
-        // 2. LÓGICA DE SIMULAÇÃO EM TEMPO REAL
         
-        function simularTempoReal() {
-            const statusGps = document.getElementById('status-gps');
-            const coordenadaAtual = document.getElementById('coordenada-atual');
-            const velocidadeAtual = document.getElementById('velocidade-atual');
-            
-            // Simula a conexão bem-sucedida
-            statusGps.innerHTML = '🟢 **ONLINE**';
-            statusGps.classList.remove('text-danger');
-            statusGps.classList.add('text-success');
+        document.getElementById('login-form').reset();
+    }
 
-            // Coordenadas iniciais (Exemplo: São Paulo)
-            let lat = -23.5505; 
-            let lon = -46.6333;
+    // Login
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const message = document.getElementById('login-message');
 
-            // Simula o recebimento de novos dados a cada 3 segundos
-            setInterval(() => {
-                // Simula uma pequena variação no movimento (GPS)
-                lat += (Math.random() - 0.5) * 0.0005; 
-                lon += (Math.random() - 0.5) * 0.0005; 
-                
-                const novaCoordenada = `Lat: ${lat.toFixed(6)}, Lon: ${lon.toFixed(6)}`;
-                const novaVelocidade = (Math.random() * 60).toFixed(1); // Velocidade de 0 a 60 km/h
+        // Simulação de autenticação
+        if (username === 'admin' && password === '123456') {
+            message.style.display = 'none';
+            loginSuccess();
+        } else {
+            message.textContent = 'Credenciais inválidas.';
+            message.style.display = 'block';
+        }
+    });
 
-                coordenadaAtual.innerHTML = novaCoordenada;
-                velocidadeAtual.innerHTML = `${novaVelocidade} km/h`;
-            }, 3000); 
+    // --- FUNÇÕES DE GESTÃO (CRUD) ---
+
+    // 2.1. MOTORISTAS (CRUD)
+    function renderDrivers() {
+        const list = document.getElementById('drivers-list');
+        list.innerHTML = '';
+        if (drivers.length === 0) { list.innerHTML = '<p class="text-muted text-center py-3">Nenhum motorista cadastrado.</p>'; return; }
+
+        drivers.forEach(driver => {
+            list.innerHTML += `
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img src="${driver.photoUrl}" alt="${driver.name}" class="driver-photo me-3">
+                        <div>
+                            <h6 class="mb-0 fw-bold text-primary">${driver.name} (Idade: ${driver.age})</h6>
+                            <small class="text-muted">CNH: ${driver.cnh} | RG: ${driver.rg} | Tel: ${driver.phone}</small>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="openDriverModal('edit', '${driver.id}')">
+                            <i data-lucide="pencil" style="width: 16px;"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDriver('${driver.id}')">
+                            <i data-lucide="trash-2" style="width: 16px;"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        lucide.createIcons();
+    }
+
+    function openDriverModal(mode, id = null) {
+        const modal = new bootstrap.Modal(document.getElementById('driverModal'));
+        const title = document.getElementById('driverModalLabel');
+        const form = document.getElementById('driver-form');
+        form.reset();
+
+        if (mode === 'new') {
+            title.textContent = 'Adicionar Novo Motorista';
+            document.getElementById('driver-id').value = '';
+            document.getElementById('driver-photo-url').value = 'https://placehold.co/100x100/94a3b8/ffffff?text=Motorista';
+        } else if (mode === 'edit') {
+            title.textContent = 'Editar Motorista';
+            const driver = getDriverById(id);
+            if (driver) {
+                document.getElementById('driver-id').value = driver.id;
+                document.getElementById('driver-name').value = driver.name;
+                document.getElementById('driver-cnh').value = driver.cnh;
+                document.getElementById('driver-rg').value = driver.rg;
+                document.getElementById('driver-phone').value = driver.phone;
+                document.getElementById('driver-age').value = driver.age;
+                document.getElementById('driver-photo-url').value = driver.photoUrl;
+            }
+        }
+        modal.show();
+    }
+
+    document.getElementById('driver-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('driver-id').value;
+        const name = document.getElementById('driver-name').value;
+        const cnh = document.getElementById('driver-cnh').value;
+        const rg = document.getElementById('driver-rg').value;
+        const phone = document.getElementById('driver-phone').value;
+        const age = document.getElementById('driver-age').value;
+        const photoUrl = document.getElementById('driver-photo-url').value;
+
+        const driverData = { id: id || generateId('d'), name, cnh, rg, phone, age, photoUrl };
+
+        if (id) {
+            const index = drivers.findIndex(d => d.id === id);
+            if (index !== -1) { drivers[index] = driverData; }
+        } else {
+            drivers.push(driverData);
         }
 
-    
-        // 3. LÓGICA DE REGISTRO DE PONTO
-        
-        function registrarPonto(tipo) {
-            const matricula = document.getElementById('matricula').value;
-            const mensagemDiv = document.getElementById('mensagem-ponto');
-            const statusDiv = document.getElementById('status-ponto');
-            const agora = new Date();
-            const hora = agora.toLocaleTimeString('pt-BR');
-            const data = agora.toLocaleDateString('pt-BR');
+        saveState();
+        renderDrivers();
+        bootstrap.Modal.getInstance(document.getElementById('driverModal')).hide();
+        populateDriverSelect(); // Update selection list
+    });
 
-            if (matricula.trim() === "") {
-                mensagemDiv.innerHTML = "⚠️ Por favor, insira a **Matrícula** para registrar o ponto.";
-                statusDiv.className = 'alert alert-warning mt-4 text-center'; // Alerta amarelo
-                return;
-            }
-
-            // Se o ponto foi registrado com sucesso, cancela o temporizador de logout!
-            if (logoutTimer) {
-                clearTimeout(logoutTimer);
-                console.log("Temporizador de 3 minutos cancelado. Ponto registrado.");
-            }
-
-            let acao = tipo === 'entrada' ? 'ENTRADA' : 'SAÍDA';
-            mensagemDiv.innerHTML = `✅ Ponto de **${acao}** registrado com sucesso!<br>
-                                     **Motorista:** ${matricula}<br>
-                                     **Data/Hora:** ${data} ${hora}`;
-            
-            // Atualiza a cor de fundo da mensagem de status usando classes do Bootstrap
-            statusDiv.className = tipo === 'entrada' 
-                ? 'alert alert-success mt-4 text-center' // Alerta verde para entrada
-                : 'alert alert-info mt-4 text-center'; // Alerta azul claro para saída
+    function deleteDriver(id) {
+        if (confirm('Tem certeza que deseja excluir este motorista?')) {
+            drivers = drivers.filter(d => d.id !== id);
+            schedules.forEach(s => { if (s.driverId === id) { s.driverId = null; } });
+            saveState();
+            renderDrivers();
+            renderSchedules();
         }
-    </script>
+    }
 
+    // 2.2. ESCALAS (CRUD)
+    function populateDriverSelect(selectedDriverId = null) {
+        const select = document.getElementById('schedule-driver');
+        select.innerHTML = '<option value="" disabled selected>-- Selecione um Motorista --</option>';
+
+        drivers.forEach(driver => {
+            const selected = driver.id === selectedDriverId ? 'selected' : '';
+            select.innerHTML += `<option value="${driver.id}" ${selected}>${driver.name}</option>`;
+        });
+    }
+
+    function renderSchedules() {
+        const list = document.getElementById('schedules-list');
+        list.innerHTML = '';
+        if (schedules.length === 0) { list.innerHTML = '<p class="text-muted text-center py-3">Nenhuma escala cadastrada.</p>'; return; }
+
+        schedules.forEach(schedule => {
+            const driver = getDriverById(schedule.driverId);
+            const driverName = driver ? driver.name : '<span class="text-danger">Não Atribuído</span>';
+            const driverPhoto = driver ? driver.photoUrl : 'https://placehold.co/100x100/6c757d/ffffff?text=N/A';
+
+            list.innerHTML += `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img src="${driverPhoto}" alt="Foto" class="driver-photo me-3">
+                        <div>
+                            <h6 class="mb-0 fw-bold">${schedule.route} | Ônibus: ${schedule.bus}</h6>
+                            <small class="text-muted">Motorista: ${driverName}</small><br>
+                            <small class="text-primary fw-bold">Horário: ${schedule.entry} - ${schedule.exit} (Almoço: ${schedule.lunchStart} - ${schedule.lunchEnd})</small>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="openScheduleModal('edit', '${schedule.id}')">
+                            <i data-lucide="pencil" style="width: 16px;"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteSchedule('${schedule.id}')">
+                            <i data-lucide="trash-2" style="width: 16px;"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        lucide.createIcons();
+    }
+
+    function openScheduleModal(mode, id = null) {
+        const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+        const title = document.getElementById('scheduleModalLabel');
+        const form = document.getElementById('schedule-form');
+        form.reset();
+
+        populateDriverSelect();
+
+        if (mode === 'new') {
+            title.textContent = 'Adicionar Nova Escala';
+            document.getElementById('schedule-id').value = '';
+        } else if (mode === 'edit') {
+            title.textContent = 'Editar Escala';
+            const schedule = schedules.find(s => s.id === id);
+            if (schedule) {
+                document.getElementById('schedule-id').value = schedule.id;
+                document.getElementById('schedule-route').value = schedule.route;
+                document.getElementById('schedule-bus').value = schedule.bus;
+                document.getElementById('schedule-entry').value = schedule.entry;
+                document.getElementById('schedule-lunch-start').value = schedule.lunchStart;
+                document.getElementById('schedule-lunch-end').value = schedule.lunchEnd;
+                document.getElementById('schedule-exit').value = schedule.exit;
+                populateDriverSelect(schedule.driverId);
+            }
+        }
+        modal.show();
+    }
+
+    document.getElementById('schedule-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('schedule-id').value;
+        const route = document.getElementById('schedule-route').value;
+        const bus = document.getElementById('schedule-bus').value;
+        const driverId = document.getElementById('schedule-driver').value;
+        const entry = document.getElementById('schedule-entry').value;
+        const lunchStart = document.getElementById('schedule-lunch-start').value;
+        const lunchEnd = document.getElementById('schedule-lunch-end').value;
+        const exit = document.getElementById('schedule-exit').value;
+
+        const scheduleData = { id: id || generateId('s'), route, bus, driverId, entry, lunchStart, lunchEnd, exit };
+
+        if (id) {
+            const index = schedules.findIndex(s => s.id === id);
+            if (index !== -1) { schedules[index] = scheduleData; }
+        } else {
+            schedules.push(scheduleData);
+        }
+
+        saveState();
+        renderSchedules();
+        renderRoutesForTracking();
+        bootstrap.Modal.getInstance(document.getElementById('scheduleModal')).hide();
+    });
+
+    function deleteSchedule(id) {
+        if (confirm('Tem certeza que deseja excluir esta escala?')) {
+            schedules = schedules.filter(s => s.id !== id);
+            saveState();
+            renderSchedules();
+            renderRoutesForTracking();
+        }
+    }
+
+    // 2.3. AVISOS/ALERTAS (CRUD)
+    function renderAlerts() {
+        const list = document.getElementById('alerts-list');
+        list.innerHTML = '';
+        if (alerts.length === 0) { list.innerHTML = '<p class="text-muted text-center py-3">Nenhum aviso ativo.</p>'; return; }
+
+        alerts.forEach(alert => {
+            const badgeClass = alert.type === 'Desvio Operacional' ? 'bg-danger' : 'bg-info';
+            list.innerHTML += `
+                <div class="list-group-item list-group-item-action alert-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="badge ${badgeClass} mb-1">${alert.type}</span>
+                        <h6 class="mb-1 fw-bold">${alert.title}</h6>
+                        <small class="text-muted">${alert.content.substring(0, 80)}...</small>
+                        <p class="mb-0 text-secondary"><small>Publicado em: ${alert.date}</small></p>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="openAlertModal('edit', '${alert.id}')">
+                            <i data-lucide="pencil" style="width: 16px;"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteAlert('${alert.id}')">
+                            <i data-lucide="trash-2" style="width: 16px;"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        lucide.createIcons();
+    }
+
+    function openAlertModal(mode, id = null) {
+        const modal = new bootstrap.Modal(document.getElementById('alertModal'));
+        const title = document.getElementById('alertModalLabel');
+        const form = document.getElementById('alert-form');
+        form.reset();
+
+        if (mode === 'new') {
+            title.textContent = 'Criar Novo Aviso';
+            document.getElementById('alert-id').value = '';
+        } else if (mode === 'edit') {
+            title.textContent = 'Editar Aviso';
+            const alertData = alerts.find(a => a.id === id);
+            if (alertData) {
+                document.getElementById('alert-id').value = alertData.id;
+                document.getElementById('alert-title').value = alertData.title;
+                document.getElementById('alert-type').value = alertData.type;
+                document.getElementById('alert-content').value = alertData.content;
+            }
+        }
+        modal.show();
+    }
+
+    document.getElementById('alert-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('alert-id').value;
+        const title = document.getElementById('alert-title').value;
+        const type = document.getElementById('alert-type').value;
+        const content = document.getElementById('alert-content').value;
+        const date = new Date().toLocaleDateString('pt-BR');
+
+        const alertData = { id: id || generateId('a'), title, type, content, date };
+
+        if (id) {
+            const index = alerts.findIndex(a => a.id === id);
+            if (index !== -1) { alerts[index] = alertData; }
+        } else {
+            alerts.unshift(alertData);
+        }
+
+        saveState();
+        renderAlerts();
+        renderPublicAlerts();
+        bootstrap.Modal.getInstance(document.getElementById('alertModal')).hide();
+    });
+
+    function deleteAlert(id) {
+        if (confirm('Tem certeza que deseja excluir este aviso?')) {
+            alerts = alerts.filter(a => a.id !== id);
+            saveState();
+            renderAlerts();
+            renderPublicAlerts();
+        }
+    }
+
+    // 2.4. PONTOS DE PARADA (CRUD)
+    function renderStopPoints() {
+        const list = document.getElementById('points-list');
+        list.innerHTML = '';
+        if (stopPoints.length === 0) { list.innerHTML = '<p class="text-muted text-center py-3">Nenhum ponto de parada cadastrado.</p>'; return; }
+
+        stopPoints.forEach(point => {
+            list.innerHTML += `
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1 fw-bold">${point.name}</h6>
+                        <small class="text-muted">Linhas: ${point.lines} | Coordenadas: ${point.lat}, ${point.lon}</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="openPointModal('edit', '${point.id}')">
+                            <i data-lucide="pencil" style="width: 16px;"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deletePoint('${point.id}')">
+                            <i data-lucide="trash-2" style="width: 16px;"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        lucide.createIcons();
+    }
+
+    function openPointModal(mode, id = null) {
+        const modal = new bootstrap.Modal(document.getElementById('pointModal'));
+        const title = document.getElementById('pointModalLabel');
+        const form = document.getElementById('point-form');
+        form.reset();
+
+        if (mode === 'new') {
+            title.textContent = 'Adicionar Novo Ponto';
+            document.getElementById('point-id').value = '';
+            document.getElementById('point-lat').value = (Math.random() * 0.01 - 0.005 - 23.55).toFixed(4); // Simulação de lat
+            document.getElementById('point-lon').value = (Math.random() * 0.01 - 0.005 - 46.63).toFixed(4); // Simulação de lon
+        } else if (mode === 'edit') {
+            title.textContent = 'Editar Ponto de Parada';
+            const point = stopPoints.find(p => p.id === id);
+            if (point) {
+                document.getElementById('point-id').value = point.id;
+                document.getElementById('point-name').value = point.name;
+                document.getElementById('point-line').value = point.lines;
+                document.getElementById('point-lat').value = point.lat;
+                document.getElementById('point-lon').value = point.lon;
+            }
+        }
+        modal.show();
+    }
+
+    document.getElementById('point-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('point-id').value;
+        const name = document.getElementById('point-name').value;
+        const lines = document.getElementById('point-line').value;
+        const lat = parseFloat(document.getElementById('point-lat').value);
+        const lon = parseFloat(document.getElementById('point-lon').value);
+
+        const pointData = { id: id || generateId('p'), name, lines, lat, lon };
+
+        if (id) {
+            const index = stopPoints.findIndex(p => p.id === id);
+            if (index !== -1) { stopPoints[index] = pointData; }
+        } else {
+            stopPoints.push(pointData);
+        }
+
+        saveState();
+        renderStopPoints();
+        bootstrap.Modal.getInstance(document.getElementById('pointModal')).hide();
+    });
+
+    function deletePoint(id) {
+        if (confirm('Tem certeza que deseja excluir este ponto de parada?')) {
+            stopPoints = stopPoints.filter(p => p.id !== id);
+            saveState();
+            renderStopPoints();
+        }
+    }
+
+    // --- 3. FUNÇÕES DE RASTREAMENTO ---
+
+    function renderRoutesForTracking() {
+        const list = document.getElementById('routes-tracking-list');
+        list.innerHTML = '';
+        if (schedules.length === 0) { list.innerHTML = '<p class="text-muted text-center py-3">Nenhuma linha ativa.</p>'; return; }
+
+        schedules.forEach(schedule => {
+            const driver = getDriverById(schedule.driverId);
+            const driverName = driver ? driver.name : 'Motorista Desconhecido';
+
+            list.innerHTML += `
+                <a href="#" class="list-group-item list-group-item-action" onclick="showTrackingDetails('${schedule.id}')">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold text-primary">${schedule.route}</h6>
+                        <small class="badge rounded-pill bg-success">Em Rota</small>
+                    </div>
+                    <p class="mb-1">${driverName}</p>
+                    <small class="text-muted">${schedule.bus}</small>
+                </a>
+            `;
+        });
+        lucide.createIcons();
+    }
+
+    function showTrackingDetails(scheduleId) {
+        const schedule = schedules.find(s => s.id === scheduleId);
+        const driver = getDriverById(schedule.driverId);
+
+        if (!schedule || !driver) {
+            document.getElementById('tracking-details-content').style.display = 'none';
+            document.getElementById('tracking-details-title').textContent = 'Detalhes não encontrados.';
+            return;
+        }
+
+        document.getElementById('tracking-details-title').textContent = `Rastreamento da Linha: ${schedule.route}`;
+        document.getElementById('tracking-details-content').style.display = 'block';
+
+        // Detalhes do Motorista e Ônibus
+        document.getElementById('tracking-driver-photo').src = driver.photoUrl;
+        document.getElementById('tracking-driver-name').textContent = driver.name;
+        document.getElementById('tracking-bus-model').textContent = `Ônibus: ${schedule.bus}`;
+
+        // Detalhes da Escala
+        document.getElementById('tracking-time-entry').textContent = schedule.entry;
+        document.getElementById('tracking-time-lunch-start').textContent = schedule.lunchStart;
+        document.getElementById('tracking-time-lunch-end').textContent = schedule.lunchEnd;
+        document.getElementById('tracking-time-exit').textContent = schedule.exit;
+
+        // Simulação de Localização em Tempo Real e Próximo Ponto
+        const points = stopPoints.map(p => p.name);
+        const randomNextStop = points.length > 0 ? points[Math.floor(Math.random() * points.length)] : 'Ponto Desconhecido (Adicione pontos na área Admin)';
+
+        document.getElementById('tracking-next-stop').textContent = randomNextStop;
+        document.getElementById('tracking-status').textContent = 'Em Movimento (Atualizando a cada 10s...)';
+
+        lucide.createIcons();
+    }
+
+    // --- 4. FUNÇÕES DE INFORMAÇÃO PÚBLICA ---
+
+    function renderPublicAlerts() {
+        const list = document.getElementById('public-alerts-list');
+        list.innerHTML = '';
+        if (alerts.length === 0) {
+            list.innerHTML = '<p class="text-muted">Nenhum aviso ativo no momento.</p>';
+            return;
+        }
+
+        alerts.forEach(alert => {
+            const badgeClass = alert.type === 'Desvio Operacional' ? 'bg-danger' : 'bg-info';
+            list.innerHTML += `
+                <div class="alert alert-dismissible fade show mb-3" role="alert" style="border-left: 5px solid var(--${alert.type === 'Desvio Operacional' ? 'danger-color' : 'info-color'});">
+                    <span class="badge ${badgeClass} me-2">${alert.type}</span>
+                    <strong class="text-dark">${alert.title}</strong>
+                    <p class="mt-1 mb-0">${alert.content}</p>
+                    <small class="text-muted d-block mt-1">Publicado em: ${alert.date}</small>
+                </div>
+            `;
+        });
+    }
+
+    // --- INICIALIZAÇÃO ---
+
+    window.onload = function() {
+        // Garante que o estado inicial do SPA é a página de login
+        showView('login-page');
+
+        // Inicializa a lista de motoristas na primeira abertura da aba Admin
+        populateDriverSelect();
+    };
+
+</script>
 </body>
 </html>
