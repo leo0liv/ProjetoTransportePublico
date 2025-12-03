@@ -23,7 +23,7 @@ USE TransportePublico_ti19;
 
 -- Estrutura de tabela tblinhas
 CREATE TABLE tblinhas (
-    id_linha INT PRIMARY KEY,
+    id_linha INT PRIMARY KEY AUTO_INCREMENT,
     codigo VARCHAR(20) UNIQUE NOT NULL,
     nome VARCHAR(100) NOT NULL,
     operadora VARCHAR(100)
@@ -31,7 +31,7 @@ CREATE TABLE tblinhas (
 
 -- Estrutura de tabela tbpontos
 CREATE TABLE tbpontos (
-    id_ponto INT(11) PRIMARY KEY,
+    id_ponto INT(11) PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     latitude DECIMAL(10,6) NOT NULL,
     longitude DECIMAL(10,6) NOT NULL
@@ -39,7 +39,7 @@ CREATE TABLE tbpontos (
 
 -- Estrutura de tabela tbveiculos
 CREATE TABLE tbveiculos(
-    id_veiculo INT PRIMARY KEY,
+    id_veiculo INT PRIMARY KEY AUTO_INCREMENT,
     placa VARCHAR(10) UNIQUE NOT NULL,
     id_linha INT,
     capacidade INT,
@@ -50,7 +50,7 @@ CREATE TABLE tbveiculos(
 
 -- Estrutura de tabela tbrotas
 CREATE TABLE tbrotas (
-    id_rota INT PRIMARY KEY,
+    id_rota INT PRIMARY KEY AUTO_INCREMENT,
     id_linha INT NOT NULL,
     id_ponto INT NOT NULL,
     ordem INT NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE tbrotas (
 
 -- Estrutura de tabela tbhorario_programados
 CREATE TABLE tbhorario_programados (
-    id_horario INT PRIMARY KEY,
+    id_horario INT PRIMARY KEY AUTO_INCREMENT,
     id_linha INT NOT NULL,
     dia_semana VARCHAR(10) NOT NULL,
     horario_partida TIME NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE tbhorario_programados (
 
 -- Estrutura de tabela tblocalizacao_tempo_real
 CREATE TABLE tblocalizacao_tempo_real (
-    id_localizacao INT PRIMARY KEY,
+    id_localizacao INT PRIMARY KEY AUTO_INCREMENT,
     id_veiculo INT NOT NULL,
     latitude DECIMAL(10,6) NOT NULL,
     longitude DECIMAL(10,6) NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE tblocalizacao_tempo_real (
 
 -- Estrutura de tabela tbprevisao_chegada
 CREATE TABLE tbprevisao_chegada (
-    id_previsao INT PRIMARY KEY,
+    id_previsao INT PRIMARY KEY AUTO_INCREMENT,
     id_veiculo INT NOT NULL,
     id_ponto INT NOT NULL,
     estimativa_chegada DATETIME NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE tbprevisao_chegada (
 
 -- Estrutura de tabela tbusuarios
 CREATE TABLE tbusuarios (
-    id_usuario INT PRIMARY KEY,
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     senha_hash VARCHAR(255) NOT NULL
@@ -109,7 +109,7 @@ CREATE TABLE tbusuarios (
 
 -- Estrutura de tabela tbmotoristas
 CREATE TABLE tbmotoristas (
-    id_motorista INT PRIMARY KEY,
+    id_motorista INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(14) UNIQUE NOT NULL,
     foto_url VARCHAR(255),
@@ -119,7 +119,7 @@ CREATE TABLE tbmotoristas (
 
 -- Estrutura de tabela tbmotoristas_alocados
 CREATE TABLE tbmotoristas_alocados (
-    id_alocado INT PRIMARY KEY,
+    id_alocado INT PRIMARY KEY AUTO_INCREMENT,
     id_motorista INT NOT NULL,
     id_veiculo INT NOT NULL,
     data_hora_inicio DATETIME NOT NULL,
@@ -132,3 +132,40 @@ CREATE TABLE tbmotoristas_alocados (
     FOREIGN KEY (id_veiculo)   REFERENCES tbveiculos(id_veiculo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+-- Inserir dados na tabela 'tblinhas'
+INSERT INTO tblinhas (codigo, nome) VALUES ('101-A', 'Terminal - Vila Rio Branco');
+
+-- Inserir dados na tabela 'tbpontos'
+-- Ponto 1: Terminal (Partida)
+INSERT INTO tbpontos (id_ponto, nome, latitude, longitude) 
+VALUES (101, 'Terminal Rodoviário Central', '-23.5850', '-48.0450');
+
+-- Ponto 2: Centro (Ponto de Passagem)
+INSERT INTO tbpontos (id_ponto, nome, latitude, longitude) 
+VALUES (102, 'Catedral Nossa Senhora dos Prazeres', '-23.5917', '-48.0531');
+
+-- Ponto 3: Bairro Final (Destino)
+INSERT INTO tbpontos (id_ponto, nome, latitude, longitude) 
+VALUES (103, 'Bairro Vila Rio Branco', '-23.6000', '-48.0600');
+
+-- Inserir dados na tabela 'tbrotas'
+-- Ordem 1: Terminal
+INSERT INTO tbrotas (id_linha, id_ponto, ordem) VALUES (1, 101, 1);
+-- Ordem 2: Catedral
+INSERT INTO tbrotas (id_linha, id_ponto, ordem) VALUES (1, 102, 2);
+-- Ordem 3: Destino
+INSERT INTO tbrotas (id_linha, id_ponto, ordem) VALUES (1, 103, 3);
+
+-- Inserir dados na tabela 'tbveiculos'
+INSERT INTO tbveiculos (placa, id_linha, capacidade)
+VALUES ('ABC-1234', 1, 40);
+
+-- Inserir dados na tabela 'tbmotoristas'
+INSERT INTO tbmotoristas (nome, cpf, telefone)
+VALUES ('João da Silva', '123.456.789-00', '15999999999');
+
+-- Inserir dados na tabela 'tbhorario_programados'
+INSERT INTO tbhorario_programados (id_linha, dia_semana, horario_partida)
+VALUES (1, 'segunda', '06:00:00');
