@@ -103,14 +103,14 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                         <i class="bi bi-map"></i> Mapa de Localização
                     </div>
                     <div class="card-body">
-                        <div class="map-container d-flex align-items-center justify-content-center">
-                            <div class="text-center text-muted">
-                                <i class="bi bi-map fs-1"></i>
-                                <div id="controls">
-                                    Exibindo Rota da Linha ID: 1 (Terminal - Vila Rio Branco)
-                                </div>
-                                <iframe id="map-iframe" src="" allowfullscreen></iframe>
-                            </div>
+                        <div class="ratio ratio-4x3"> 
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d29254.131904991147!2d-48.06764847405178!3d-23.57682870911824!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x94c5cccf1dc8fd1b%3A0xe6c4b1b9273155b0!2sVila%20Regina%2C%20Itapetininga%20-%20SP!3m2!1d-23.5862943!2d-48.0741515!4m5!1s0x94c5cc3ee3493c5f%3A0xee6e291c6979d687!2sJardim%20Maraba%2C%20Itapetininga%20-%20SP!3m2!1d-23.5699224!2d-48.0171315!5e0!3m2!1spt-BR!2sbr!4v1764801209727!5m2!1spt-BR!2sbr" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
                         </div>
                     </div>
                 </div>
@@ -158,52 +158,7 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
 
     <!-- Bootstrap JS -->
     <script src="../js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // ID da linha que queremos exibir
-        const LINE_ID = 1;
-
-        function loadBusRoute() {
-            // 1. URL do script PHP
-            const phpUrl = `get_origin_destination.php?id=${LINE_ID}`;
-            
-            fetch(phpUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.origin && data.destination) {
-                        const origin = data.origin;
-                        const destination = data.destination;
-                        
-                        // 2. Coordenadas formatadas para o URL
-                        const originCoord = `${origin.lat},${origin.lng}`;
-                        const destinationCoord = `${destination.lat},${destination.lng}`;
-                        
-                        // 3. CONSTRUÇÃO DO URL DE ROTAS DO GOOGLE MAPS
-                        // Parâmetros cruciais: 
-                        // api=1: Habilita a API URL para direções
-                        // travelmode=transit: Define o modo de transporte público (ônibus)
-                        // origin e destination usam as coordenadas do seu BD
-                        const mapsUrl = `https://www.google.com/maps/embed/v1/directions?key=SUA_CHAVE_API&origin=${originCoord}&destination=${destinationCoord}&mode=transit`;
-
-                        // 4. Inserir o URL no Iframe
-                        document.getElementById('map-iframe').src = mapsUrl;
-                        
-                        // Você pode remover a chave API do parâmetro 'src' do iframe e usar o padrão 'dir/...'
-                        // Mas o padrão 'embed/v1/directions' é mais robusto para iframes.
-                    } else {
-                        console.error("Erro ao obter coordenadas:", data.message);
-                        alert("Não foi possível carregar a rota.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro de rede:', error);
-                    alert('Erro de comunicação com o servidor PHP.');
-                });
-        }
-
-        // Carrega a rota ao abrir a página
-        loadBusRoute();
-    </script>
+    
 
 </body>
 
