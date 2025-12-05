@@ -47,15 +47,6 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="../css/bootstrap-icons.css">
 
-    <style>
-        body { margin: 0; padding: 0; }
-        /* Garante que o iframe ocupe a maior parte da tela */
-        #map-container {
-            width: 100%;
-            height: 90vh; /* 90% da altura da tela */
-        }
-    </style>
-
 </head>
 
 <body>
@@ -116,7 +107,7 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                             <div class="text-center text-muted">
                                 <i class="bi bi-map fs-1"></i>
                                 <div id="controls">
-                                    Exibindo Rota da Linha ID: 1 (Terminal - Vila Rio Branco)
+                                    Exibindo Rota da Linha ID: 1
                                 </div>
                                 <iframe id="map-iframe" src="" allowfullscreen></iframe>
                             </div>
