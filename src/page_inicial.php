@@ -47,6 +47,15 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="../css/bootstrap-icons.css">
 
+    <style>
+        body { margin: 0; padding: 0; }
+        /* Garante que o iframe ocupe a maior parte da tela */
+        #map-container {
+            width: 100%;
+            height: 90vh; /* 90% da altura da tela */
+        }
+    </style>
+
 </head>
 
 <body>
@@ -107,9 +116,14 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                             <div class="text-center text-muted">
                                 <i class="bi bi-map fs-1"></i>
                                 <div id="controls">
-                                    Exibindo Rota da Linha ID: 1 (Terminal - Vila Rio Branco)
                                 </div>
-                                <iframe id="map-iframe" src="" allowfullscreen></iframe>
+                                <iframe
+                                    id="map-iframe"
+                                    loading="lazy"
+                                    allowfullscreen
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                    src="http://googleusercontent.com/maps.google.com/dir/destino/Curitiba,+Paraná">
+                                </iframe>
                             </div>
                         </div>
                     </div>
@@ -158,52 +172,7 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
 
     <!-- Bootstrap JS -->
     <script src="../js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // ID da linha que queremos exibir
-        const LINE_ID = 1;
-
-        function loadBusRoute() {
-            // 1. URL do script PHP
-            const phpUrl = `get_origin_destination.php?id=${LINE_ID}`;
-            
-            fetch(phpUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.origin && data.destination) {
-                        const origin = data.origin;
-                        const destination = data.destination;
-                        
-                        // 2. Coordenadas formatadas para o URL
-                        const originCoord = `${origin.lat},${origin.lng}`;
-                        const destinationCoord = `${destination.lat},${destination.lng}`;
-                        
-                        // 3. CONSTRUÇÃO DO URL DE ROTAS DO GOOGLE MAPS
-                        // Parâmetros cruciais: 
-                        // api=1: Habilita a API URL para direções
-                        // travelmode=transit: Define o modo de transporte público (ônibus)
-                        // origin e destination usam as coordenadas do seu BD
-                        const mapsUrl = `https://www.google.com/maps/embed/v1/directions?key=SUA_CHAVE_API&origin=${originCoord}&destination=${destinationCoord}&mode=transit`;
-
-                        // 4. Inserir o URL no Iframe
-                        document.getElementById('map-iframe').src = mapsUrl;
-                        
-                        // Você pode remover a chave API do parâmetro 'src' do iframe e usar o padrão 'dir/...'
-                        // Mas o padrão 'embed/v1/directions' é mais robusto para iframes.
-                    } else {
-                        console.error("Erro ao obter coordenadas:", data.message);
-                        alert("Não foi possível carregar a rota.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro de rede:', error);
-                    alert('Erro de comunicação com o servidor PHP.');
-                });
-        }
-
-        // Carrega a rota ao abrir a página
-        loadBusRoute();
-    </script>
+    
 
 </body>
 
