@@ -116,14 +116,9 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                             <div class="text-center text-muted">
                                 <i class="bi bi-map fs-1"></i>
                                 <div id="controls">
+                                    Exibindo Rota da Linha ID: 1 (Terminal - Vila Rio Branco)
                                 </div>
-                                <iframe
-                                    id="map-iframe"
-                                    loading="lazy"
-                                    allowfullscreen
-                                    referrerpolicy="no-referrer-when-downgrade"
-                                    src="http://googleusercontent.com/maps.google.com/dir/destino/Curitiba,+Paraná">
-                                </iframe>
+                                <iframe id="map-iframe" src="" allowfullscreen></iframe>
                             </div>
                         </div>
                     </div>
