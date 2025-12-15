@@ -158,7 +158,6 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
 
     <!-- Bootstrap JS -->
     <script src="../js/bootstrap.bundle.min.js"></script>
-    
 
 </body>
 
