@@ -47,6 +47,28 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="../css/bootstrap-icons.css">
 
+    <!-- MAPS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+
+    <style>
+    #map {
+        height: 600px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        height: 600px;
+        overflow-y: auto;
+    }
+    </style>
+
 </head>
 
 <body>
@@ -54,7 +76,7 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
         <h1 class="mb-4">
             <i class="bi bi-speedometer2"></i> Monitoramento em Tempo Real
         </h1>
-        
+
         <!-- Stats Cards -->
         <div class="row g-4 mb-4">
             <div class="col-sm-6 col-xl-3">
@@ -94,29 +116,16 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                 </div>
             </div>
         </div>
-        
+
         <div class="row g-4">
-            <!-- Mapa Simulado -->
             <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-map"></i> Mapa de Localização
-                    </div>
-                    <div class="card-body">
-                        <div class="map-container d-flex align-items-center justify-content-center">
-                            <div class="text-center text-muted">
-                                <i class="bi bi-map fs-1"></i>
-                                <div id="controls">
-                                    Exibindo Rota da Linha ID: 1
-                                </div>
-                                <iframe id="map-iframe" src="" allowfullscreen></iframe>
-                            </div>
-                        </div>
-                    </div>
+                <div id="map" style="height: 500px;"></div>
+                <div id="instructions">
+                    <p class="small text-muted">
+                    </p>
                 </div>
             </div>
-            
-            <!-- Últimas Localizações -->
+
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
@@ -125,29 +134,29 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush">
                             <?php if (empty($localizacoes)): ?>
-                                <li class="list-group-item text-center text-muted py-4">
-                                    Nenhuma localização registrada.
-                                </li>
+                            <li class="list-group-item text-center text-muted py-4">
+                                Nenhuma localização registrada.
+                            </li>
                             <?php else: ?>
-                                <?php foreach ($localizacoes as $loc): ?>
-                                    <li class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <strong><?php echo $loc['placa']; ?></strong>
-                                                <?php if ($loc['linha_codigo']): ?>
-                                                    <span class="badge bg-primary ms-1"><?php echo $loc['linha_codigo']; ?></span>
-                                                <?php endif; ?>
-                                                <br>
-                                                <small class="text-muted">
-                                                    <?php echo number_format($loc['velocidade'], 1); ?> km/h
-                                                </small>
-                                            </div>
-                                            <small class="text-muted">
-                                                <?php echo date('H:i', strtotime($loc['timestamp_atualizacao'])); ?>
-                                            </small>
-                                        </div>
-                                    </li>
-                                <?php endforeach; ?>
+                            <?php foreach ($localizacoes as $loc): ?>
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><?php echo $loc['placa']; ?></strong>
+                                        <?php if ($loc['linha_codigo']): ?>
+                                        <span class="badge bg-primary ms-1"><?php echo $loc['linha_codigo']; ?></span>
+                                        <?php endif; ?>
+                                        <br>
+                                        <small class="text-muted">
+                                            <?php echo number_format($loc['velocidade'], 1); ?> km/h
+                                        </small>
+                                    </div>
+                                    <small class="text-muted">
+                                        <?php echo date('H:i', strtotime($loc['timestamp_atualizacao'])); ?>
+                                    </small>
+                                </div>
+                            </li>
+                            <?php endforeach; ?>
                             <?php endif; ?>
                         </ul>
                     </div>
@@ -158,6 +167,61 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
 
     <!-- Bootstrap JS -->
     <script src="../js/bootstrap.bundle.min.js"></script>
+
+    <!-- MAPS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+    // 1. Inicializar o Mapa (Coordenadas de exemplo: São Paulo)
+    const map = L.map('map').setView([-23.5505, -46.6333], 13);
+
+    // 2. Adicionar Camada do OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 3. Definir Pontos de Ônibus (Latitude e Longitude)
+    const pontoA = L.latLng(-23.5505, -46.6333); // Ex: Praça da Sé
+    const pontoB = L.latLng(-23.5611, -46.6559); // Ex: MASP (Av. Paulista)
+
+    // 4. Configurar o Roteamento (OSRM)
+    const control = L.Routing.control({
+        waypoints: [
+            pontoA,
+            pontoB
+        ],
+        lineOptions: {
+            styles: [{
+                color: '#007bff',
+                opacity: 0.7,
+                weight: 6
+            }]
+        },
+        createMarker: function(i, waypoint, n) {
+            // Personaliza os marcadores de ponto
+            const markerLabel = i === 0 ? "Ponto Inicial" : "Ponto Final";
+            return L.marker(waypoint.latLng).bindPopup(markerLabel);
+        },
+        router: L.Routing.osrmv1({
+            serviceUrl: `https://router.project-osrm.org/route/v1`
+        })
+    }).addTo(map);
+
+    // 5. Mover as instruções para a nossa barra lateral do Bootstrap
+    control.on('routesfound', function(e) {
+        const routes = e.routes;
+        const summary = routes[0].summary;
+        const container = document.getElementById('instructions');
+
+        container.innerHTML = `
+                <div class="alert alert-info">
+                    <strong>Distância:</strong> ${(summary.totalDistance / 1000).toFixed(2)} km <br>
+                    <strong>Tempo estimado:</strong> ${Math.round(summary.totalTime / 60)} min
+                </div>
+            `;
+    });
+    </script>
 
 </body>
 
