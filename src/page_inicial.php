@@ -171,56 +171,53 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
     <!-- MAPS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/lrm-pt-br.js"></script>
 
     <script>
-    // 1. Inicializar o Mapa (Coordenadas de exemplo: São Paulo)
-    const map = L.map('map').setView([-23.5505, -46.6333], 13);
+        // Inicializar o Mapa
+        const map = L.map('map').setView([-23.5916, -48.0530], 14);
 
-    // 2. Adicionar Camada do OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+        // Adicionar Camada do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    // 3. Definir Pontos de Ônibus (Latitude e Longitude)
-    const pontoA = L.latLng(-23.5505, -46.6333); // Ex: Praça da Sé
-    const pontoB = L.latLng(-23.5611, -46.6559); // Ex: MASP (Av. Paulista)
+        // Definir Pontos (Latitude e Longitude)
+        // Exemplo: Da Rodoviária para a Praça Marechal Deodoro (Centro)
+        const pontoA = L.latLng(-23.5878, -48.0422); // Terminal Rodoviário
+        const pontoB = L.latLng(-23.5926, -48.0535); // Praça Marechal Deodoro
 
-    // 4. Configurar o Roteamento (OSRM)
-    const control = L.Routing.control({
-        waypoints: [
-            pontoA,
-            pontoB
-        ],
-        lineOptions: {
-            styles: [{
-                color: '#007bff',
-                opacity: 0.7,
-                weight: 6
-            }]
-        },
-        createMarker: function(i, waypoint, n) {
-            // Personaliza os marcadores de ponto
-            const markerLabel = i === 0 ? "Ponto Inicial" : "Ponto Final";
-            return L.marker(waypoint.latLng).bindPopup(markerLabel);
-        },
-        router: L.Routing.osrmv1({
-            serviceUrl: `https://router.project-osrm.org/route/v1`
-        })
-    }).addTo(map);
+        // Configurar o Roteamento (OSRM)
+        const control = L.Routing.control({
+            waypoints: [pontoA, pontoB],
+            language: 'pt-BR',
+            router: L.Routing.osrmv1({
+                serviceUrl: `https://router.project-osrm.org/route/v1`,
+                language: 'pt-BR'
+            }),
+            lineOptions: {
+                styles: [{ color: '#007bff', opacity: 0.7, weight: 6 }]
+            },
+            createMarker: function(i, waypoint, n) {
+                const label = i === 0 ? "Início" : "Fim";
+                return L.marker(waypoint.latLng).bindPopup(label);
+            }
+        }).addTo(map);
 
-    // 5. Mover as instruções para a nossa barra lateral do Bootstrap
-    control.on('routesfound', function(e) {
-        const routes = e.routes;
-        const summary = routes[0].summary;
-        const container = document.getElementById('instructions');
+        // Mover as instruções para a barra lateral
+        control.on('routesfound', function(e) {
+            const routes = e.routes;
+            const summary = routes[0].summary;
+            const container = document.getElementById('instructions');
 
-        container.innerHTML = `
-                <div class="alert alert-info">
-                    <strong>Distância:</strong> ${(summary.totalDistance / 1000).toFixed(2)} km <br>
-                    <strong>Tempo estimado:</strong> ${Math.round(summary.totalTime / 60)} min
-                </div>
-            `;
-    });
+            container.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>Cidade:</strong> Itapetininga - SP <br>
+                        <strong>Distância:</strong> ${(summary.totalDistance / 1000).toFixed(2)} km <br>
+                        <strong>Tempo estimado:</strong> ${Math.round(summary.totalTime / 60)} min
+                    </div>
+                `;
+        });
     </script>
 
 </body>
