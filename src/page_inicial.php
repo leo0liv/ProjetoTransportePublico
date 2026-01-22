@@ -49,35 +49,15 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
 
     <!-- MAPS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-
-    <style>
-    #map {
-        height: 600px;
-        width: 100%;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .sidebar {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        height: 600px;
-        overflow-y: auto;
-    }
-    </style>
 
 </head>
 
 <body>
     <main class="container py-4">
-        <h1 class="mb-4">
-            <i class="bi bi-speedometer2"></i> Monitoramento em Tempo Real
-        </h1>
+        <h1 class="mb-4"><i class="bi bi-map"></i> Mapa de Rotas</h1>
 
-        <!-- Stats Cards -->
+        <!-- Status Cards -->
         <div class="row g-4 mb-4">
             <div class="col-sm-6 col-xl-3">
                 <div class="card text-center">
@@ -115,8 +95,20 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                     </div>
                 </div>
             </div>
-        </div>
+        </div> <!-- fecha Status Cards -->
 
+        <!-- Opções de linha e busca -->
+        <nav class="navbar bg-body-tertiary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand">Linhas</a>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Busque sua linha..." aria-label="Search" />
+                    <button class="btn btn-outline-success" type="submit">Buscar</button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- MAPS e Ultima atualização -->
         <div class="row g-4">
             <div class="col-lg-8">
                 <div id="map" style="height: 500px;"></div>
@@ -162,7 +154,7 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
                     </div>
                 </div>
             </div>
-        </div>
+        </div> <!-- fecha MAPS e Ultima atualização -->
     </main>
 
     <!-- Bootstrap JS -->
@@ -174,50 +166,54 @@ $localizacoes = $conn->query($sqlLocal)->fetch_all(MYSQLI_ASSOC);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/lrm-pt-br.js"></script>
 
     <script>
-        // Inicializar o Mapa
-        const map = L.map('map').setView([-23.5916, -48.0530], 14);
+    // Inicializar o Mapa
+    const map = L.map('map').setView([-23.5916, -48.0530], 14);
 
-        // Adicionar Camada do OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+    // Adicionar Camada do OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Definir Pontos (Latitude e Longitude)
-        // Exemplo: Da Rodoviária para a Praça Marechal Deodoro (Centro)
-        const pontoA = L.latLng(-23.5878, -48.0422); // Terminal Rodoviário
-        const pontoB = L.latLng(-23.5926, -48.0535); // Praça Marechal Deodoro
+    // Definir Pontos (Latitude e Longitude)
+    // Exemplo: Da Rodoviária para a Praça Marechal Deodoro (Centro)
+    const pontoA = L.latLng(-23.5878, -48.0422); // Terminal Rodoviário
+    const pontoB = L.latLng(-23.5926, -48.0535); // Praça Marechal Deodoro
 
-        // Configurar o Roteamento (OSRM)
-        const control = L.Routing.control({
-            waypoints: [pontoA, pontoB],
-            language: 'pt-BR',
-            router: L.Routing.osrmv1({
-                serviceUrl: `https://router.project-osrm.org/route/v1`,
-                language: 'pt-BR'
-            }),
-            lineOptions: {
-                styles: [{ color: '#007bff', opacity: 0.7, weight: 6 }]
-            },
-            createMarker: function(i, waypoint, n) {
-                const label = i === 0 ? "Início" : "Fim";
-                return L.marker(waypoint.latLng).bindPopup(label);
-            }
-        }).addTo(map);
+    // Configurar o Roteamento (OSRM)
+    const control = L.Routing.control({
+        waypoints: [pontoA, pontoB],
+        language: 'pt-BR',
+        router: L.Routing.osrmv1({
+            serviceUrl: `https://router.project-osrm.org/route/v1`,
+            language: 'pt-BR'
+        }),
+        lineOptions: {
+            styles: [{
+                color: '#007bff',
+                opacity: 0.7,
+                weight: 6
+            }]
+        },
+        createMarker: function(i, waypoint, n) {
+            const label = i === 0 ? "Início" : "Fim";
+            return L.marker(waypoint.latLng).bindPopup(label);
+        }
+    }).addTo(map);
 
-        // Mover as instruções para a barra lateral
-        control.on('routesfound', function(e) {
-            const routes = e.routes;
-            const summary = routes[0].summary;
-            const container = document.getElementById('instructions');
+    // Mover as instruções para a barra lateral
+    control.on('routesfound', function(e) {
+        const routes = e.routes;
+        const summary = routes[0].summary;
+        const container = document.getElementById('instructions');
 
-            container.innerHTML = `
+        container.innerHTML = `
                     <div class="alert alert-info">
                         <strong>Cidade:</strong> Itapetininga - SP <br>
                         <strong>Distância:</strong> ${(summary.totalDistance / 1000).toFixed(2)} km <br>
                         <strong>Tempo estimado:</strong> ${Math.round(summary.totalTime / 60)} min
                     </div>
                 `;
-        });
+    });
     </script>
 
 </body>
