@@ -128,5 +128,7 @@ include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
   </div>
 </div>
 
-<script>
-    // Script       
+
+<?php 
+include '../admin/footer.php'; 
+?>   
