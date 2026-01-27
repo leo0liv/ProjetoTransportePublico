@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $senha_hash_bd = $usuario['senha_hash'];
         
         // 6. Verifica a senha usando password_verify()
-        if (password_verify($senha_digitada, $senha_hash_bd)) {
+        if ($senha_digitada == $senha_hash_bd) {
             
             // Sucesso no login: Cria as variáveis de sessão
             $_SESSION['logado'] = TRUE;

@@ -131,3 +131,7 @@ CREATE TABLE tbmotoristas_alocados (
     FOREIGN KEY (id_motorista) REFERENCES tbmotoristas(id_motorista),
     FOREIGN KEY (id_veiculo)   REFERENCES tbveiculos(id_veiculo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 3. INSERE O USUÁRIO 
+INSERT INTO tbusuarios (id_usuario, nome, email, senha_hash) 
+VALUES (1, 'Administrador Master', 'admin@transporte.com', '$2y$10$O9lMhHkR5L5h.6S.mE7vU.G/yX8S8WpL8R7Pq7z2Y.O8X7S8WpL8');
