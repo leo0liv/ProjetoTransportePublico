@@ -27,8 +27,13 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        
         <li class="nav-item">
           <a class="nav-link" href="linhas.php">Linhas</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="rotas_lista.php">Rotas</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="veiculos_lista.php">Veículos</a>
@@ -60,6 +65,7 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
     </div>
   </div>
 </nav>
+
 <main class="container" style="padding-top: 20px;">
 
     </main>
