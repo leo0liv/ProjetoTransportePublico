@@ -1,242 +1,1320 @@
-<?php
-// OBRIGATÓRIO: Proteção de Login e início da sessão
-include 'verificar_login.php'; 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento de Transporte Público Municipal</title>
+    <!-- Carrega Bootstrap 5.3 para estilização e componentes -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Carrega Leaflet para o mapa em tempo real -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* Estilos CSS personalizados e responsivos */
+        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
+        .full-height { min-height: 100vh; }
+        .card { border-radius: 0.75rem; }
+        .btn-primary { 
+            background-color: #0d6efd; 
+            border-color: #0d6efd; 
+            transition: all 0.3s; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-primary:hover { 
+            background-color: #0b5ed7; 
+            border-color: #0a58ca; 
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .navbar-brand { font-weight: 700; color: #0d6efd !important; }
+        #map-container { height: 500px; border-radius: 0.5rem; overflow: hidden; }
+        .driver-item:hover { background-color: #e9ecef; cursor: pointer; }
 
-// Incluir a conexão - Caminho padrão do seu projeto
-include("../connections/db_connect.php");
+        /* Estilo para a mensagem de fallback */
+        .fallback-warning { background-color: #fff3cd; color: #664d03; border: 1px solid #ffecb5; padding: 10px; border-radius: 0.5rem; margin-bottom: 15px; }
 
-// Variável para o nome do seu banco de dados
-$database_conn = "TransportePublico_ti19";
+        /* Estilo para Toasts de Sucesso */
+        .toast.bg-success {
+            background-color: #198754 !important; /* Verde Bootstrap */
+            color: #fff !important;
+            border: 1px solid #0f5132;
+        }
 
-// Selecionar o banco de dados
-mysqli_select_db($conn, $database_conn);
+        /* Estilo para a lista de ocorrências no monitoramento */
+        .incident-alert {
+            border-left: 5px solid #dc3545;
+            transition: transform 0.2s;
+        }
+        .incident-alert:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-// 1. Consulta para motoristas (para a gestão de turnos)
-$sql_motoristas = "SELECT id_motorista, nome FROM tbmotoristas ORDER BY nome ASC";
-$res_motoristas = $conn->query($sql_motoristas);
 
-// 2. Consulta de veículos ativos
-$sql_veiculos = "SELECT v.id_veiculo, v.prefixo, v.placa, l.nome as linha_nome 
-                 FROM tbveiculos v 
-                 LEFT JOIN tblinhas l ON v.id_linha = l.id_linha";
-$res_veiculos = $conn->query($sql_veiculos);
+        /* Responsividade para telas menores */
+        @media (max-width: 992px) {
+            #map-container { height: 300px; margin-top: 1rem; }
+            .navbar .d-flex { flex-wrap: wrap; justify-content: center; }
+            .navbar .btn { margin-bottom: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
 
-$total_veiculos = ($res_veiculos) ? $res_veiculos->num_rows : 0;
+    <!-- Scripts do Firebase e Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-$titulo_pagina = "Painel de Monitoramento";
+    <!-- Estrutura Principal da Aplicação -->
+    <div id="app" class="container-fluid p-0">
+        
+        <!-- PÁGINA 1: TELA DE LOGIN -->
+        <div id="view-login" class="full-height d-flex justify-content-center align-items-center p-3">
+            <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
+                
+                <!-- Mensagem de aviso caso o Firebase falhe -->
+                <div id="firebase-status-message" class="d-none"></div>
 
-// Inclui o header padrão do admin (Navbar e Bootstrap)
-include 'header.php'; 
-?>
-
-<!-- Importação do Leaflet CSS para o Mapa -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-<style>
-    #mapa-monitoramento {
-        height: 500px;
-        width: 100%;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        z-index: 1;
-    }
-    .card-stats {
-        border-left: 4px solid #0d6efd;
-    }
-    .pulse-online {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        background-color: #198754;
-        border-radius: 50%;
-        margin-right: 5px;
-        animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(25, 135, 84, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); }
-    }
-    .custom-bus i {
-        font-size: 1.2rem;
-    }
-</style>
-
-<div class="container-fluid mt-4 px-4">
-    <!-- Cabeçalho de Monitorização -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-primary fw-bold mb-0">
-                <i class="bi bi-broadcast"></i> Centro de Monitoramento
-            </h2>
-            <p class="text-muted">Localização em Tempo Real e Gestão de Escalas</p>
-        </div>
-        <div class="text-end">
-            <span class="badge bg-light text-dark border p-2">
-                <span class="pulse-online"></span> Ligação Ativa
-            </span>
-            <div class="small text-muted mt-1" id="clock">--:--:--</div>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <!-- Mapa de Monitorização -->
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
-                    <h5 class="mb-0 fw-bold"><i class="bi bi-map"></i> Mapa da Frota</h5>
-                    <button class="btn btn-sm btn-outline-primary" onclick="window.location.reload()">
-                        <i class="bi bi-arrow-clockwise"></i> Atualizar GPS
-                    </button>
-                </div>
-                <div class="card-body p-0">
-                    <div id="mapa-monitoramento"></div>
-                </div>
+                <h2 class="text-center mb-4 text-primary">Acesso Administrador</h2>
+                <form id="login-form">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Usuário</label>
+                        <!-- Valores de demonstração preenchidos automaticamente -->
+                        <input type="text" id="username" value="admin" class="form-control" required autocomplete="username">
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Senha</label>
+                         <!-- Valores de demonstração preenchidos automaticamente -->
+                        <input type="password" id="password" value="password" class="form-control" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Entrar no Sistema</button>
+                    <p id="auth-error-message" class="text-danger text-center mt-3 d-none">Credenciais inválidas. Tente novamente.</p>
+                </form>
+                <p class="text-center text-muted mt-3"><small>Use <code class="text-success">admin</code> e <code class="text-success">password</code> para acesso de demonstração.</small></p>
             </div>
         </div>
 
-        <!-- Lateral: Controles Operacionais -->
-        <div class="col-lg-4">
-            <!-- Estatística Rápida -->
-            <div class="card shadow-sm border-0 mb-4 card-stats">
-                <div class="card-body">
-                    <h6 class="text-muted text-uppercase small fw-bold">Veículos no Sistema</h6>
-                    <h3 class="fw-bold"><?php echo $total_veiculos; ?></h3>
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+        <!-- OUTRAS PÁGINAS (Escondidas inicialmente) -->
+        <div id="main-content" class="full-height d-none">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+                <div class="container-fluid">
+                    <span class="navbar-brand">Monitoramento de Frota (ID: <span id="user-id" class="text-muted small">...</span>)</span>
+                    <div class="d-flex">
+                        <button class="btn btn-outline-primary me-2" onclick="showView('dashboard')">Cadastro / Admin</button>
+                        <button class="btn btn-outline-success me-2" onclick="showView('monitoring')">Monitoramento em Tempo Real</button>
+                        <button class="btn btn-danger" onclick="signOutApp()">Sair</button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container mt-4 pb-5">
+                
+                <!-- PÁGINA 2: CADASTRO E ADMINISTRAÇÃO (Dashboard) -->
+                <div id="view-dashboard" class="d-none">
+                    <h3 class="mb-4 text-secondary">Gerenciamento de Dados Mestre (CRUD)</h3>
+                    <div class="card p-4 shadow-sm">
+                        <ul class="nav nav-tabs mb-3" id="adminTabs" role="tablist">
+                            <li class="nav-item"><button class="nav-link active" id="drivers-tab" data-bs-toggle="tab" data-bs-target="#drivers" type="button">Motoristas</button></li>
+                            <li class="nav-item"><button class="nav-link" id="buses-tab" data-bs-toggle="tab" data-bs-target="#buses" type="button">Ônibus</button></li>
+                            <li class="nav-item"><button class="nav-link" id="routes-tab" data-bs-toggle="tab" data-bs-target="#routes" type="button">Linhas / Pontos</button></li>
+                            <!-- Ocorrências removido daqui, agora é global no Monitoring -->
+                        </ul>
+                        <div class="tab-content">
+                            
+                            <!-- 2.1 - Cadastro de Motoristas -->
+                            <div class="tab-pane fade show active" id="drivers" role="tabpanel">
+                                <button class="btn btn-success mb-3" onclick="openDriverModal(null)">+ Novo Motorista</button>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr><th>Nome</th><th>RG</th><th>Ônibus</th><th>Linha</th><th>Ações</th></tr>
+                                        </thead>
+                                        <tbody id="driver-list">
+                                            <tr><td colspan="5" class="text-center text-danger">Modo de Demonstração: Banco de dados desabilitado.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 2.2 - Cadastro de Ônibus -->
+                            <div class="tab-pane fade" id="buses" role="tabpanel">
+                                <button class="btn btn-success mb-3" onclick="openBusModal(null)">+ Novo Ônibus</button>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr><th>Placa</th><th>Modelo</th><th>Capacidade</th><th>Status</th><th>Ações</th></tr>
+                                        </thead>
+                                        <tbody id="bus-list">
+                                            <tr><td colspan="5" class="text-center text-danger">Modo de Demonstração: Banco de dados desabilitado.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 2.3 - Cadastro de Linhas / Pontos -->
+                            <div class="tab-pane fade" id="routes" role="tabpanel">
+                                <button class="btn btn-success mb-3" onclick="openRouteModal(null)">+ Nova Linha</button>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr><th>Nome da Linha</th><th>Traçado (Pontos)</th><th>Ações</th></tr>
+                                        </thead>
+                                        <tbody id="route-list">
+                                            <tr><td colspan="3" class="text-center text-danger">Modo de Demonstração: Banco de dados desabilitado.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 3: MONITORAMENTO EM TEMPO REAL -->
+                <div id="view-monitoring" class="d-none">
+                    <h3 class="mb-4 text-secondary">Monitoramento de Motoristas e Frota</h3>
+                    <div class="row">
+                        <div class="col-lg-4 mb-4 mb-lg-0">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="card-title text-primary">Motoristas em Serviço</h5>
+                                <div id="active-drivers-list" class="list-group list-group-flush">
+                                    <div class="list-group-item text-center text-danger">Modo de Demonstração: Banco de dados desabilitado.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="card-title text-primary" id="map-title">Mapa da Linha (Selecione um Motorista)</h5>
+                                <div id="map-container" class="mt-3">
+                                    <!-- O mapa Leaflet será injetado aqui -->
+                                </div>
+                                <div class="mt-3">
+                                    <p class="mb-1">Motorista Selecionado: <strong id="selected-driver-name">Nenhum</strong></p>
+                                    <p class="mb-1">Ônibus Ativo: <strong id="selected-bus-name">Nenhum</strong></p>
+                                    <p class="mb-1">Linha Ativa: <strong id="selected-route-name">Nenhuma</strong></p>
+                                    <p class="mb-1">Última Posição: <strong id="selected-driver-coords">--</strong></p>
+                                    <p class="mb-1 text-info"><small>O movimento no mapa é simulado a cada 5 segundos.</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NOVO: Seção de Notícias/Ocorrências na parte de baixo -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card p-4 shadow-sm bg-light">
+                                <h4 class="card-title text-danger d-flex justify-content-between align-items-center">
+                                    Alertas e Ocorrências em Tempo Real
+                                    <button class="btn btn-sm btn-success" onclick="openIncidentModal(null)">+ Novo Alerta</button>
+                                </h4>
+                                <ul id="incident-list-monitoring" class="list-group">
+                                    <li class="list-group-item text-center text-danger">Modo de Demonstração: Banco de dados desabilitado.</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Formulário de Atribuição de Turno -->
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3 border-bottom-0">
-                    <h5 class="mb-0 fw-bold"><i class="bi bi-person-plus"></i> Abrir Turno Operacional</h5>
-                </div>
-                <div class="card-body">
-                    <form id="formTurno" action="#" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">MOTORISTA</label>
-                            <select name="id_motorista" class="form-select border-primary-subtle" required>
-                                <option value="">Selecione um motorista...</option>
-                                <?php if($res_motoristas): while($m = $res_motoristas->fetch_assoc()): ?>
-                                    <option value="<?php echo $m['id_motorista']; ?>"><?php echo htmlspecialchars($m['nome']); ?></option>
-                                <?php endwhile; endif; ?>
-                            </select>
+    <!-- MODAIS (Motorista, Ônibus, Linha, Ocorrência) -->
+
+    <!-- MODAL DE CRIAÇÃO/EDIÇÃO DE MOTORISTA -->
+    <div class="modal fade" id="driverModal" tabindex="-1" aria-labelledby="driverModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="driver-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="driverModalLabel">Cadastrar Motorista</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning" id="driver-modal-warning" style="display:none;">
+                            Atenção: A função de salvar/editar está desabilitada no Modo de Demonstração.
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">VEÍCULO / PREFÍXO</label>
-                            <select name="id_veiculo" class="form-select border-primary-subtle" required>
-                                <option value="">Selecione a viatura...</option>
-                                <?php 
-                                if($res_veiculos):
-                                    $res_veiculos->data_seek(0); // Reiniciar o ponteiro
-                                    while($v = $res_veiculos->fetch_assoc()): 
-                                ?>
-                                    <option value="<?php echo $v['id_veiculo']; ?>"><?php echo htmlspecialchars($v['prefixo']); ?> - <?php echo htmlspecialchars($v['placa']); ?></option>
-                                <?php endwhile; endif; ?>
-                            </select>
+                        <input type="hidden" id="driver-id">
+                        <div class="mb-3"><label for="d_name" class="form-label">Nome Completo</label><input type="text" id="d_name" class="form-control" required></div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><label for="d_rg" class="form-label">RG</label><input type="text" id="d_rg" class="form-control" required></div>
+                            <div class="col-md-6 mb-3"><label for="d_cnh" class="form-label">CNH</label><input type="text" id="d_cnh" class="form-control" required></div>
                         </div>
                         <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label small fw-bold text-secondary">HORA INÍCIO</label>
-                                <input type="time" name="hora_inicio" class="form-control" value="<?php echo date('H:i'); ?>" required>
+                            <div class="col-md-6 mb-3"><label for="d_tel" class="form-label">Telefone</label><input type="tel" id="d_tel" class="form-control"></div>
+                            <div class="col-md-6 mb-3"><label for="d_age" class="form-label">Idade</label><input type="number" id="d_age" class="form-control"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="d_civil" class="form-label">Estado Civil</label>
+                                <select id="d_civil" class="form-select">
+                                    <option value="solteiro">Solteiro(a)</option>
+                                    <option value="casado">Casado(a)</option>
+                                    <option value="divorciado">Divorciado(a)</option>
+                                    <option value="viuvo">Viúvo(a)</option>
+                                </select>
                             </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label small fw-bold text-secondary">DURAÇÃO (H)</label>
-                                <input type="number" name="duracao" class="form-control" value="8" min="1" max="12">
+                            <div class="col-md-6 mb-3"><label for="d_city" class="form-label">Cidade</label><input type="text" id="d_city" class="form-control" required></div>
+                        </div>
+                        
+                        <!-- CAMPO DE SELEÇÃO DE ÔNIBUS JUNTO COM A LINHA -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="d_route" class="form-label">Linha Atribuída</label>
+                                <select id="d_route" class="form-select" required>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="d_bus" class="form-label">Ônibus Atribuído (Placa)</label>
+                                <select id="d_bus" class="form-select" required>
+                                    <!-- Populated by JS -->
+                                </select>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
-                            <i class="bi bi-check-circle"></i> CONFIRMAR ESCALA
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tabela de Turnos Ativos -->
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold">Turnos em Operação</h5>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Motorista</th>
-                                <th>Veículo</th>
-                                <th>Linha Atual</th>
-                                <th>Início</th>
-                                <th>Saída Prevista</th>
-                                <th>Status</th>
-                                <th class="text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Exemplo Estático -->
-                            <tr>
-                                <td class="fw-bold">Ricardo Santos</td>
-                                <td><span class="badge bg-dark">#B-102</span></td>
-                                <td>Linha Norte-Sul</td>
-                                <td>08:00</td>
-                                <td>16:00</td>
-                                <td><span class="badge bg-success">Em Rota</span></td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-danger" title="Fechar Turno">
-                                        <i class="bi bi-stop-fill"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <h6 class="mt-4">Registro de Ponto Simulado (Status)</h6>
+                        <div class="mb-3">
+                            <label for="d_status" class="form-label">Status Atual</label>
+                            <select id="d_status" class="form-select">
+                                <option value="Descanso">Descanso</option>
+                                <option value="Em Serviço">Em Serviço</option>
+                                <option value="Intervalo Almoço">Intervalo Almoço</option>
+                                <option value="Troca de Turno">Troca de Turno</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Motorista</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
+    
+    <!-- MODAL DE CRIAÇÃO/EDIÇÃO DE ÔNIBUS -->
+    <div class="modal fade" id="busModal" tabindex="-1" aria-labelledby="busModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="bus-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="busModalLabel">Cadastrar Ônibus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning" id="bus-modal-warning" style="display:none;">
+                            Atenção: A função de salvar/editar está desabilitada no Modo de Demonstração.
+                        </div>
+                        <input type="hidden" id="bus-id">
+                        <div class="mb-3"><label for="b_plate" class="form-label">Placa</label><input type="text" id="b_plate" class="form-control" required></div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><label for="b_model" class="form-label">Modelo</label><input type="text" id="b_model" class="form-control" required></div>
+                            <div class="col-md-6 mb-3"><label for="b_brand" class="form-label">Marca</label><input type="text" id="b_brand" class="form-control" required></div>
+                        </div>
+                        <div class="mb-3"><label for="b_capacity" class="form-label">Capacidade (Assentos)</label><input type="number" id="b_capacity" class="form-control" required></div>
+                        <div class="mb-3">
+                            <label for="b_status" class="form-label">Condição</label>
+                            <select id="b_status" class="form-select">
+                                <option value="Novo">Novo</option>
+                                <option value="Seminovo">Seminovo</option>
+                                <option value="Manutenção">Em Manutenção</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Ônibus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-<!-- Scripts de Mapa e Funções -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Relógio do Sistema
-        setInterval(() => {
-            const clock = document.getElementById('clock');
-            if(clock) clock.innerText = new Date().toLocaleTimeString('pt-PT');
-        }, 1000);
+    <!-- MODAL DE CRIAÇÃO/EDIÇÃO DE LINHA/ROTA -->
+    <div class="modal fade" id="routeModal" tabindex="-1" aria-labelledby="routeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="route-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="routeModalLabel">Cadastrar Linha/Rota</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning" id="route-modal-warning" style="display:none;">
+                            Atenção: A função de salvar/editar está desabilitada no Modo de Demonstração.
+                        </div>
+                        <input type="hidden" id="route-id">
+                        <div class="mb-3"><label for="r_name" class="form-label">Nome da Linha (Ex: Linha 10 - Centro)</label><input type="text" id="r_name" class="form-control" required></div>
+                        <div class="mb-3">
+                            <label for="r_stops" class="form-label">Traçado da Linha (Pontos de Parada - Separados por vírgula)</label>
+                            <textarea id="r_stops" class="form-control" rows="3" placeholder="Ex: Praça Central, Terminal, Rua Principal, Bairro X"></textarea>
+                            <div class="form-text">Pontos de referência que o ônibus irá passar.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Linha</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        // Inicializar Mapa
-        const map = L.map('mapa-monitoramento').setView([38.7223, -9.1393], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+    <!-- MODAL DE CRIAÇÃO/EDIÇÃO DE OCORRÊNCIA/NOTÍCIA -->
+    <div class="modal fade" id="incidentModal" tabindex="-1" aria-labelledby="incidentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="incident-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="incidentModalLabel">Registrar Ocorrência / Notícia</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning" id="incident-modal-warning" style="display:none;">
+                            Atenção: A função de salvar/editar está desabilitada no Modo de Demonstração.
+                        </div>
+                        <input type="hidden" id="incident-id">
+                        <div class="mb-3"><label for="i_title" class="form-label">Título da Ocorrência</label><input type="text" id="i_title" class="form-control" required></div>
+                        <div class="mb-3">
+                            <label for="i_description" class="form-label">Descrição (Ex: Desvio de ônibus devido a construção na Rua Y)</label>
+                            <textarea id="i_description" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                             <label for="i_route" class="form-label">Linha Afetada (Opcional)</label>
+                            <select id="i_route" class="form-select">
+                                <option value="">Todas as Linhas</option>
+                                <option value="Linha 10 - Centro (Mock)">Linha 10 - Centro (Mock)</option>
+                                <option value="Linha 25 - Bairro X (Mock)">Linha 25 - Bairro X (Mock)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Ocorrência</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        // Estilo do Ícone do Ônibus
-        const busIcon = L.divIcon({
-            className: 'custom-bus',
-            html: '<div style="background:#0d6efd; color:white; width:34px; height:34px; line-height:34px; border-radius:50%; text-align:center; border:3px solid white; box-shadow:0 0 10px rgba(0,0,0,0.3)"><i class="bi bi-bus-front"></i></div>',
-            iconSize: [34, 34]
+    <!-- Toast Container for Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <!-- Notificações Toast serão injetadas aqui -->
+    </div>
+
+
+    <!-- Script principal com lógica Firebase e JS -->
+    <script type="module">
+        // --- 1. CONFIGURAÇÃO INICIAL E FIREBASE ---
+        
+        // Importações necessárias do Firebase Firestore e Auth
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, doc, getDoc, setDoc, addDoc, onSnapshot, collection, updateDoc, deleteDoc, query, setLogLevel
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variáveis globais de ambiente (disponíveis no Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let firebaseConfig = {};
+        try {
+             firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        } catch (e) {
+            console.error("Erro ao fazer parse da configuração do Firebase:", e);
+        }
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let db;
+        let auth;
+        let userId = null;
+        let isFallbackMode = false; // Indica se o Firebase falhou (Modo de Demonstração)
+        let activeDriverId = null; 
+        let isAuthenticated = false; 
+
+        // Variáveis globais para os dados (Caches) - Mock data para Fallback
+        let ROUTES_CACHE = [
+            { id: 'mock1', name: 'Linha 10 - Centro (Mock)', stops: 'Terminal, Praça Central, Rua Principal', coords: [[-23.548, -46.631], [-23.555, -46.638], [-23.560, -46.645]] },
+            { id: 'mock2', name: 'Linha 25 - Bairro X (Mock)', stops: 'Terminal, Mercado, Escola', coords: [[-23.550520, -46.633308], [-23.545, -46.630], [-23.540, -46.625]] }
+        ];
+        let DRIVERS_CACHE = [
+            // Adicionado campo assignedBus
+            { id: 'd1', name: 'João Silva', rg: '12345', cnh: 'ABC12345', maritalStatus: 'casado', assignedRoute: 'Linha 10 - Centro (Mock)', assignedBus: 'ABC-1010', status: 'Em Serviço', currentPosition: [-23.550520, -46.633308], tel: '9999-9999', age: 45, city: 'São Paulo' },
+            { id: 'd2', name: 'Maria Souza', rg: '54321', cnh: 'DEF67890', maritalStatus: 'solteiro', assignedRoute: 'Linha 25 - Bairro X (Mock)', assignedBus: 'XYZ-2020', status: 'Descanso', currentPosition: [-23.540, -46.625], tel: '8888-8888', age: 30, city: 'São Paulo' }
+        ];
+        let BUSES_CACHE = [
+            { id: 'b1', plate: 'ABC-1010', model: 'Urbanus', brand: 'Mercedes', capacity: 40, condition: 'Novo' },
+            { id: 'b2', plate: 'XYZ-2020', model: 'Micro', brand: 'Volare', capacity: 25, condition: 'Manutenção' }
+        ];
+        let INCIDENTS_CACHE = [
+            { id: 'i1', title: 'Desvio de Rota', description: 'Obras na Rua da Glória, desvio temporário.', routeName: 'Linha 10 - Centro (Mock)', createdAt: Date.now() - 3600000 },
+            { id: 'i2', title: 'Atraso Generalizado', description: 'Manifestação próxima ao Terminal, trânsito lento.', routeName: 'Todas as Linhas', createdAt: Date.now() - 1800000 },
+        ];
+
+
+        // Referências DOM
+        const AUTH_SCREEN = document.getElementById('view-login');
+        const MAIN_APP_CONTENT = document.getElementById('main-content');
+        const LOGIN_FORM = document.getElementById('login-form');
+        const AUTH_ERROR_MESSAGE = document.getElementById('auth-error-message');
+        const FIREBASE_STATUS_MESSAGE = document.getElementById('firebase-status-message');
+        const USER_ID_SPAN = document.getElementById('user-id');
+        
+        // Inicialização dos Modais Bootstrap
+        const driverModal = new bootstrap.Modal(document.getElementById('driverModal'));
+        const busModal = new bootstrap.Modal(document.getElementById('busModal'));
+        const routeModal = new bootstrap.Modal(document.getElementById('routeModal'));
+        const incidentModal = new bootstrap.Modal(document.getElementById('incidentModal'));
+        
+        // Variáveis do Mapa
+        let map = null;
+        let marker = null;
+        let polyline = null;
+
+        // --- FUNÇÕES AUXILIARES DE FIREBASE/MOCK ---
+
+        /**
+         * Retorna o caminho base para as coleções públicas do aplicativo.
+         * @param {string} collectionName Nome da coleção.
+         * @returns {string} O caminho completo da coleção.
+         */
+        function getCollectionPath(collectionName) {
+            return `/artifacts/${appId}/public/data/${collectionName}`;
+        }
+        
+        /**
+         * Inicializa o Firebase ou configura o Modo de Demonstração.
+         */
+        function initializeFirebase() {
+            try {
+                // 1. Verifica se a configuração é válida (se o app está no ambiente Canvas)
+                if (Object.keys(firebaseConfig).length > 0 && firebaseConfig.projectId) {
+                    setLogLevel('Debug'); 
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app); 
+                    setupAuthListener(); 
+                    attemptInitialAuth();
+                    FIREBASE_STATUS_MESSAGE.classList.add('d-none'); // Esconde a mensagem de status se OK
+                } else {
+                    // 2. Modo de Falha (Fallback)
+                    isFallbackMode = true;
+                    console.warn("AVISO: Configuração do Firebase ausente/inválida. Entrando em Modo de Demonstração. CRUD e Realtime desabilitados.");
+                    
+                    FIREBASE_STATUS_MESSAGE.innerHTML = `
+                        <div class="fallback-warning">
+                            <strong>Atenção:</strong> Erro ao conectar ao banco de dados.
+                            A aplicação está no **Modo de Demonstração**.
+                            As funções de salvar, editar e exclusão (CRUD) estão desabilitadas, mas a visualização de dados funciona.
+                        </div>
+                    `;
+                    FIREBASE_STATUS_MESSAGE.classList.remove('d-none');
+                    
+                    // Mocka Auth e DB para evitar erros de referência nula
+                    userId = 'MOCK-ADMIN-ID';
+                    USER_ID_SPAN.textContent = userId;
+                }
+            } catch (error) {
+                console.error("ERRO GRAVE ao inicializar o Firebase. Verifique sua configuração.", error);
+                
+                isFallbackMode = true; // Força o modo de falha
+                
+                FIREBASE_STATUS_MESSAGE.innerHTML = `
+                    <div class="fallback-warning">
+                        <strong>ERRO:</strong> Falha na inicialização do Firebase.
+                        A aplicação está no **Modo de Demonstração**.
+                    </div>
+                `;
+                FIREBASE_STATUS_MESSAGE.classList.remove('d-none');
+            }
+        }
+
+        /**
+         * Configura o listener para a mudança de estado da autenticação (apenas se não for Fallback).
+         */
+        function setupAuthListener() {
+            if (isFallbackMode) return; // Não faz nada no modo de demonstração
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    USER_ID_SPAN.textContent = userId;
+                    // Se já estiver autenticado via o form, atualiza a view.
+                    if (isAuthenticated) {
+                       updateAppView(); 
+                    }
+                } else {
+                    isAuthenticated = false;
+                    updateAppView();
+                }
+            });
+        }
+
+        /**
+         * Tenta autenticar usando token ou anonimamente (apenas se não for Fallback).
+         */
+        async function attemptInitialAuth() {
+            if (isFallbackMode || !auth) return;
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Erro na autenticação inicial (apenas log):", error);
+            }
+        }
+
+        /**
+         * Atualiza a exibição da aplicação com base no estado de autenticação (isAuthenticated).
+         */
+        function updateAppView() {
+            // Se as credenciais "admin/password" foram validadas
+            if (isAuthenticated) {
+                AUTH_SCREEN.classList.add('d-none');
+                MAIN_APP_CONTENT.classList.remove('d-none');
+                showView('monitoring'); // Inicia na página de monitoramento
+                
+                // Atualiza os seletores de modal com os dados de cache, mesmo no fallback
+                updateModalRouteSelectors();
+                updateModalBusSelectors();
+                
+                // Chama os listeners apenas se não estiver em fallback
+                if (!isFallbackMode) {
+                    setupRealtimeListeners(); 
+                } else {
+                    // No Fallback Mode, renderiza o Mock Data estático (ou atualizado)
+                    renderDriversList();
+                    renderBusesList();
+                    renderRoutesList();
+                    renderIncidentsList(); // Renderiza para a lista do Dashboard
+                    renderIncidentListMonitoring(); // NOVO: Renderiza para a lista do Monitoring
+                    renderActiveDriversList();
+                    
+                    // Seleciona o primeiro motorista mockado para exibir o mapa se não houver um ativo
+                    if (!activeDriverId && DRIVERS_CACHE.length > 0) {
+                        selectDriverForMonitoring(DRIVERS_CACHE[0].id);
+                    }
+                }
+            } else {
+                // Se ainda não logou ou fez logoff
+                AUTH_SCREEN.classList.remove('d-none');
+                MAIN_APP_CONTENT.classList.add('d-none');
+            }
+        }
+
+        /**
+         * Lógica de login manual (gate de UI com credenciais fixas).
+         */
+        LOGIN_FORM.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const submitButton = e.target.querySelector('button[type="submit"]');
+
+            submitButton.textContent = "Verificando...";
+            submitButton.disabled = true;
+
+            if (username === 'admin' && password === 'password') {
+                AUTH_ERROR_MESSAGE.classList.add('d-none');
+                
+                isAuthenticated = true; // Sinaliza sucesso no login
+                
+                // Configura o userId em modo fallback se necessário
+                if (isFallbackMode) {
+                    userId = 'MOCK-ADMIN-ID';
+                    USER_ID_SPAN.textContent = userId;
+                }
+                
+                // Chama a atualização da view imediatamente após o login
+                updateAppView(); 
+                
+                // Reinicia o estado do botão
+                submitButton.textContent = "Entrar no Sistema";
+                submitButton.disabled = false;
+
+            } else {
+                AUTH_ERROR_MESSAGE.textContent = "Credenciais inválidas. Tente novamente.";
+                AUTH_ERROR_MESSAGE.classList.remove('d-none');
+                submitButton.textContent = "Entrar no Sistema";
+                submitButton.disabled = false;
+                isAuthenticated = false; 
+            }
         });
 
-        // Marcadores de Exemplo
-        L.marker([38.7250, -9.1400], {icon: busIcon}).addTo(map).bindPopup('<b>Veículo #B-102</b><br>Motorista: Ricardo Santos<br><span class="text-success">Status: OK</span>');
-        L.marker([38.7320, -9.1350], {icon: busIcon}).addTo(map).bindPopup('<b>Veículo #A-405</b><br>Estado: Parado em Ponto');
-
-        // Tratamento do Formulário (Exemplo Simulado)
-        document.getElementById('formTurno').onsubmit = function(e) {
-            e.preventDefault();
-            alert('Sucesso: Turno atribuído e motorista alocado no mapa.');
+        /**
+         * Realiza o logoff do usuário e reverte o estado para a tela de login.
+         */
+        window.signOutApp = async () => {
+            isAuthenticated = false;
+            activeDriverId = null; // Limpa o motorista selecionado
+            // Apenas tenta sair se não estiver em Fallback Mode
+            if (!isFallbackMode && auth) {
+                await signOut(auth);
+                await signInAnonymously(auth); 
+            }
+            updateAppView();
         };
-    });
-</script>
 
-<?php 
-// Liberação de memória e encerramento
-if ($res_motoristas) $res_motoristas->free();
-if ($res_veiculos) $res_veiculos->free();
-$conn->close();
+        // --- FUNÇÃO PARA MOSTRAR NOTIFICAÇÕES (NOVO) ---
+        /**
+         * Cria e exibe uma notificação Toast no canto inferior direito.
+         * @param {string} title Título da notificação (ex: "Sucesso!").
+         * @param {string} message Mensagem detalhada.
+         * @param {string} type Classe de cor Bootstrap (ex: 'success', 'danger', 'warning').
+         */
+        function showToast(title, message, type) {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastElement = document.createElement('div');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-include 'footer.php'; 
-?>
+            toastElement.classList.add('toast', `bg-${type}`, 'border-0');
+            toastElement.setAttribute('role', 'alert');
+            toastElement.setAttribute('aria-live', 'assertive');
+            toastElement.setAttribute('aria-atomic', 'true');
+            toastElement.setAttribute('data-bs-delay', '5000'); // 5 segundos
+
+            toastElement.innerHTML = `
+                <div class="toast-header text-dark">
+                    <strong class="me-auto">${title}</strong>
+                    <small class="text-muted">${timeString}</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body text-white">
+                    ${message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toastElement);
+            const toast = new bootstrap.Toast(toastElement);
+            
+            // Remove o elemento HTML após o toast ser escondido para liberar memória
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+
+            toast.show();
+        }
+
+        // --- 2. GESTÃO DE VIEWS E MAPA ---
+
+        /**
+         * Alterna entre as views principais.
+         * @param {string} viewName O nome da view ('dashboard' ou 'monitoring').
+         */
+        window.showView = (viewName) => {
+            document.getElementById('view-dashboard').classList.add('d-none');
+            document.getElementById('view-monitoring').classList.add('d-none');
+            document.getElementById(`view-${viewName}`).classList.remove('d-none');
+
+            if (viewName === 'monitoring') {
+                initializeMap(); // Garante que o mapa seja inicializado ao entrar na view
+                if(map) map.invalidateSize(); // Corrige problemas de renderização do mapa
+            }
+        };
+
+        /**
+         * Inicializa o mapa Leaflet.
+         */
+        function initializeMap() {
+            if (map === null && document.getElementById('map-container')) {
+                // Coordenadas simuladas para o centro do mapa (ex: São Paulo)
+                const initialCoords = [-23.550520, -46.633308]; 
+                
+                map = L.map('map-container').setView(initialCoords, 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+
+                // Configuração inicial no Fallback Mode
+                if (isFallbackMode && DRIVERS_CACHE.length > 0) {
+                     // Garante que o motorista ativo seja selecionado ao carregar o mapa
+                     if (activeDriverId) {
+                         selectDriverForMonitoring(activeDriverId);
+                     } else {
+                         selectDriverForMonitoring(DRIVERS_CACHE[0].id);
+                     }
+                }
+            }
+        }
+
+        // --- 3. FUNÇÕES DE RENDERIZAÇÃO E CRUD (PÁGINA 2) ---
+
+        /**
+         * Configura listeners de tempo real para todas as coleções (Apenas se não for Fallback).
+         */
+        function setupRealtimeListeners() {
+            if (isFallbackMode || !db || !userId) return;
+
+            // Motoristas
+            onSnapshot(query(collection(db, getCollectionPath('drivers'))), (snapshot) => {
+                DRIVERS_CACHE = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderDriversList();
+                renderActiveDriversList();
+                if (activeDriverId) {
+                    const driver = DRIVERS_CACHE.find(d => d.id === activeDriverId);
+                    if (driver) updateMapPosition(driver);
+                }
+            });
+
+            // Ônibus
+            onSnapshot(query(collection(db, getCollectionPath('buses'))), (snapshot) => {
+                BUSES_CACHE = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderBusesList();
+                updateModalBusSelectors(); // ATUALIZADO: Atualiza seletores de ônibus
+            });
+
+            // Linhas/Rotas (Cache importante para Modais)
+            onSnapshot(query(collection(db, getCollectionPath('routes'))), (snapshot) => {
+                ROUTES_CACHE = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderRoutesList();
+                updateModalRouteSelectors();
+            });
+
+            // Notícias/Ocorrências
+            onSnapshot(query(collection(db, getCollectionPath('incidents'))), (snapshot) => {
+                INCIDENTS_CACHE = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderIncidentsList(); // Renderiza no Dashboard
+                renderIncidentListMonitoring(); // NOVO: Renderiza no Monitoring
+            });
+        }
+        
+        /**
+         * Função genérica para salvar (Add/Update)
+         */
+        async function saveDocument(collectionName, id, data, modalDismiss) {
+            const action = id ? 'atualizado' : 'adicionado';
+            const itemType = collectionName.charAt(0).toUpperCase() + collectionName.slice(1, -1); // Ex: 'drivers' -> 'Driver'
+
+            if (isFallbackMode) {
+                 console.warn(`[FALLBACK MODE] CRUD desabilitado. Simulação de salvamento para ${collectionName}...`);
+
+                 const finalId = id || crypto.randomUUID(); // Gera um ID único para o novo item
+                 const finalData = { id: finalId, createdAt: Date.now(), ...data };
+
+                 let targetCache;
+                 let renderFunction;
+
+                 // Seleciona o cache correto e a função de renderização
+                 switch (collectionName) {
+                    case 'drivers':
+                        targetCache = DRIVERS_CACHE;
+                        renderFunction = () => { renderDriversList(); renderActiveDriversList(); };
+                        // Atribui uma posição padrão para o novo motorista
+                        if (!finalData.currentPosition) {
+                             finalData.currentPosition = ROUTES_CACHE.find(r => r.name === finalData.assignedRoute)?.coords?.[0] || [-23.550520, -46.633308];
+                        }
+                        break;
+                    case 'buses':
+                        targetCache = BUSES_CACHE;
+                        renderFunction = renderBusesList;
+                        break;
+                    case 'routes':
+                        targetCache = ROUTES_CACHE;
+                        renderFunction = () => { renderRoutesList(); updateModalRouteSelectors(); };
+                        // Atribui mock coords para a nova rota (importante para o mapa)
+                        if (!finalData.coords) {
+                             // Coordenadas mockadas para que o mapa funcione na rota
+                             const baseLat = -23.550 + Math.random() * 0.01;
+                             const baseLng = -46.633 + Math.random() * 0.01;
+                             finalData.coords = [[baseLat, baseLng], [baseLat + 0.005, baseLng + 0.005], [baseLat + 0.01, baseLng]];
+                        }
+                        break;
+                    case 'incidents':
+                        targetCache = INCIDENTS_CACHE;
+                        // NOVO: Renderiza as duas listas de notícias
+                        renderFunction = () => { renderIncidentsList(); renderIncidentListMonitoring(); }; 
+                        break;
+                    default:
+                        console.error(`Coleção desconhecida: ${collectionName}`);
+                        modalDismiss();
+                        return;
+                 }
+
+                 // Adiciona ou Atualiza o item no cache local
+                 const index = targetCache.findIndex(d => d.id === finalId);
+                 if (index > -1) {
+                     targetCache[index] = { ...targetCache[index], ...finalData }; // Atualiza
+                 } else {
+                     targetCache.push(finalData); // Adiciona
+                 }
+                 
+                 renderFunction(); // Re-renderiza a lista(s) imediatamente
+                 modalDismiss();
+                 showToast('Sucesso!', `${itemType} ${action} com sucesso (Demo)!`, 'success');
+                 return;
+            }
+
+            // --- LÓGICA FIREBASE (Se não for Fallback) ---
+            try {
+                if (id) {
+                    await updateDoc(doc(db, getCollectionPath(collectionName), id), data);
+                    console.log(`Documento (${collectionName}/${id}) atualizado.`);
+                } else {
+                    await addDoc(collection(db, getCollectionPath(collectionName)), { ...data, createdAt: Date.now() });
+                    console.log(`Novo documento (${collectionName}) adicionado.`);
+                }
+                modalDismiss();
+                showToast('Sucesso!', `${itemType} ${action} com sucesso!`, 'success');
+            } catch (error) {
+                console.error(`Erro ao salvar ${collectionName}:`, error);
+                console.error(`ERRO: Falha ao salvar ${collectionName}. Verifique as regras de segurança ou o console para mais detalhes.`);
+                showToast('Erro!', `Falha ao salvar o ${itemType}. Verifique o console.`, 'danger');
+            }
+        }
+
+        /**
+         * Função genérica para deletar
+         */
+        window.deleteDocument = async (collectionName, id, itemName) => {
+             const itemType = collectionName.charAt(0).toUpperCase() + collectionName.slice(1, -1);
+             
+             if (isFallbackMode) {
+                 console.warn("[FALLBACK MODE] CRUD desabilitado. Simulação de exclusão.");
+                 
+                 let targetCache;
+                 let renderFunction;
+
+                 switch (collectionName) {
+                    case 'drivers': targetCache = DRIVERS_CACHE; renderFunction = renderDriversList; break;
+                    case 'buses': targetCache = BUSES_CACHE; renderFunction = renderBusesList; break;
+                    case 'routes': targetCache = ROUTES_CACHE; renderFunction = renderRoutesList; break;
+                    case 'incidents': targetCache = INCIDENTS_CACHE; 
+                        renderFunction = () => { renderIncidentsList(); renderIncidentListMonitoring(); }; // NOVO: Renderiza as duas listas
+                        break;
+                    default: return;
+                 }
+
+                 if (window.confirm(`[DEMO] Tem certeza que deseja excluir '${itemName}' da coleção ${collectionName}?`)) {
+                    const index = targetCache.findIndex(d => d.id === id);
+                    if (index > -1) {
+                        targetCache.splice(index, 1);
+                        renderFunction();
+                        if (collectionName === 'drivers') renderActiveDriversList();
+                        if (collectionName === 'drivers' && activeDriverId === id) activeDriverId = null;
+                        console.log(`Item '${itemName}' removido do cache local.`);
+                        showToast('Excluído!', `${itemType} removido com sucesso (Demo).`, 'success');
+                    }
+                 }
+                 return;
+            }
+            // --- LÓGICA FIREBASE ---
+            if (window.confirm(`Tem certeza que deseja excluir '${itemName}' da coleção ${collectionName}?`)) {
+                try {
+                    await deleteDoc(doc(db, getCollectionPath(collectionName), id));
+                    console.log(`Documento (${collectionName}/${id}) excluído.`);
+                    showToast('Excluído!', `${itemType} removido com sucesso.`, 'success');
+                } catch (error) {
+                    console.error(`Erro ao excluir ${collectionName}:`, error);
+                    console.error(`ERRO: Falha ao excluir ${collectionName}. Verifique as regras de segurança ou o console para mais detalhes.`);
+                    showToast('Erro!', `Falha ao excluir o ${itemType}. Verifique o console.`, 'danger');
+                }
+            }
+        };
+
+        // RENDERIZAÇÕES (Adaptadas para Fallback Mode)
+
+        function renderDriversList() {
+            const container = document.getElementById('driver-list');
+            const driversHtml = DRIVERS_CACHE.map(d => `
+                <tr>
+                    <td>${d.name}</td>
+                    <td>${d.rg}</td>
+                    <td><span class="badge bg-secondary">${d.assignedBus || 'N/A'}</span></td>
+                    <td>${d.assignedRoute}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info me-2" onclick="openDriverModal('${d.id}')">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDocument('drivers', '${d.id}', '${d.name}')">Excluir</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" class="text-center">Nenhum motorista cadastrado.</td></tr>';
+            
+            container.innerHTML = driversHtml;
+        }
+        
+        function renderBusesList() {
+             const container = document.getElementById('bus-list');
+             const busesHtml = BUSES_CACHE.map(b => `
+                <tr>
+                    <td>${b.plate}</td>
+                    <td>${b.model} (${b.brand})</td>
+                    <td>${b.capacity} acentos</td>
+                    <td><span class="badge bg-${b.condition === 'Novo' ? 'success' : 'warning'}">${b.condition}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info me-2" onclick="openBusModal('${b.id}')">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDocument('buses', '${b.id}', '${b.plate}')">Excluir</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" class="text-center">Nenhum ônibus cadastrado.</td></tr>';
+
+            container.innerHTML = busesHtml;
+        }
+
+        function renderRoutesList() {
+            const container = document.getElementById('route-list');
+            const routesHtml = ROUTES_CACHE.map(r => `
+                <tr>
+                    <td>${r.name}</td>
+                    <td>${r.stops.split(',').slice(0, 3).join(', ')}...</td>
+                    <td>
+                        <button class="btn btn-sm btn-info me-2" onclick="openRouteModal('${r.id}')">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDocument('routes', '${r.id}', '${r.name}')">Excluir</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="3" class="text-center">Nenhuma linha cadastrada.</td></tr>';
+            
+            container.innerHTML = routesHtml;
+        }
+        
+        // Renderiza a lista de ocorrências no Dashboard (Tab)
+        function renderIncidentsList() {
+            // Este container estava na antiga aba de admin. Ele será mantido, mas não será mais exibido no fluxo principal.
+            const container = document.getElementById('incident-list'); 
+            if (container) {
+                container.innerHTML = INCIDENTS_CACHE.length > 0 ? `<li class="list-group-item text-center">Notícias visíveis abaixo no Monitoramento.</li>` : '<li class="list-group-item text-center">Nenhuma ocorrência registrada.</li>';
+            }
+        }
+        
+        // NOVO: Renderiza a lista de ocorrências para a seção de Monitoramento (parte de baixo)
+        function renderIncidentListMonitoring() {
+            const container = document.getElementById('incident-list-monitoring');
+            const sortedIncidents = INCIDENTS_CACHE.sort((a, b) => b.createdAt - a.createdAt);
+            
+            const incidentsHtml = sortedIncidents.map(i => `
+                <li class="list-group-item incident-alert d-flex justify-content-between align-items-start mb-2 shadow-sm border-danger">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold text-danger">${i.title}</div>
+                        ${i.description}
+                        <div class="text-muted small">Linha: ${i.routeName || 'Todas'} - ${new Date(i.createdAt).toLocaleString('pt-BR')}</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-info me-2" onclick="openIncidentModal('${i.id}')">Editar</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDocument('incidents', '${i.id}', '${i.title}')">Excluir</button>
+                    </div>
+                </li>
+            `).join('') || '<li class="list-group-item text-center text-muted">Nenhuma ocorrência ativa no momento.</li>';
+            
+            container.innerHTML = incidentsHtml;
+        }
+
+
+        // ATUALIZAÇÃO DE SELECTS
+        function updateModalRouteSelectors() {
+            // Cria as opções dinamicamente do cache de rotas
+            const routeOptions = ROUTES_CACHE.map(r => `<option value="${r.name}">${r.name}</option>`).join('');
+            
+            const driverRouteSelect = document.getElementById('d_route');
+            driverRouteSelect.innerHTML = '<option value="">Selecione uma Linha</option>' + routeOptions;
+            
+            const incidentRouteSelect = document.getElementById('i_route');
+            incidentRouteSelect.innerHTML = '<option value="">Todas as Linhas</option>' + routeOptions;
+        }
+
+        // NOVO: Atualiza o seletor de Ônibus no Modal de Motorista
+        function updateModalBusSelectors() {
+            // Cria as opções dinamicamente do cache de ônibus
+            const busOptions = BUSES_CACHE.map(b => 
+                // Usamos a Placa como valor para vincular o motorista ao veículo
+                `<option value="${b.plate}">${b.plate} (${b.model}) - ${b.condition}</option>`
+            ).join('');
+            
+            const driverBusSelect = document.getElementById('d_bus');
+            driverBusSelect.innerHTML = '<option value="">Selecione um Ônibus</option>' + busOptions;
+        }
+
+
+        // --- FUNÇÕES DE MODAL E SUBMISSÃO DE FORMULÁRIO (Edição/Criação) ---
+
+        // Adaptação dos Modais: exibe aviso de desativação do CRUD no Fallback Mode
+        function setupModalWarnings() {
+             if (isFallbackMode) {
+                document.getElementById('driver-modal-warning').style.display = 'block';
+                document.getElementById('bus-modal-warning').style.display = 'block';
+                document.getElementById('route-modal-warning').style.display = 'block';
+                document.getElementById('incident-modal-warning').style.display = 'block';
+             }
+        }
+        
+        /**
+         * Preenche o modal de Motorista com dados existentes ou zera o formulário.
+         */
+        window.openDriverModal = (id) => {
+            const driver = DRIVERS_CACHE.find(d => d.id === id);
+            document.getElementById('driverModalLabel').textContent = id ? 'Editar Motorista' : 'Cadastrar Motorista';
+            document.getElementById('driver-id').value = id || '';
+            document.getElementById('d_name').value = driver ? driver.name : '';
+            document.getElementById('d_rg').value = driver ? driver.rg : '';
+            document.getElementById('d_cnh').value = driver ? driver.cnh : '';
+            document.getElementById('d_tel').value = driver ? driver.tel : '';
+            document.getElementById('d_age').value = driver?.age || '';
+            document.getElementById('d_city').value = driver ? driver.city : '';
+            document.getElementById('d_civil').value = driver ? driver.maritalStatus : 'solteiro';
+            
+            // Popula os seletores antes de definir o valor
+            updateModalRouteSelectors(); 
+            updateModalBusSelectors(); // NOVO: Atualiza seletor de ônibus
+            
+            document.getElementById('d_route').value = driver ? driver.assignedRoute : '';
+            document.getElementById('d_bus').value = driver ? driver.assignedBus : ''; // NOVO: Define o Ônibus Atribuído
+            document.getElementById('d_status').value = driver ? driver.status : 'Descanso';
+            
+            setupModalWarnings(); 
+            driverModal.show();
+        };
+
+        /**
+         * Listener de submissão para o formulário de Motorista.
+         */
+        document.getElementById('driver-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('driver-id').value;
+            const data = {
+                name: document.getElementById('d_name').value,
+                rg: document.getElementById('d_rg').value,
+                cnh: document.getElementById('d_cnh').value,
+                tel: document.getElementById('d_tel').value,
+                age: parseInt(document.getElementById('d_age').value) || null,
+                maritalStatus: document.getElementById('d_civil').value,
+                city: document.getElementById('d_city').value,
+                assignedRoute: document.getElementById('d_route').value,
+                assignedBus: document.getElementById('d_bus').value, // NOVO: Captura o Ônibus Atribuído
+                status: document.getElementById('d_status').value,
+                // Mantém a posição atual no cache se for uma edição, caso contrário, será definida no saveDocument
+                currentPosition: DRIVERS_CACHE.find(d => d.id === id)?.currentPosition || null
+            };
+            saveDocument('drivers', id, data, () => driverModal.hide());
+        });
+        
+        /**
+         * Preenche o modal de Ônibus com dados existentes ou zera o formulário.
+         */
+        window.openBusModal = (id) => {
+            const bus = BUSES_CACHE.find(b => b.id === id);
+            document.getElementById('busModalLabel').textContent = id ? 'Editar Ônibus' : 'Cadastrar Ônibus';
+            document.getElementById('bus-id').value = id || '';
+            document.getElementById('b_plate').value = bus ? bus.plate : '';
+            document.getElementById('b_model').value = bus ? bus.model : '';
+            document.getElementById('b_brand').value = bus ? bus.brand : '';
+            document.getElementById('b_capacity').value = bus?.capacity || '';
+            document.getElementById('b_status').value = bus ? bus.condition : 'Novo';
+
+            setupModalWarnings(); 
+            busModal.show();
+        };
+        
+        /**
+         * Listener de submissão para o formulário de Ônibus.
+         */
+        document.getElementById('bus-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('bus-id').value;
+            const data = {
+                plate: document.getElementById('b_plate').value,
+                model: document.getElementById('b_model').value,
+                brand: document.getElementById('b_brand').value,
+                capacity: parseInt(document.getElementById('b_capacity').value) || 0,
+                condition: document.getElementById('b_status').value,
+            };
+            saveDocument('buses', id, data, () => busModal.hide());
+        });
+        
+        /**
+         * Preenche o modal de Linha com dados existentes ou zera o formulário.
+         */
+        window.openRouteModal = (id) => {
+            const route = ROUTES_CACHE.find(r => r.id === id);
+            document.getElementById('routeModalLabel').textContent = id ? 'Editar Linha/Rota' : 'Cadastrar Linha/Rota';
+            document.getElementById('route-id').value = id || '';
+            document.getElementById('r_name').value = route ? route.name : '';
+            document.getElementById('r_stops').value = route ? route.stops : '';
+
+            setupModalWarnings(); 
+            routeModal.show();
+        };
+        
+        /**
+         * Listener de submissão para o formulário de Linha.
+         */
+        document.getElementById('route-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('route-id').value;
+            const data = {
+                name: document.getElementById('r_name').value,
+                stops: document.getElementById('r_stops').value,
+                // Não precisa de coords aqui; elas são mockadas no saveDocument se for um novo registro.
+            };
+            saveDocument('routes', id, data, () => routeModal.hide());
+        });
+
+        /**
+         * Preenche o modal de Ocorrência com dados existentes ou zera o formulário.
+         */
+        window.openIncidentModal = (id) => {
+            const incident = INCIDENTS_CACHE.find(i => i.id === id);
+            document.getElementById('incidentModalLabel').textContent = id ? 'Editar Ocorrência' : 'Registrar Ocorrência / Notícia';
+            document.getElementById('incident-id').value = id || '';
+            document.getElementById('i_title').value = incident ? incident.title : '';
+            document.getElementById('i_description').value = incident ? incident.description : '';
+            
+            // Popula os seletores de rota para o modal de ocorrência (que usa o cache de rotas)
+            updateModalRouteSelectors(); 
+            
+            document.getElementById('i_route').value = incident ? incident.routeName : '';
+
+            setupModalWarnings(); 
+            incidentModal.show();
+        };
+        
+        /**
+         * Listener de submissão para o formulário de Ocorrência.
+         */
+        document.getElementById('incident-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('incident-id').value;
+            const data = {
+                title: document.getElementById('i_title').value,
+                description: document.getElementById('i_description').value,
+                routeName: document.getElementById('i_route').value,
+            };
+            saveDocument('incidents', id, data, () => incidentModal.hide());
+        });
+
+
+        // --- 4. FUNÇÕES DE MONITORAMENTO (PÁGINA 3) ---
+        
+        function renderActiveDriversList() {
+            const container = document.getElementById('active-drivers-list');
+            const activeDrivers = DRIVERS_CACHE.filter(d => d.status === 'Em Serviço');
+            
+            container.innerHTML = activeDrivers.map(d => {
+                const isActive = d.id === activeDriverId ? ' active' : '';
+                return `
+                    <button type="button" class="list-group-item list-group-item-action driver-item${isActive}" onclick="selectDriverForMonitoring('${d.id}')">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">${d.name}</h6>
+                            <small class="badge bg-primary">${d.assignedBus || 'S/Ônibus'}</small>
+                        </div>
+                        <p class="mb-1 small">Linha: ${d.assignedRoute || 'N/A'}</p>
+                        <small>Última Posição: ${d.currentPosition?.[0] ? 'Atualizada' : 'N/A'}</small>
+                    </button>
+                `;
+            }).join('') || '<div class="list-group-item text-center">Nenhum motorista em serviço no momento.</div>';
+        }
+
+        /**
+         * Atualiza a posição do marcador no mapa e na UI lateral.
+         */
+        function updateMapPosition(driver) {
+            const [newLat, newLng] = driver.currentPosition;
+            const driverCoordsDisplay = document.getElementById('selected-driver-coords');
+
+            if (marker) {
+                marker.setLatLng([newLat, newLng]);
+                marker.getPopup().setContent(`<strong>${driver.name}</strong><br>Ônibus: ${driver.assignedBus}<br>Status: ${driver.status}`);
+            } else if (map) {
+                 marker = L.marker([newLat, newLng]).addTo(map)
+                    .bindPopup(`<strong>${driver.name}</strong><br>Ônibus: ${driver.assignedBus}<br>Status: ${driver.status}`).openPopup();
+            }
+
+            if (map && !map.getBounds().contains(L.latLng(newLat, newLng))) {
+                 map.setView([newLat, newLng], 14);
+            }
+
+            driverCoordsDisplay.textContent = `Lat: ${newLat.toFixed(6)}, Lng: ${newLng.toFixed(6)}`;
+        }
+
+        /**
+         * Simula o movimento do motorista no mapa (Apenas se não for Fallback, pois modifica o DB).
+         */
+        function simulateDriverMovement() {
+            // A simulação de movimento só ocorre se NÃO estiver em modo fallback, pois exige escrita no DB ou atualização de cache complexa
+            if (isFallbackMode || !db || !activeDriverId) return; 
+
+            const driver = DRIVERS_CACHE.find(d => d.id === activeDriverId);
+            if (!driver || !driver.currentPosition || driver.status !== 'Em Serviço') return;
+
+            const [lat, lng] = driver.currentPosition;
+            const moveFactor = 0.00005; 
+            const newLat = lat + (Math.random() - 0.5) * moveFactor; 
+            const newLng = lng + (Math.random() - 0.5) * moveFactor;
+
+            // Atualiza o Firestore com a nova posição simulada
+            updateDoc(doc(db, getCollectionPath('drivers'), activeDriverId), {
+                currentPosition: [newLat, newLng]
+            }).catch(e => {
+                console.error("Erro ao simular movimento:", e);
+            });
+        }
+        
+        // Inicia a simulação de movimento (a cada 5 segundos)
+        setInterval(simulateDriverMovement, 5000);
+
+        /**
+         * Seleciona um motorista e renderiza seu mapa e linha.
+         */
+        window.selectDriverForMonitoring = (driverId) => {
+            activeDriverId = driverId;
+            const driver = DRIVERS_CACHE.find(d => d.id === driverId);
+            const route = ROUTES_CACHE.find(r => r.name === driver?.assignedRoute);
+            const bus = BUSES_CACHE.find(b => b.plate === driver?.assignedBus); // NOVO: Busca o objeto Ônibus
+
+            // 1. Atualiza a UI lateral
+            document.getElementById('selected-driver-name').textContent = driver?.name || 'Nenhum';
+            document.getElementById('selected-bus-name').textContent = bus?.plate || 'Nenhum'; // NOVO: Mostra Ônibus
+            document.getElementById('selected-route-name').textContent = route?.name || 'Nenhuma';
+            document.getElementById('map-title').textContent = `Monitorando: ${driver?.name} na Linha ${route?.name || 'N/A'}`;
+            
+            renderActiveDriversList(); // Atualiza a seleção visual na lista
+            
+            if (!map) initializeMap();
+
+            // 2. Traçado da Linha (Polyline)
+            if (polyline) map.removeLayer(polyline);
+
+            // Remove marcadores e círculos antigos
+            map.eachLayer(layer => {
+                if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+                    if (marker && layer === marker) return; // Mantém o marcador do ônibus se já existir
+                    map.removeLayer(layer);
+                }
+                if (layer instanceof L.Tooltip) map.removeLayer(layer);
+            });
+
+            if (route && route.coords && route.coords.length >= 2) {
+                polyline = L.polyline(route.coords, { color: '#007bff', weight: 4 }).addTo(map);
+                
+                route.coords.forEach((coord, index) => {
+                    const stopName = route.stops.split(',')[index]?.trim() || `Ponto ${index + 1}`;
+                    L.circleMarker(coord, {
+                        color: '#dc3545',
+                        fillColor: '#dc3545',
+                        fillOpacity: 0.8,
+                        radius: 6
+                    }).addTo(map).bindPopup(`<strong>Parada:</strong> ${stopName}`);
+                });
+
+                map.fitBounds(polyline.getBounds(), { padding: [50, 50] }); 
+            } else {
+                 L.tooltip({ permanent: true, direction: 'center', className: 'text-danger' })
+                    .setContent('Linha/Pontos não configurados para este motorista.')
+                    .setLatLng(driver?.currentPosition || map.getCenter())
+                    .addTo(map);
+            }
+            
+            // 3. Posição do Motorista (Marker)
+            if (driver) {
+                updateMapPosition(driver);
+            }
+        };
+
+        // --- INICIALIZAÇÃO GERAL ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase(); 
+        });
+
+    </script>
+</body>
+</html>	
