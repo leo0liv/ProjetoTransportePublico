@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Linhas De Onibus</title>
-    <!-- Bootstrap e Icons -->
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -33,11 +33,11 @@
 
     <div class="container mb-5">
         <div class="row g-4" id="busContainer">
-            <!-- As linhas serão inseridas aqui pelo JavaScript -->
+            
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
