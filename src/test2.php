@@ -1,69 +1,64 @@
+<?php
+require_once '../connections/db_connect.php';
+
+// Vamos buscar os pontos da linha ID 1 (exemplo)
+$id_linha = 1; 
+
+$sql = "SELECT p.nome, p.latitude, p.longitude 
+        FROM tbrotas r
+        JOIN tbpontos p ON r.id_ponto = p.id_ponto
+        WHERE r.id_linha = :id_linha
+        ORDER BY r.ordem ASC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['id_linha' => $id_linha]);
+$pontos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Transformamos o array do PHP em JSON para o JavaScript ler
+$pontosJSON = json_encode($pontos);
+?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Mapa de Rotas - Itapetininga</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
     <style>
-        /* IMPORTANTE: Sem isso o mapa não aparece */
-        #map { 
-            height: 500px; 
-            width: 100%; 
-            border: 2px solid #ccc;
-        }
-        #instructions { margin: 20px; font-family: sans-serif; }
-        .loading { color: orange; font-weight: bold; }
+        #map { height: 600px; width: 100%; border: 1px solid #ccc; }
     </style>
 </head>
 <body>
 
-    <div id="instructions">Carregando endereços...</div>
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
     <script>
+        // Pegamos os dados vindos do banco via PHP
+        const dadosDoBanco = <?php echo $pontosJSON; ?>;
+
+        // Inicializa o mapa (centralizado em Itapetininga)
         const map = L.map('map').setView([-23.5916, -48.0530], 14);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        const azulIcon = new L.Icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
-        });
+        // Converte as coordenadas do banco para o formato do Leaflet
+        const waypoints = dadosDoBanco.map(p => L.latLng(p.latitude, p.longitude));
 
-        // TESTE COM APENAS 1 ENDEREÇO
-        const enderecoTeste = "Rua Monsenhor Soares, Itapetininga, SP";
-        const geocoder = L.Control.Geocoder.nominatim();
-
-        // Fazemos apenas UMA chamada
-        geocoder.geocode(enderecoTeste, function(results) {
-            if (results.length > 0) {
-                const ponto = results[0].center;
-                
-                // Adiciona um marcador simples para testar a resposta
-                L.marker(ponto, { icon: azulIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>Sucesso!</b><br>${enderecoTeste}`)
-                    .openPopup();
-
-                // Centraliza o mapa no ponto encontrado
-                map.setView(ponto, 16);
-                
-                document.getElementById('instructions').innerHTML = "Endereço encontrado com sucesso!";
-            } else {
-                document.getElementById('instructions').innerHTML = "O serviço não encontrou o endereço.";
+        // Desenha a rota
+        L.Routing.control({
+            waypoints: waypoints,
+            language: 'pt-BR',
+            lineOptions: {
+                styles: [{ color: '#007bff', weight: 6 }]
+            },
+            createMarker: function(i, waypoint, n) {
+                // Aqui o nome da rua vem direto da sua tabela 'tbpontos'
+                const nomeDaRua = dadosDoBanco[i].nome;
+                return L.marker(waypoint.latLng).bindPopup(`<b>${nomeDaRua}</b>`);
             }
-        });
+        }).addTo(map);
     </script>
 </body>
 </html>
