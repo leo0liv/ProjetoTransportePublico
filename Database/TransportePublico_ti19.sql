@@ -34,7 +34,9 @@ CREATE TABLE tbpontos (
     id_ponto INT(11) PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     latitude DECIMAL(10,6) NOT NULL,
-    longitude DECIMAL(10,6) NOT NULL
+    longitude DECIMAL(10,6) NOT NULL,
+    tipo_ponto VARCHAR(10)
+        CHECK(tipo_ponto='inicio' OR tipo_ponto='meio' OR tipo_ponto='fim')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Estrutura de tabela tbveiculos
