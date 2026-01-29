@@ -1,20 +1,22 @@
 <?php
 require_once '../connections/db_connect.php';
 
-// Vamos buscar os pontos da linha ID 1 (exemplo)
 $id_linha = 1; 
 
+// Usando o padrão mysqli conforme seu arquivo de conexão
 $sql = "SELECT p.nome, p.latitude, p.longitude 
         FROM tbrotas r
         JOIN tbpontos p ON r.id_ponto = p.id_ponto
-        WHERE r.id_linha = :id_linha
+        WHERE r.id_linha = ?
         ORDER BY r.ordem ASC";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute(['id_linha' => $id_linha]);
-$pontos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_linha); // "i" significa que o ID é um número inteiro
+$stmt->execute();
+$result = $stmt->get_result();
+$pontos = $result->fetch_all(MYSQLI_ASSOC);
 
-// Transformamos o array do PHP em JSON para o JavaScript ler
+// Converte para JSON para o JavaScript usar
 $pontosJSON = json_encode($pontos);
 ?>
 <!DOCTYPE html>
@@ -35,30 +37,27 @@ $pontosJSON = json_encode($pontos);
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // Pegamos os dados vindos do banco via PHP
         const dadosDoBanco = <?php echo $pontosJSON; ?>;
 
-        // Inicializa o mapa (centralizado em Itapetininga)
-        const map = L.map('map').setView([-23.5916, -48.0530], 14);
+        // Se o banco estiver vazio, evita erro no mapa
+        if (dadosDoBanco.length === 0) {
+            console.error("Nenhum ponto encontrado para esta linha no banco de dados.");
+        }
 
+        const map = L.map('map').setView([-23.5916, -48.0530], 14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        // Converte as coordenadas do banco para o formato do Leaflet
-        const waypoints = dadosDoBanco.map(p => L.latLng(p.latitude, p.longitude));
+        if (dadosDoBanco.length >= 2) {
+            const waypoints = dadosDoBanco.map(p => L.latLng(p.latitude, p.longitude));
 
-        // Desenha a rota
-        L.Routing.control({
-            waypoints: waypoints,
-            language: 'pt-BR',
-            lineOptions: {
-                styles: [{ color: '#007bff', weight: 6 }]
-            },
-            createMarker: function(i, waypoint, n) {
-                // Aqui o nome da rua vem direto da sua tabela 'tbpontos'
-                const nomeDaRua = dadosDoBanco[i].nome;
-                return L.marker(waypoint.latLng).bindPopup(`<b>${nomeDaRua}</b>`);
-            }
-        }).addTo(map);
+            L.Routing.control({
+                waypoints: waypoints,
+                language: 'pt-BR',
+                createMarker: function(i, waypoint, n) {
+                    return L.marker(waypoint.latLng).bindPopup(`<b>${dadosDoBanco[i].nome}</b>`);
+                }
+            }).addTo(map);
+        }
     </script>
 </body>
 </html>
