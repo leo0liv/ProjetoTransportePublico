@@ -186,5 +186,5 @@ include '../admin/header.php';
 </div>
 
 <?php 
-include '../footer.php'; 
+include '../admin/footer.php'; 
 ?>
