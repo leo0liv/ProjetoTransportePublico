@@ -36,9 +36,6 @@
               <li class="nav-item">
                 <a class="nav-link" href="#"><i class="bi bi-signpost-2"></i>&nbsp;Linhas</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="bi bi-clock"></i>&nbsp;Previsões</a>
-              </li>
             </ul>
             <div class="d-flex">
                 <form 
@@ -51,7 +48,7 @@
                     <input 
                         type="text"
                         class="form-control me-2"  
-                        placeholder="Busca produto"
+                        placeholder="Buscar Linha"
                         name="buscar"
                         id="buscar"
                         size="30"
