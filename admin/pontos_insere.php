@@ -15,20 +15,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_select_db($conn, $database_conn);
 
     $tabela_insert  =   "tbpontos";
-    $campos_insert  =   "nome, latitude, longitude";
+    $campos_insert  =   "nome, latitude, longitude, tipo_ponto";
     
     // Recebe e sanitiza os dados
     $nome           =   $conn->real_escape_string($_POST['nome']);
     // As coordenadas são decimais (DECIMAL(10,6)), usamos floatval para garantir o formato correto
     $latitude       =   floatval($_POST['latitude']);
     $longitude      =   floatval($_POST['longitude']);     
+    $tipo_ponto     =   $_POST['tipo_ponto'];
 
     // Query de Inserção
     $insertSQL  =   "
                     INSERT INTO ".$tabela_insert."
                         (".$campos_insert.")
                     VALUES
-                        ('$nome', '$latitude', '$longitude');
+                        ('$nome', '$latitude', '$longitude','$tipo_ponto');
                     ";
     $resultado  =   $conn->query($insertSQL);
 
@@ -69,8 +70,8 @@ include '../admin/header.php';
                     method="post"
                     id="form_ponto_insere"
                     name="form_ponto_insere"
-                >
-                    
+                >   
+
                     <div class="mb-3">
                         <label for="nome" class="form-label">Nome do Ponto:</label>
                         <div class="input-group">
@@ -84,6 +85,23 @@ include '../admin/header.php';
                                 maxlength="100"
                                 required
                             >
+                        </div> 
+                    </div> 
+
+                    <div class="mb-3">
+                         <label for="tipo_ponto" class="form-label">Ponto Associado:</label>
+
+                        <div class="input-group">
+                            <select 
+                                name="tipo_ponto" 
+                                id="tipo_ponto"
+                                class="form-select"
+                                required
+                            >
+                                <option value="inicio">Inicio</option>
+                                <option value="meio">Ponto</option>
+                                <option value="fim">Fim</option>
+                            </select>
                         </div> 
                     </div> 
                     
@@ -127,6 +145,8 @@ include '../admin/header.php';
                         </div> 
                     </div>
 
+                    
+
                     <div class="d-flex justify-content-between pt-3">
                          <button 
                             type="submit" 
@@ -141,7 +161,8 @@ include '../admin/header.php';
                          </a>
                     </div>
                 </form>
-            </div> </div>
+            </div> 
+        </div>
     </div>
 </div>
 
