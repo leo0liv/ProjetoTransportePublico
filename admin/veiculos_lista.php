@@ -161,7 +161,7 @@ include 'header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
 </script>
 
 <?php 
-include 'footer.php'; // Inclui o script JS do Bootstrap
+include '../admin/footer.php'; 
 ?>
 <script src="../js/bootstrap.bundle.min.js"></script>
 </body> 

@@ -222,5 +222,5 @@ include 'header.php';
 if (isset($lista_linhas)) {
     mysqli_free_result($lista_linhas); 
 }
-include 'footer.php'; 
+include '../admin/footer.php'; 
 ?>
