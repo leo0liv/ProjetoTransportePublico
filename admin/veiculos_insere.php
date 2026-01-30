@@ -108,7 +108,8 @@ include '../admin/header.php';
                                  <i class="bi bi-exclamation-triangle-fill"></i> Nenhuma linha cadastrada. Cadastre uma linha primeiro.
                              </div>
                         <?php endif; ?>
-                    </div> <div class="mb-3">
+                    </div> 
+                    <div class="mb-3">
                         <label for="placa" class="form-label">Placa do Veículo:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-credit-card"></i></span>

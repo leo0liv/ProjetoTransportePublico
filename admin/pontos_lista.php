@@ -13,7 +13,7 @@ mysqli_select_db($conn, $database_conn);
 
 // Selecionar os dados
 $consulta   =   "
-                SELECT  id_ponto, nome, latitude, longitude
+                SELECT  id_ponto, nome, latitude, longitude, tipo_ponto
                 FROM    tbpontos
                 ORDER BY nome ASC;
                 ";
@@ -67,6 +67,7 @@ include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
                         <th scope="col">Nome do Ponto</th>
                         <th scope="col">Latitude</th>
                         <th scope="col">Longitude</th>
+                        <th scope="col">Tipo de Ponto</th>
                         <th scope="col">Ações</th>
                     </tr>
                 </thead>
@@ -80,6 +81,7 @@ include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
                             <td><?php echo $row['nome']; ?></td>
                             <td><?php echo $row['latitude']; ?></td>
                             <td><?php echo $row['longitude']; ?></td>
+                            <td><?php echo $row['tipo_ponto']; ?></td>
                             <td>
                                 <a href="pontos_atualiza.php?id=<?php echo $row['id_ponto']; ?>" class="btn btn-sm btn-info text-white me-2" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>

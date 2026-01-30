@@ -31,15 +31,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_ponto_filtro) {
  
     // Recebe e sanitiza os dados do formulário
     $nome           = $conn->real_escape_string($_POST['nome']);
-    $latitude       = floatval($_POST['latitude']);
-    $longitude      = floatval($_POST['longitude']);
+    $latitude       =   floatval($_POST['latitude']);
+    $longitude      =   floatval($_POST['longitude']);     
+    $tipo_ponto     =   $_POST['tipo_ponto'];
+;
  
     // Consulta SQL para atualização dos dados
     $updateSQL  = "
                     UPDATE " . $tabela . "
                     SET nome = '$nome',
                         latitude = '$latitude',
-                        longitude = '$longitude'
+                        longitude = '$longitude',
+                        tipo_ponto = '$tipo_ponto'
                     WHERE " . $campo_filtro . " = '$id_ponto_filtro';
                     ";
     $resultado  = $conn->query($updateSQL);
@@ -127,6 +130,24 @@ include '../admin/header.php';
                                 required
                                 value="<?php echo htmlspecialchars($ponto_atual['nome']); ?>"
                             >
+                        </div> 
+                    </div> 
+
+                    <div class="mb-3">
+                         <label for="tipo_ponto" class="form-label">Ponto Associado:</label>
+
+                        <div class="input-group">
+                            <select 
+                                name="tipo_ponto" 
+                                id="tipo_ponto"
+                                class="form-select"
+                                required
+                                value="<?php echo htmlspecialchars($ponto_atual['tipo_ponto']); ?>"
+                            >
+                                <option value="inicio">Inicio</option>
+                                <option value="meio">Ponto</option>
+                                <option value="fim">Fim</option>
+                            </select>
                         </div> 
                     </div> 
                     
