@@ -42,12 +42,12 @@
 
     <script>
         const linhasDeOnibus = [
-            { id: "101", nome: "Centro / Bairro Real", cor: "bg-primary", status: "Operando", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=400&q=80" },
-            { id: "205", nome: "Terminal Norte / Shopping", cor: "bg-success", status: "Operando", img: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=400&q=80" },
-            { id: "312", nome: "Universidade / Estação", cor: "bg-danger", status: "Atrasado", img: "https://images.unsplash.com/photo-1632276514732-c3a506649f8a?auto=format&fit=crop&w=400&q=80" },
-            { id: "404", nome: "Circular Aeroporto", cor: "bg-warning text-dark", status: "Operando", img: "https://images.unsplash.com/photo-1590610931215-062e7428801d?auto=format&fit=crop&w=400&q=80" },
-            { id: "550", nome: "Vila Nova / Industrial", cor: "bg-info text-dark", status: "Manutenção", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=400&q=80" },
-            { id: "010", nome: "Expresso Praiano", cor: "bg-dark", status: "Operando", img: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=400&q=80" }
+            { id: "101", nome: "Centro / Bairro Real", cor: "bg-primary", status: "Operando", img: "https://i.pinimg.com/1200x/1c/ec/9e/1cec9e718927991e0b869ef554d9d417.jpg" },
+            { id: "205", nome: "Terminal Norte / Shopping", cor: "bg-success", status: "Operando", img: "https://i.pinimg.com/736x/7b/16/37/7b1637552bd622c86351b12e8fbb53bf.jpg" },
+            { id: "312", nome: "Universidade / Estação", cor: "bg-danger", status: "Atrasado", img: "https://i.pinimg.com/736x/50/dd/80/50dd8042d89cc9deb6e0c9f4f5566fcc.jpg" },
+            { id: "404", nome: "Circular Aeroporto", cor: "bg-warning text-dark", status: "Operando", img: "https://i.pinimg.com/1200x/df/ea/9c/dfea9c91925044600dc8ce5b6b9a5c2e.jpg" },
+            { id: "550", nome: "Vila Nova / Industrial", cor: "bg-info text-dark", status: "Manutenção", img: "https://i.pinimg.com/736x/52/fd/2e/52fd2e0e5a3fda603435e7e1f027413c.jpg" },
+            { id: "010", nome: "Expresso Praiano", cor: "bg-dark", status: "Operando", img: "https://i.pinimg.com/736x/fb/c6/22/fbc6227bd878e8e48d145757d0c9f1e8.jpg" }
         ];
 
         const container = document.getElementById('busContainer');
