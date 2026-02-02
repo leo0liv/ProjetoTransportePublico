@@ -46,7 +46,7 @@
             { id: "205", nome: "Terminal Norte / Shopping", cor: "bg-success", status: "Operando", img: "https://i.pinimg.com/736x/7b/16/37/7b1637552bd622c86351b12e8fbb53bf.jpg" },
             { id: "312", nome: "Universidade / Estação", cor: "bg-danger", status: "Atrasado", img: "https://i.pinimg.com/736x/50/dd/80/50dd8042d89cc9deb6e0c9f4f5566fcc.jpg" },
             { id: "404", nome: "Circular Aeroporto", cor: "bg-warning text-dark", status: "Operando", img: "https://i.pinimg.com/1200x/df/ea/9c/dfea9c91925044600dc8ce5b6b9a5c2e.jpg" },
-            { id: "550", nome: "Vila Nova / Industrial", cor: "bg-info text-dark", status: "Manutenção", img: "https://i.pinimg.com/736x/52/fd/2e/52fd2e0e5a3fda603435e7e1f027413c.jpg" },
+            { id: "550", nome: "Vila Nova / Industrial", cor: "bg-info text-dark", status: "Operando", img: "https://i.pinimg.com/736x/52/fd/2e/52fd2e0e5a3fda603435e7e1f027413c.jpg" },
             { id: "010", nome: "Expresso Praiano", cor: "bg-dark", status: "Operando", img: "https://i.pinimg.com/736x/fb/c6/22/fbc6227bd878e8e48d145757d0c9f1e8.jpg" }
         ];
 
