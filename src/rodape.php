@@ -44,17 +44,50 @@
 
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold text-uppercase small mb-3">Fale Conosco</h5>
-                    <form>
-                        <div class="mb-2">
-                            <input type="text" class="form-control form-control-sm bg-secondary text-white border-0 shadow-none" placeholder="Nome" required>
+                    <form
+                        action="rodape_contato_envia.php"
+                        name="form_contato"
+                        id="form_contato"
+                        method="post"
+                    >
+                        <div class="mb-2 input-group">
+                            <span class="input-group-addon" id="basic-addon1"></span>
+                            <input 
+                                type="text" 
+                                class="form-control form-control-sm bg-secondary text-white border-0 shadow-none"
+                                id="nome_contato"
+                                name="nome_contato"
+                                placeholder="Digite seu nome."
+                                aria-describedby="basic-addon1"
+                                required
+                            >
                         </div>
                         <div class="mb-2">
-                            <input type="email" class="form-control form-control-sm bg-secondary text-white border-0 shadow-none" placeholder="E-mail" required>
+                            <span class="input-group-addon" id="basic-addon2"></span>
+                            <input 
+                                type="email"
+                                name="email_contato"
+                                id="email_contato"
+                                class="form-control form-control-sm bg-secondary text-white border-0 shadow-none" 
+                                placeholder="Digite seu e-mail."
+                                aria-describedby="basic-addon2" 
+                                required
+                            >
                         </div>
                         <div class="mb-2">
-                            <textarea class="form-control form-control-sm bg-secondary text-white border-0 shadow-none" rows="2" placeholder="Mensagem" required></textarea>
+                            <span class="input-group-addon" id="basic-addon3"></span>
+                            <textarea 
+                                class="form-control form-control-sm bg-secondary text-white border-0 shadow-none" 
+                                name="comentarios_contato"
+                                id="comentarios_contato"
+                                cols="30"
+                                rows="5" 
+                                placeholder="Comentários, dúvidas e/ou sugestões."
+                                aria-describedby="basic-addon3" 
+                                required
+                            ></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">ENVIAR</button>
+                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold" arial-label="Enviar">ENVIAR</button>
                     </form>
                 </div>
 
