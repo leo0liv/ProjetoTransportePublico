@@ -96,8 +96,8 @@ $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="display-6 fw-bold">Transporte TI-19</h1>
-                    <p class="mb-0">Consulta de Itinerários e Pontos</p>
+                    <h1 class="display-6 fw-bold">Consulta de Itinerários e Pontos</h1>
+                   
                 </div>
                 <?php if ($view == 'detalhes'): ?>
                     <a href="linhas_onibus.php" class="btn btn-outline-light d-flex align-items-center">
@@ -107,7 +107,7 @@ $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
             </div>
         </div>
     </header>
-<?php include 'rodape.php'; ?>
+
     <div class="container mb-5">
         
         <?php if ($view == 'lista'): ?>
