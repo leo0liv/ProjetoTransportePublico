@@ -1,129 +1,224 @@
+<?php
+/**
+ * CONFIGURAÇÃO DE CONEXÃO E LÓGICA DO SISTEMA
+ */
+$host = 'localhost';
+$db   = 'TransportePublico_ti19';
+$user = 'TransportePublico_ti19';
+$pass = 'senacti19';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
+}
+
+// Lógica de navegação simples
+$view = isset($_GET['view']) ? $_GET['view'] : 'lista';
+$id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <?php include 'menu.php'; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linhas de Ônibus</title>
-   
+    <title>Transporte Público - Linhas</title>
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
         body { 
-            background-image: url('https://i.pinimg.com/736x/d3/8f/a9/d38fa9bdada897b12a59afd0ee968b4b.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-color: #f8f9fa;
+            background-color: #f4f7f6; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        .header-simple { 
-            padding: 40px 0; 
-            text-align: center; 
-            color: #fff;
-            background-color: rgba(0, 0, 0, 0.6);
+        .header-bg {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px 0;
             margin-bottom: 30px;
-            backdrop-filter: blur(5px); /* Efeito de desfoque suave no fundo do título */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
-        .bus-card { 
-            transition: transform 0.2s; 
-            cursor: pointer; 
-            overflow: hidden; 
-            background-color: #fff; 
-            border-radius: 12px;
+        .card-linha {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+            border-left: 5px solid #1e3c72;
         }
-
-        .bus-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 12px 25px rgba(0,0,0,0.4) !important; 
+        .card-linha:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
-
-        .bus-img { 
-            width: 100%; 
-            height: 180px; 
-            object-fit: cover; 
+        .ponto-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+            border-left: 2px dashed #adb5bd;
         }
-
-        .badge-line { 
-            font-size: 1.2rem; 
-            width: 55px; 
-            height: 55px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 50%; 
+        .ponto-item::before {
+            content: "";
+            position: absolute;
+            left: -9px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background-color: #1e3c72;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+        .ponto-item:last-child {
+            border-left-color: transparent;
+        }
+        .badge-codigo {
+            background-color: #1e3c72;
+            color: white;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 8px;
         }
     </style>
-</head> 
+</head>
 <body>
 
-    <?php 
-       
-        if (file_exists("../src/menu.php")) {
-            include("../src/menu.php"); 
-        }
-        
-       
-        $linhasDeOnibus = [
-            ["id" => "101", "nome" => "Centro / Bairro Real", "cor" => "bg-primary", "status" => "Operando", "img" => "https://i.pinimg.com/1200x/1c/ec/9e/1cec9e718927991e0b869ef554d9d417.jpg"],
-            ["id" => "205", "nome" => "Terminal Norte / Shopping", "cor" => "bg-success", "status" => "Operando", "img" => "https://i.pinimg.com/736x/7b/16/37/7b1637552bd622c86351b12e8fbb53bf.jpg"],
-            ["id" => "312", "nome" => "Universidade / Estação", "cor" => "bg-danger", "status" => "Atrasado", "img" => "https://i.pinimg.com/736x/50/dd/80/50dd8042d89cc9deb6e0c9f4f5566fcc.jpg"],
-            ["id" => "404", "nome" => "Circular Aeroporto", "cor" => "bg-warning text-dark", "status" => "Operando", "img" => "https://i.pinimg.com/1200x/df/ea/9c/dfea9c91925044600dc8ce5b6b9a5c2e.jpg"],
-            ["id" => "550", "nome" => "Vila Nova / Industrial", "cor" => "bg-info text-dark", "status" => "Manutenção", "img" => "https://i.pinimg.com/736x/52/fd/2e/52fd2e0e5a3fda603435e7e1f027413c.jpg"],
-            ["id" => "010", "nome" => "Expresso Praiano", "cor" => "bg-dark", "status" => "Operando", "img" => "https://i.pinimg.com/736x/fb/c6/22/fbc6227bd878e8e48d145757d0c9f1e8.jpg"]
-        ];
-    ?>
-
-    <header class="header-simple">
+    <header class="header-bg">
         <div class="container">
-            <h1 class="display-5 fw-bold text-uppercase">Linhas de Ônibus</h1>
-            <p class="lead">Consulte abaixo o status e itinerários das linhas disponíveis</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 fw-bold">Transporte TI-19</h1>
+                    <p class="mb-0">Consulta de Itinerários e Pontos</p>
+                </div>
+                <?php if ($view == 'detalhes'): ?>
+                    <a href="linhas_onibus.php" class="btn btn-outline-light d-flex align-items-center">
+                        <span class="material-icons me-1">arrow_back</span> Voltar
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
     </header>
-
+<?php include 'rodape.php'; ?>
     <div class="container mb-5">
-        <div class="row g-4" id="busContainer">
+        
+        <?php if ($view == 'lista'): ?>
             
-            <?php foreach ($linhasDeOnibus as $linha): ?>
-                <?php 
-                  
-                    $statusClass = "bg-light text-dark border";
-                    if ($linha['status'] == "Atrasado") $statusClass = "bg-warning text-dark";
-                    if ($linha['status'] == "Manutenção") $statusClass = "bg-danger text-white";
+            <div class="row g-4">
+                <?php
+                $stmt = $pdo->query("SELECT * FROM tblinhas ORDER BY codigo ASC");
+                $linhas = $stmt->fetchAll();
+
+                if (count($linhas) > 0):
+                    foreach ($linhas as $linha):
                 ?>
-                
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 bus-card border-0 shadow-sm">
-                        <img src="<?= $linha['img'] ?>" alt="<?= $linha['nome'] ?>" class="bus-img">
-                        <div class="card-body d-flex align-items-center">
-                            <div class="<?= $linha['cor'] ?> text-white fw-bold badge-line me-3 shadow-sm">
-                                <?= $linha['id'] ?>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h5 class="card-title mb-1" style="font-size: 1.1rem;"><?= $linha['nome'] ?></h5>
-                                <p class="card-text mb-0">
-                                    <span class="badge <?= $statusClass ?>">
-                                        <?= $linha['status'] ?>
-                                    </span>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 card-linha shadow-sm" onclick="location.href='?view=detalhes&id=<?= $linha['id_linha'] ?>'">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="badge-codigo me-3"><?= htmlspecialchars($linha['codigo']) ?></div>
+                                    <h5 class="card-title mb-0"><?= htmlspecialchars($linha['nome']) ?></h5>
+                                </div>
+                                <p class="text-muted mb-0 d-flex align-items-center">
+                                    <span class="material-icons size-sm me-1" style="font-size: 18px;">business</span>
+                                    <?= htmlspecialchars($linha['operadora'] ?: 'Operadora não informada') ?>
                                 </p>
                             </div>
-                            <span class="material-icons text-secondary">chevron_right</span>
+                            <div class="card-footer bg-transparent border-0 text-end">
+                                <span class="text-primary fw-bold small">VER PONTOS</span>
+                            </div>
+                        </div>
+                    </div>
+                <?php 
+                    endforeach; 
+                else:
+                ?>
+                    <div class="col-12 text-center py-5">
+                        <span class="material-icons display-1 text-muted">directions_bus</span>
+                        <p class="lead mt-3">Nenhuma linha cadastrada no banco de dados.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+        <?php elseif ($view == 'detalhes' && $id_linha > 0): ?>
+            <!-- VISÃO: PONTOS DA LINHA (ROTAS) -->
+            <?php
+                // Busca dados da linha
+                $stmtLinha = $pdo->prepare("SELECT * FROM tblinhas WHERE id_linha = ?");
+                $stmtLinha->execute([$id_linha]);
+                $dadosLinha = $stmtLinha->fetch();
+
+                if ($dadosLinha):
+            ?>
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white py-3">
+                                <h4 class="mb-0">
+                                    Linha <?= htmlspecialchars($dadosLinha['codigo']) ?> - 
+                                    <span class="text-muted"><?= htmlspecialchars($dadosLinha['nome']) ?></span>
+                                </h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <h6 class="text-uppercase text-secondary fw-bold mb-4">Itinerário (Sequência de Pontos)</h6>
+                                
+                                <div class="itinerario-container">
+                                    <?php
+                                    // Query para buscar os pontos através da tabela tbrotas
+                                    $sqlRotas = "SELECT p.*, r.ordem 
+                                                 FROM tbrotas r 
+                                                 JOIN tbpontos p ON r.id_ponto = p.id_ponto 
+                                                 WHERE r.id_linha = ? 
+                                                 ORDER BY r.ordem ASC";
+                                    $stmtRotas = $pdo->prepare($sqlRotas);
+                                    $stmtRotas->execute([$id_linha]);
+                                    $pontos = $stmtRotas->fetchAll();
+
+                                    if (count($pontos) > 0):
+                                        foreach ($pontos as $ponto):
+                                    ?>
+                                        <div class="ponto-item">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h6 class="mb-1 fw-bold"><?= htmlspecialchars($ponto['nome']) ?></h6>
+                                                    <small class="text-muted d-block">
+                                                        Lat: <?= $ponto['latitude'] ?> | Long: <?= $ponto['longitude'] ?>
+                                                    </small>
+                                                </div>
+                                                <span class="badge rounded-pill bg-<?= $ponto['tipo_ponto'] == 'inicio' ? 'success' : ($ponto['tipo_ponto'] == 'fim' ? 'danger' : 'info') ?> small">
+                                                    <?= ucfirst($ponto['tipo_ponto']) ?>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    <?php 
+                                        endforeach;
+                                    else:
+                                    ?>
+                                        <div class="alert alert-light border text-center">
+                                            Não há pontos de parada cadastrados para esta rota ainda.
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <?php else: ?>
+                <div class="alert alert-danger">Linha não encontrada.</div>
+            <?php endif; ?>
+        <?php endif; ?>
 
-        </div>
     </div>
-        <?php 
-       
-        if (file_exists("../src/rodape.php")) {
-            include("../src/rodape.php"); 
-        }
-        ?>
+<?php include 'rodape.php'; ?>
+    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
