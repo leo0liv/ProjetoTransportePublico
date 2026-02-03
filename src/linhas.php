@@ -100,7 +100,7 @@ $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
                    
                 </div>
                 <?php if ($view == 'detalhes'): ?>
-                    <a href="linhas_onibus.php" class="btn btn-outline-light d-flex align-items-center">
+                    <a href="linhas.php" class="btn btn-outline-light d-flex align-items-center">
                         <span class="material-icons me-1">arrow_back</span> Voltar
                     </a>
                 <?php endif; ?>
