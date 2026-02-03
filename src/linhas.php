@@ -45,7 +45,7 @@ $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .header-bg {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+       
             color: white;
             padding: 40px 0;
             margin-bottom: 30px;
@@ -92,7 +92,7 @@ $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 </head>
 <body>
 
-    <header class="header-bg">
+    <header class="header-bg bg-dark">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
