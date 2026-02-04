@@ -6,22 +6,22 @@
     <title>Menu - Público</title>
 
     <!-- CSS específico -->
-    <link rel="stylesheet" href="../css/meu_estilo.css">
+    <link rel="stylesheet" href="./css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="../css/fonts.css">
+    <link rel="stylesheet" href="./css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="./css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="../css/bootstrap-icons.css">
+    <link rel="stylesheet" href="./css/bootstrap-icons.css">
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container-fluid container-lg">
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" href="./page_inicial.php">
             <strong class="bi bi-bus-front text-warning"></strong>
             <strong>Transporte Público</strong>
           </a>
@@ -38,27 +38,21 @@
               </li>
             </ul>
             <div class="d-flex">
-                <form 
-                        action="#"
-                        method="get"
-                        name="form_busca"
-                        id="form_busca"
-                        class="d-flex"
-                        role="search">
+                <form action="linhas_buscar.php" method="get" name="form_busca" id="form_busca" class="d-flex" role="search">
                     <input 
                         type="text"
                         class="form-control me-2"  
-                        placeholder="Buscar Linha"
+                        placeholder="Buscar por linha."
                         name="buscar"
                         id="buscar"
-                        size="30"
                         required
                     />
-                    <button type="submit" class="me-2 btn btn-danger">
+                    
+                    <button type="submit" class="btn btn-danger">
                         <i class="bi bi-search"></i>
-                    </button>
+                    </button>&nbsp;
                 </form>
-                <a href="../admin/adm_options.php" class="btn btn-secondary btn-info">
+                <a href="./admin/adm_options.php" class="btn btn-secondary btn-info">
                     <strong class="bi bi-gear text-white">&nbsp;Admin</strong>
                 </a>
             </div>
@@ -67,6 +61,6 @@
       </nav>
 
     <!-- Bootstrap JS -->
-    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

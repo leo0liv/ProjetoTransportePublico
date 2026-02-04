@@ -1,6 +1,6 @@
 <?php
 // CONEXÃO E FUNÇÕES
-require_once '../connections/db_connect.php';
+require_once './connections/db_connect.php';
 
 function queryValue($conn, $sql) {
     return $conn->query($sql)->fetch_assoc()['t'] ?? 0;
@@ -43,16 +43,16 @@ $pontosJSON = json_encode($pontosArray);
     <title>Painel de Mobilidade - Itapetininga</title>
 
         <!-- CSS específico -->
-    <link rel="stylesheet" href="../css/meu_estilo.css">
+    <link rel="stylesheet" href="./css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="../css/fonts.css">
+    <link rel="stylesheet" href="./css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="./css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="../css/bootstrap-icons.css">
+    <link rel="stylesheet" href="./css/bootstrap-icons.css">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
@@ -137,7 +137,7 @@ $pontosJSON = json_encode($pontosArray);
                                     if($tipo == 'inicio') $classe = 'ponto-inicio';
                                     if($tipo == 'fim') $classe = 'ponto-fim';
                                 ?>
-                                <li class="list-group-item ponto-item <?= $classe ?>">
+                                <li class="list-group-item ponto-item-1 <?= $classe ?>">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;"><?= $tipo ?></small>
@@ -157,7 +157,7 @@ $pontosJSON = json_encode($pontosArray);
 <?php include 'rodape.php'; ?>
 
 <!-- Bootstrap JS -->
-<script src="../js/bootstrap.bundle.min.js"></script>
+<script src="./js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
