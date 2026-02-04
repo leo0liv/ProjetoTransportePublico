@@ -60,9 +60,11 @@ $pontosJSON = json_encode($pontosArray);
 </head>
 <body class="bg-light">
 
+<?php include 'menu.php'; ?>
+
 <main class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="bi bi-bus-front text-primary"></i> Sistema de Rotas</h1>
+        <h1><i class="bi bi-bus-front text-warning"></i> Sistema de Rotas</h1>
         <span class="badge bg-dark">Itapetininga - SP</span>
     </div>
 
@@ -152,6 +154,7 @@ $pontosJSON = json_encode($pontosArray);
         </div>
     </div>
 </main>
+<?php include 'rodape.php'; ?>
 
 <!-- Bootstrap JS -->
 <script src="../js/bootstrap.bundle.min.js"></script>

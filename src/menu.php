@@ -31,10 +31,10 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-geo-alt"></i>&nbsp;Mapa</a>
+                <a class="nav-link active" aria-current="page" href="page_inicial.php"><i class="bi bi-geo-alt"></i>&nbsp;Mapa</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#"><i class="bi bi-signpost-2"></i>&nbsp;Linhas</a>
+                <a class="nav-link" href="linhas.php"><i class="bi bi-signpost-2"></i>&nbsp;Linhas</a>
               </li>
             </ul>
             <div class="d-flex">
@@ -58,7 +58,7 @@
                         <i class="bi bi-search"></i>
                     </button>
                 </form>
-                <a href="#" class="btn btn-secondary btn-info">
+                <a href="../admin/adm_options.php" class="btn btn-secondary btn-info">
                     <strong class="bi bi-gear text-white">&nbsp;Admin</strong>
                 </a>
             </div>
