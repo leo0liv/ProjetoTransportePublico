@@ -1,6 +1,6 @@
 <?php
 // CONEXÃO E FUNÇÕES
-require_once './connections/db_connect.php';
+require_once __DIR__ . '/connections/db_connect.php';
 
 function queryValue($conn, $sql) {
     return $conn->query($sql)->fetch_assoc()['t'] ?? 0;
@@ -59,8 +59,6 @@ $pontosJSON = json_encode($pontosArray);
 
 </head>
 <body class="bg-light">
-
-<?php include 'menu.php'; ?>
 
 <main class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -154,7 +152,6 @@ $pontosJSON = json_encode($pontosArray);
         </div>
     </div>
 </main>
-<?php include 'rodape.php'; ?>
 
 <!-- Bootstrap JS -->
 <script src="./js/bootstrap.bundle.min.js"></script>
