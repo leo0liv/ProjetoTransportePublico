@@ -1,6 +1,6 @@
 <?php
 // CONEXÃO E FUNÇÕES
-require_once './connections/db_connect.php';
+require_once __DIR__ . '/../connections/db_connect.php';
 
 function queryValue($conn, $sql) {
     return $conn->query($sql)->fetch_assoc()['t'] ?? 0;
@@ -9,12 +9,12 @@ function queryValue($conn, $sql) {
 function int_param($v) { return (int)$v; }
 
 // ESTATÍSTICAS (Cards Superiores)
-//$stats = [
-//    'linhas'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tblinhas"),
-//    'veiculos_ativos'   => queryValue($conn, "SELECT COUNT(*) AS t FROM tbveiculos"),
-//    'pontos'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tbpontos"),
-//    'motoristas_ativos' => queryValue($conn, "SELECT COUNT(*) AS t FROM tbmotoristas"),
-//];
+$stats = [
+    'linhas'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tblinhas"),
+    'veiculos_ativos'   => queryValue($conn, "SELECT COUNT(*) AS t FROM tbveiculos"),
+    'pontos'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tbpontos"),
+    'motoristas_ativos' => queryValue($conn, "SELECT COUNT(*) AS t FROM tbmotoristas"),
+];
 
 // LÓGICA DE SELEÇÃO DE LINHA E BUSCA DA ROTA
 $resLinhas = $conn->query("SELECT id_linha, codigo, nome FROM tblinhas ORDER BY nome");
@@ -62,11 +62,10 @@ $pontosJSON = json_encode($pontosArray);
 
 <main class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-warning"><i class="bi bi-map text-warning"></i> Mapa de Rotas</h1>
+        <h1 class="text-info"><i class="bi bi-speedometer2 text-info"></i> Painel de Controle</h1>
         <span class="badge bg-dark">Itapetininga - SP</span>
     </div>
 
-<!-- CARDS 
     <div class="row g-4 mb-4">
         <?php 
         $cards = [
@@ -87,7 +86,7 @@ $pontosJSON = json_encode($pontosArray);
         </div>
         <?php endforeach; ?>
     </div>
--->
+
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body">
             <form method="GET" class="row g-3 align-items-center">
@@ -153,6 +152,7 @@ $pontosJSON = json_encode($pontosArray);
         </div>
     </div>
 </main>
+
 
 <!-- Bootstrap JS -->
 <script src="./js/bootstrap.bundle.min.js"></script>

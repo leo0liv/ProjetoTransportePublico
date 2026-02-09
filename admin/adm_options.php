@@ -10,7 +10,7 @@ $titulo_pagina = "Painel Administrativo";
 ?>
 
 <main>
-    <?php include '../page_inicial.php';  ?>
+    <?php include 'page_inicial_adm.php';  ?>
 </main>
 
 <?php 
