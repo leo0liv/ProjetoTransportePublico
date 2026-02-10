@@ -9,25 +9,16 @@ function queryValue($conn, $sql) {
 
 function int_param($v) { return (int)$v; }
 
-<<<<<<< HEAD
+
 // ESTATÍSTICAS
-$stats = [
-    'linhas'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tblinhas"),
-    'veiculos_ativos'   => queryValue($conn, "SELECT COUNT(*) AS t FROM tbveiculos"),
-    'pontos'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tbpontos"),
-    'motoristas_ativos' => queryValue($conn, "SELECT COUNT(*) AS t FROM tbmotoristas"),
-];
-=======
-// ESTATÍSTICAS (Cards Superiores)
 //$stats = [
 //    'linhas'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tblinhas"),
 //    'veiculos_ativos'   => queryValue($conn, "SELECT COUNT(*) AS t FROM tbveiculos"),
 //    'pontos'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tbpontos"),
 //    'motoristas_ativos' => queryValue($conn, "SELECT COUNT(*) AS t FROM tbmotoristas"),
 //];
->>>>>>> 7d6a09bc65690615348b2fe4640f62a5f2544a34
 
-// 1. CARREGAR LISTA DE LINHAS
+// CARREGAR LISTA DE LINHAS
 $resLinhas = $conn->query("SELECT id_linha, codigo, nome FROM tblinhas ORDER BY nome");
 $linhas = $resLinhas->fetch_all(MYSQLI_ASSOC);
 
@@ -38,7 +29,7 @@ $info_horario = null;
 
 if ($id_selecionado > 0) {
     
-    // TENTATIVA 1: Buscar o primeiro horário que TENHA pontos cadastrados (Prioridade)
+    // CONSULTA NO BANCO DE DADOS
     $sqlHorario = "SELECT h.id_horario, h.horario_partida, h.dia_semana 
                    FROM tbhorario_programados h
                    INNER JOIN tbrotas r ON h.id_horario = r.id_horario
@@ -51,7 +42,6 @@ if ($id_selecionado > 0) {
     $stmtH->execute();
     $resHorario = $stmtH->get_result();
 
-    // Se não achar nenhum com pontos, pega qualquer um só para não dar erro (mostra vazio)
     if ($resHorario->num_rows == 0) {
         $stmtH = $conn->prepare("SELECT id_horario, horario_partida, dia_semana FROM tbhorario_programados WHERE id_linha = ? ORDER BY horario_partida ASC LIMIT 1");
         $stmtH->bind_param("i", $id_selecionado);
@@ -63,8 +53,7 @@ if ($id_selecionado > 0) {
         $info_horario = $resHorario->fetch_assoc();
         $id_horario_atual = $info_horario['id_horario'];
 
-        // 3. BUSCAR OS PONTOS
-// Note que agora pegamos r.tipo_ponto (da tabela tbrotas) e não mais p.tipo_ponto
+// BUSCAR OS PONTOS
 $sqlRota = "SELECT p.nome, p.latitude, p.longitude, r.tipo_ponto, r.horario_previsto 
             FROM tbrotas r
             JOIN tbpontos p ON r.id_ponto = p.id_ponto
@@ -95,11 +84,11 @@ $pontosJSON = json_encode($pontosArray);
     <style>
         #map { height: 500px; width: 100%; border-radius: 8px; z-index: 1; }
         .scroll-lista { max-height: 440px; overflow-y: auto; }
-        /* Estilo para ficar igual sua imagem */
+        
         .list-group-item { border-left: 4px solid transparent; }
-        .border-inicio { border-left-color: #198754 !important; } /* Verde */
-        .border-meio { border-left-color: #0d6efd !important; }   /* Azul */
-        .border-fim { border-left-color: #dc3545 !important; }    /* Vermelho */
+        .border-inicio { border-left-color: #198754 !important; } 
+        .border-meio { border-left-color: #0d6efd !important; }   
+        .border-fim { border-left-color: #dc3545 !important; }   
     </style>
 </head>
 <body class="bg-light">
@@ -110,7 +99,7 @@ $pontosJSON = json_encode($pontosArray);
         <span class="badge bg-dark">Itapetininga - SP</span>
     </div>
 
-<!-- CARDS 
+<!-- 
     <div class="row g-4 mb-4">
         <?php 
         $cards = [
@@ -132,6 +121,7 @@ $pontosJSON = json_encode($pontosArray);
         <?php endforeach; ?>
     </div>
 -->
+
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body">
             <form method="GET" class="row g-3 align-items-center">
