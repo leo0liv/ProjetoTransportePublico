@@ -1,235 +1,274 @@
 <?php
-// OBRIGATÓRIO: Proteção de Login
 include 'verificar_login.php'; 
-
-// Incluir a conexão
 include("../connections/db_connect.php");
 
-$database_conn = "TransportePublico_ti19";
-$mensagem = '';
-$tipo_alerta = '';
-
 // Verifica se o ID da linha foi passado
-if (!isset($_GET['id_linha']) || !is_numeric($_GET['id_linha'])) {
-    header("Location: rotas_lista.php?msg_erro=Linha inválida");
+if (!isset($_GET['id_linha'])) {
+    header("Location: rotas_lista.php");
     exit();
 }
 
-$id_linha_filtro = $conn->real_escape_string($_GET['id_linha']);
+$id_linha = $conn->real_escape_string($_GET['id_linha']);
+$database_conn = "TransportePublico_ti19";
 mysqli_select_db($conn, $database_conn);
 
-// --- LÓGICA DE AÇÃO: ADICIONAR PONTO ---
-if (isset($_POST['acao']) && $_POST['acao'] == 'adicionar' && isset($_POST['id_ponto'])) {
-    $id_ponto = $conn->real_escape_string($_POST['id_ponto']);
+
+//  CRIAR NOVO HORÁRIO (INSERT)
+
+if (isset($_POST['criar_horario'])) {
+    $dia = $_POST['dia_semana'];
+    $hora = $_POST['horario_partida'];
     
-    // 1. Descobrir a próxima ordem
-    $res_ordem = $conn->query("SELECT IFNULL(MAX(ordem), 0) + 1 AS proxima FROM tbrotas WHERE id_linha = '$id_linha_filtro'");
-    $proxima_ordem = $res_ordem->fetch_assoc()['proxima'];
-    
-    // 2. Inserir na rota
-    $sql_add = "INSERT INTO tbrotas (id_linha, id_ponto, ordem) VALUES ('$id_linha_filtro', '$id_ponto', '$proxima_ordem')";
-    if ($conn->query($sql_add)) {
-        $mensagem = "Ponto adicionado à rota!";
-        $tipo_alerta = "success";
-    } else {
-        $mensagem = "Erro ao adicionar: " . $conn->error;
-        $tipo_alerta = "danger";
+    $sql = "INSERT INTO tbhorario_programados (id_linha, dia_semana, horario_partida) VALUES ('$id_linha', '$dia', '$hora')";
+    if($conn->query($sql)) {
+        header("Location: rotas_gerenciar.php?id_linha=$id_linha&msg=criado");
+        exit();
     }
 }
 
-// --- LÓGICA DE AÇÃO: REMOVER PONTO ---
-if (isset($_GET['remover_ponto']) && is_numeric($_GET['remover_ponto'])) {
-    $id_ponto_rem = $conn->real_escape_string($_GET['remover_ponto']);
+
+//  EDITAR HORÁRIO (UPDATE)
+
+if (isset($_POST['editar_horario'])) {
+    $id_edit = $_POST['id_horario'];
+    $dia_edit = $_POST['dia_semana'];
+    $hora_edit = $_POST['horario_partida'];
     
-    $sql_del = "DELETE FROM tbrotas WHERE id_linha = '$id_linha_filtro' AND id_ponto = '$id_ponto_rem'";
-    if ($conn->query($sql_del)) {
-        // Reordenar os pontos restantes para não haver buracos na sequência
-        $conn->query("SET @ordem := 0");
-        $conn->query("UPDATE tbrotas SET ordem = (@ordem := @ordem + 1) WHERE id_linha = '$id_linha_filtro' ORDER BY ordem ASC");
-        
-        $mensagem = "Ponto removido e itinerário reordenado.";
-        $tipo_alerta = "info";
+    $sql = "UPDATE tbhorario_programados SET dia_semana = '$dia_edit', horario_partida = '$hora_edit' WHERE id_horario = '$id_edit'";
+    
+    if($conn->query($sql)) {
+        header("Location: rotas_gerenciar.php?id_linha=$id_linha&msg=editado");
+        exit();
     }
 }
 
-// 1. Buscar informações da Linha
-$res_linha = $conn->query("SELECT * FROM tblinhas WHERE id_linha = '$id_linha_filtro'");
-$linha_info = $res_linha->fetch_assoc();
 
-// 2. Buscar pontos que JÁ ESTÃO na rota desta linha
-$sql_rota = "
-    SELECT R.id_ponto, R.ordem, P.nome 
-    FROM tbrotas R
-    INNER JOIN tbpontos P ON R.id_ponto = P.id_ponto
-    WHERE R.id_linha = '$id_linha_filtro'
-    ORDER BY R.ordem ASC
-";
-$lista_rota = $conn->query($sql_rota);
+//  EXCLUIR HORÁRIO (DELETE)
 
-// 3. Buscar pontos DISPONÍVEIS (que ainda não estão nesta linha)
-$sql_disponiveis = "
-    SELECT id_ponto, nome 
-    FROM tbpontos 
-    WHERE id_ponto NOT IN (SELECT id_ponto FROM tbrotas WHERE id_linha = '$id_linha_filtro')
-    ORDER BY nome ASC
-";
-$lista_disponiveis = $conn->query($sql_disponiveis);
+if (isset($_GET['del'])) {
+    $id_del = $conn->real_escape_string($_GET['del']);
+    $conn->query("DELETE FROM tbhorario_programados WHERE id_horario = '$id_del'");
+    header("Location: rotas_gerenciar.php?id_linha=$id_linha&msg=removido");
+    exit();
+}
 
-$titulo_pagina = "Configurar Rota - " . $linha_info['codigo'];
+// BUSCAR DADOS
+$linha = $conn->query("SELECT * FROM tblinhas WHERE id_linha = '$id_linha'")->fetch_assoc();
+$horarios = $conn->query("SELECT * FROM tbhorario_programados WHERE id_linha = '$id_linha' ORDER BY dia_semana, horario_partida");
+
 include '../admin/header.php'; 
 ?>
 
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-primary m-0">Itinerário: <?php echo $linha_info['codigo']; ?></h2>
-            <p class="text-muted"><?php echo $linha_info['nome']; ?></p>
-        </div>
-        <a href="rotas_lista.php" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Voltar para Lista
-        </a>
-    </div>
-
-    <?php if ($mensagem): ?>
-        <div class="alert alert-<?php echo $tipo_alerta; ?> alert-dismissible fade show" role="alert">
-            <?php echo $mensagem; ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    
+    <?php if (isset($_GET['msg'])): ?>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> Ação realizada com sucesso!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
 
-    <div class="row">
-        <div class="col-md-7">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-dark text-white d-flex justify-content-between">
-                    <span><i class="bi bi-list-ol"></i> Ordem das Paradas</span>
-                    <span class="badge bg-primary"><?php echo $lista_rota->num_rows; ?> Paradas</span>
-                </div>
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        <?php if ($lista_rota->num_rows > 0): ?>
-                            <?php while($pt = $lista_rota->fetch_assoc()): ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                    <div>
-                                        <span class="badge bg-info text-dark rounded-pill me-2"><?php echo $pt['ordem']; ?>º</span>
-                                        <strong><?php echo $pt['nome']; ?></strong>
-                                    </div>
-                                    
-                                    <button type="button" 
-                                            class="btn btn-outline-danger btn-sm"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalExcluir"
-                                            data-nome="<?php echo $pt['nome']; ?>"
-                                            data-url="rotas_gerenciar.php?id_linha=<?php echo $id_linha_filtro; ?>&remover_ponto=<?php echo $pt['id_ponto']; ?>">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </li>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <li class="list-group-item text-center py-5 text-muted">
-                                <i class="bi bi-geo-alt display-1 d-block mb-3"></i>
-                                Nenhuma parada definida para esta linha.
-                            </li>
-                        <?php endif; ?>
-                    </ul>
-                </div>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="text-primary fw-bold mb-0">Horários da Linha: <?php echo $linha['codigo']; ?></h2>
+            <p class="text-muted fs-5 mb-0"><?php echo $linha['nome']; ?></p>
         </div>
+        <div>
+            <a href="rotas_lista.php" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovoHorario">
+                <i class="bi bi-plus-lg"></i> Novo Horário de Saída
+            </button>
+        </div>
+    </div>
 
-        <div class="col-md-5">
-            <div class="card shadow-sm border-primary">
-                <div class="card-header bg-primary text-white">
-                    <i class="bi bi-plus-circle"></i> Adicionar Parada
-                </div>
-                <div class="card-body">
-                    <form action="rotas_gerenciar.php?id_linha=<?php echo $id_linha_filtro; ?>" method="post">
-                        <input type="hidden" name="acao" value="adicionar">
+    <div class="row g-4">
+        <?php while($h = $horarios->fetch_assoc()): ?>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100 border-start border-4 border-primary hover-card">
+                    <div class="card-body">
                         
-                        <div class="mb-3">
-                            <label for="id_ponto" class="form-label">Escolha um ponto cadastrado:</label>
-                            <select name="id_ponto" id="id_ponto" class="form-select" required>
-                                <option value="">-- Selecione o Ponto --</option>
-                                <?php while($disp = $lista_disponiveis->fetch_assoc()): ?>
-                                    <option value="<?php echo $disp['id_ponto']; ?>"><?php echo $disp['nome']; ?></option>
-                                <?php endwhile; ?>
-                            </select>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-clock fs-3 me-2 text-primary"></i>
+                            <h3 class="card-title fw-bold text-dark m-0">
+                                <?php echo substr($h['horario_partida'], 0, 5); ?>
+                            </h3>
                         </div>
+                        <span class="badge bg-secondary mb-3"><?php echo ucfirst($h['dia_semana']); ?></span>
+                        
+                        <p class="card-text text-muted small mb-4">
+                            Clique em "Gerenciar Pontos" para definir o itinerário deste horário.
+                        </p>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="rotas_pontos.php?id_horario=<?php echo $h['id_horario']; ?>&id_linha=<?php echo $id_linha; ?>" class="btn btn-outline-primary w-100 fw-bold">
+                                <i class="bi bi-map"></i> Gerenciar Pontos
+                            </a>
 
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-plus-lg"></i> Adicionar ao Itinerário
-                        </button>
-                    </form>
-                    
-                    <?php if ($lista_disponiveis->num_rows == 0): ?>
-                        <div class="alert alert-warning mt-3 mb-0 small">
-                            Não há mais pontos disponíveis para adicionar. 
-                            <a href="pontos_insere.php">Cadastrar novos pontos?</a>
+                            <button type="button" 
+                                    class="btn btn-info text-white" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalEditarHorario"
+                                    data-id="<?php echo $h['id_horario']; ?>"
+                                    data-dia="<?php echo $h['dia_semana']; ?>"
+                                    data-hora="<?php echo $h['horario_partida']; ?>"
+                                    title="Editar">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-outline-danger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalExcluirHorario"
+                                    data-id="<?php echo $h['id_horario']; ?>"
+                                    data-texto="<?php echo substr($h['horario_partida'], 0, 5) . ' (' . ucfirst($h['dia_semana']) . ')'; ?>"
+                                    title="Excluir">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
-                    <?php endif; ?>
+                    </div>
                 </div>
             </div>
-            
-            <div class="alert alert-secondary mt-3 small">
-                <i class="bi bi-lightbulb"></i> Os pontos são adicionados automaticamente ao <strong>final</strong> da rota. Para remover e alterar a ordem, exclua e adicione novamente na sequência correta.
+        <?php endwhile; ?>
+        
+        <?php if($horarios->num_rows == 0): ?>
+            <div class="col-12">
+                <div class="alert alert-warning text-center py-5">
+                    <i class="bi bi-clock-history display-1 d-block mb-3 text-warning"></i>
+                    <h4 class="alert-heading">Nenhum horário cadastrado!</h4>
+                    <p>Clique no botão "Novo Horário de Saída" para começar.</p>
+                </div>
             </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovoHorario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle"></i> Novo Horário</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body py-4">
+                    <input type="hidden" name="criar_horario" value="1">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Dia da Semana</label>
+                        <select name="dia_semana" class="form-select" required>
+                            <option value="Segunda-Sexta">Segunda a Sexta</option>
+                            <option value="Sabado">Sábado</option>
+                            <option value="Domingo">Domingo/Feriado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Horário de Partida</label>
+                        <input type="time" name="horario_partida" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4">Salvar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalExcluir" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">
-          <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirmação de Exclusão
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      
-      <div class="modal-body">
-        <p class="fw-bold mb-2">Você tem certeza que deseja excluir o ponto:</p>
-        
-        <div class="alert alert-light border text-danger text-center fw-bold" id="nomePontoModal">
-            ...
+<div class="modal fade" id="modalEditarHorario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square"></i> Editar Horário</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body py-4">
+                    <input type="hidden" name="editar_horario" value="1">
+                    <input type="hidden" name="id_horario" id="edit_id_horario">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Dia da Semana</label>
+                        <select name="dia_semana" id="edit_dia_semana" class="form-select" required>
+                            <option value="Segunda-Sexta">Segunda a Sexta</option>
+                            <option value="Sabado">Sábado</option>
+                            <option value="Domingo">Domingo/Feriado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Horário de Partida</label>
+                        <input type="time" name="horario_partida" id="edit_horario_partida" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info text-white fw-bold px-4">Salvar Alterações</button>
+                </div>
+            </form>
         </div>
-
-        <p class="text-muted small mb-0">
-          Se este ponto estiver associado a uma rota, a exclusão será bloqueada.
-        </p>
-      </div>
-      
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <a href="#" id="btnConfirmarExclusao" class="btn btn-danger">Sim, Excluir</a>
-      </div>
-      
     </div>
-  </div>
+</div>
+
+<div class="modal fade" id="modalExcluirHorario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="fs-5 mb-0">
+                    Deseja excluir o horário: <strong id="deleteTexto">...</strong>?
+                </p>
+                <p class="text-danger small mt-2 mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Atenção: Isso também apagará todos os pontos configurados dentro deste horário.
+                </p>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                <a href="#" id="linkExcluir" class="btn btn-danger px-4">Excluir</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var modalExcluir = document.getElementById('modalExcluir');
         
-        modalExcluir.addEventListener('show.bs.modal', function (event) {
-            // Botão que acionou o modal
+        // Configuração Modal EDITAR
+        var modalEditar = document.getElementById('modalEditarHorario');
+        modalEditar.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var dia = button.getAttribute('data-dia');
+            var hora = button.getAttribute('data-hora');
             
-            // Extrair info dos atributos data-*
-            var nomePonto = button.getAttribute('data-nome');
-            var urlDeletar = button.getAttribute('data-url');
-            
-            // Atualizar o conteúdo do modal
-            var modalNome = modalExcluir.querySelector('#nomePontoModal');
-            var modalLink = modalExcluir.querySelector('#btnConfirmarExclusao');
+            document.getElementById('edit_id_horario').value = id;
+            document.getElementById('edit_dia_semana').value = dia;
+            document.getElementById('edit_horario_partida').value = hora;
+        });
 
-            modalNome.textContent = nomePonto;
-            modalLink.setAttribute('href', urlDeletar);
+        // Configuração Modal EXCLUIR
+        var modalExcluir = document.getElementById('modalExcluirHorario');
+        modalExcluir.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var texto = button.getAttribute('data-texto');
+            
+            // Atualiza texto e link
+            document.getElementById('deleteTexto').textContent = texto;
+            document.getElementById('linkExcluir').setAttribute('href', '?id_linha=<?php echo $id_linha; ?>&del=' + id);
         });
     });
 </script>
 
-<?php 
-$conn->close();
-include '../admin/footer.php'; 
-?>
+<style>
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        transition: transform 0.2s;
+    }
+</style>
+
+<?php include '../admin/footer.php'; ?>
