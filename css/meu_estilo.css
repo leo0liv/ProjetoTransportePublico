@@ -1,3 +1,8 @@
+body { 
+  background-color: #f4f7f6; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
 #map { 
   height: 550px; 
   width: 100%; 
@@ -11,19 +16,23 @@
 }
 
 /* Estilização da lista lateral de logradouros */
-.ponto-item { 
+.ponto-item-1 { 
   border-left: 5px solid #ccc; 
   transition: background 0.3s; 
 }
-.ponto-item:hover { 
+
+.ponto-item-1:hover { 
   background-color: #f8f9fa; 
 }
+
 .ponto-inicio { 
   border-left-color: #28a745; 
 }
+
 .ponto-fim { 
   border-left-color: #dc3545; 
 }
+
 .ponto-meio { 
   border-left-color: #007bff; 
 }
@@ -31,4 +40,51 @@
 .scroll-lista { 
   max-height: 480px; 
   overflow-y: auto; 
+}
+
+.header-bg { 
+  color: white; 
+  padding: 40px 0; 
+  margin-bottom: 30px; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+}
+
+.card-linha { 
+  transition: transform 0.2s, box-shadow 0.2s; 
+  cursor: pointer; 
+  border: none; 
+  border-left: 5px solid #1e3c72; 
+}
+
+.card-linha:hover { 
+  transform: translateY(-5px); 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+}
+
+.ponto-item {
+  position: relative; 
+  padding-left: 30px; 
+  margin-bottom: 20px; 
+  border-left: 2px dashed #adb5bd; 
+}
+
+.ponto-item::before { 
+  content: ""; 
+  position: absolute; 
+  left: -9px; top: 0; 
+  width: 16px; height: 16px; 
+  background-color: #1e3c72; 
+  border-radius: 50%; border: 3px solid white; 
+}
+
+.badge-codigo { 
+  background-color: #1e3c72; 
+  color: white; 
+  font-weight: bold; 
+  padding: 8px 12px; 
+  border-radius: 8px; 
+}
+
+footer { 
+  margin-top: auto; 
 }

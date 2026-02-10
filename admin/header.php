@@ -52,7 +52,7 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
                  <i class="bi bi-person-circle"></i> Olá, <?php echo $_SESSION['nome_usuario'] ?? 'Visitante'; ?>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="../index.php"><i class="bi bi-house-door-fill"></i> Ir para o Site Público</a></li>
+                <li><a class="dropdown-item" href="../page_inicial.php"><i class="bi bi-house-door-fill"></i> Ir para o Site Público</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <a class="dropdown-item text-danger" href="logout.php">

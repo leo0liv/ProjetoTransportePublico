@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>rodapé - público</title>
 
-    <link rel="stylesheet" href="../css/meu_estilo.css">
-    <link rel="stylesheet" href="../css/fonts.css">
-    <link rel="stylesheet" href="../css/bootstrap.css">
-    <link rel="stylesheet" href="../css/bootstrap-icons.css">
+    <link rel="stylesheet" href="./css/meu_estilo.css">
+    <link rel="stylesheet" href="./css/fonts.css">
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="./css/bootstrap-icons.css">
 </head>
 <body>
 
-    <footer class="bg-dark text-light pt-5 pb-4">
+    <footer class="bg-dark text-light pt-5 pb-4 py-4">
         <div class="container">
             <div class="row">
 
@@ -99,6 +99,6 @@
         </div>
     </footer>
 
-    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
