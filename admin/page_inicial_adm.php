@@ -9,7 +9,6 @@ function queryValue($conn, $sql) {
 
 function int_param($v) { return (int)$v; }
 
-
 // ESTATÍSTICAS
 $stats = [
     'linhas'            => queryValue($conn, "SELECT COUNT(*) AS t FROM tblinhas"),
@@ -18,47 +17,49 @@ $stats = [
     'motoristas_ativos' => queryValue($conn, "SELECT COUNT(*) AS t FROM tbmotoristas"),
 ];
 
-// CARREGAR LISTA DE LINHAS
+// 1. CARREGAR LISTA DE LINHAS
 $resLinhas = $conn->query("SELECT id_linha, codigo, nome FROM tblinhas ORDER BY nome");
 $linhas = $resLinhas->fetch_all(MYSQLI_ASSOC);
 
 $id_selecionado = isset($_GET['linha']) ? int_param($_GET['linha']) : (isset($linhas[0]) ? $linhas[0]['id_linha'] : 0);
 
+$horarios_disponiveis = [];
+$id_horario_atual = isset($_GET['horario']) ? int_param($_GET['horario']) : 0;
 $pontosArray = [];
-$info_horario = null;
+$info_horario_selecionado = null;
 
 if ($id_selecionado > 0) {
     
-    // CONSULTA NO BANCO DE DADOS
-    $sqlHorario = "SELECT h.id_horario, h.horario_partida, h.dia_semana 
-                   FROM tbhorario_programados h
-                   INNER JOIN tbrotas r ON h.id_horario = r.id_horario
-                   WHERE h.id_linha = ? 
-                   GROUP BY h.id_horario
-                   ORDER BY h.horario_partida ASC LIMIT 1";
-                   
-    $stmtH = $conn->prepare($sqlHorario);
+    // BUSCAR TODOS OS HORÁRIOS DA LINHA SELECIONADA
+    $sqlTodosHorarios = "SELECT id_horario, horario_partida, dia_semana 
+                         FROM tbhorario_programados 
+                         WHERE id_linha = ? 
+                         ORDER BY horario_partida ASC";
+    $stmtH = $conn->prepare($sqlTodosHorarios);
     $stmtH->bind_param("i", $id_selecionado);
     $stmtH->execute();
-    $resHorario = $stmtH->get_result();
+    $horarios_disponiveis = $stmtH->get_result()->fetch_all(MYSQLI_ASSOC);
 
-    if ($resHorario->num_rows == 0) {
-        $stmtH = $conn->prepare("SELECT id_horario, horario_partida, dia_semana FROM tbhorario_programados WHERE id_linha = ? ORDER BY horario_partida ASC LIMIT 1");
-        $stmtH->bind_param("i", $id_selecionado);
-        $stmtH->execute();
-        $resHorario = $stmtH->get_result();
+    // Se nenhum horário foi escolhido ou se mudou a linha, pega o primeiro da lista
+    if ($id_horario_atual == 0 && !empty($horarios_disponiveis)) {
+        $id_horario_atual = $horarios_disponiveis[0]['id_horario'];
     }
 
-    if ($resHorario->num_rows > 0) {
-        $info_horario = $resHorario->fetch_assoc();
-        $id_horario_atual = $info_horario['id_horario'];
+    // BUSCAR OS PONTOS (LOGRADOUROS) DO HORÁRIO ESPECÍFICO
+    if ($id_horario_atual > 0) {
+        // Captura info do horário para o texto do formulário
+        foreach($horarios_disponiveis as $h) {
+            if($h['id_horario'] == $id_horario_atual) {
+                $info_horario_selecionado = $h;
+                break;
+            }
+        }
 
-// BUSCAR OS PONTOS
-$sqlRota = "SELECT p.nome, p.latitude, p.longitude, r.tipo_ponto, r.horario_previsto 
-            FROM tbrotas r
-            JOIN tbpontos p ON r.id_ponto = p.id_ponto
-            WHERE r.id_horario = ?
-            ORDER BY r.ordem ASC";
+        $sqlRota = "SELECT p.nome, p.latitude, p.longitude, r.tipo_ponto, r.horario_previsto 
+                    FROM tbrotas r
+                    JOIN tbpontos p ON r.id_ponto = p.id_ponto
+                    WHERE r.id_horario = ?
+                    ORDER BY r.ordem ASC";
 
         $stmt = $conn->prepare($sqlRota);
         $stmt->bind_param("i", $id_horario_atual);
@@ -84,8 +85,8 @@ $pontosJSON = json_encode($pontosArray);
     <style>
         #map { height: 500px; width: 100%; border-radius: 8px; z-index: 1; }
         .scroll-lista { max-height: 440px; overflow-y: auto; }
-        
-        .list-group-item { border-left: 4px solid transparent; }
+        .list-group-item { border-left: 4px solid transparent; transition: 0.2s; }
+        .list-group-item:hover { background-color: #f8f9fa; }
         .border-inicio { border-left-color: #198754 !important; } 
         .border-meio { border-left-color: #0d6efd !important; }   
         .border-fim { border-left-color: #dc3545 !important; }    
@@ -98,7 +99,6 @@ $pontosJSON = json_encode($pontosArray);
         <h1 class="text-info"><i class="bi bi-speedometer2 text-info"></i> Painel de Controle</h1>
         <span class="badge bg-dark">Itapetininga - SP</span>
     </div>
-
 
     <div class="row g-4 mb-4">
         <?php 
@@ -121,13 +121,12 @@ $pontosJSON = json_encode($pontosArray);
         <?php endforeach; ?>
     </div>
 
-
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body">
-            <form method="GET" class="row g-3 align-items-center">
-                <div class="col-auto"><label class="fw-bold">Visualizar Itinerário:</label></div>
-                <div class="col-md-6">
-                    <select name="linha" class="form-select" onchange="this.form.submit()">
+            <form method="GET" id="formFiltro" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="fw-bold mb-1">Selecione a Linha:</label>
+                    <select name="linha" class="form-select" onchange="document.getElementById('horario_select').value=''; this.form.submit()">
                         <?php foreach ($linhas as $l): ?>
                             <option value="<?= $l['id_linha'] ?>" <?= $l['id_linha'] == $id_selecionado ? 'selected' : '' ?>>
                                 <?= $l['codigo'] ?> - <?= $l['nome'] ?>
@@ -135,9 +134,27 @@ $pontosJSON = json_encode($pontosArray);
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <?php if($info_horario): ?>
-                    <div class="col-md-4 text-muted small">
-                         <i class="bi bi-clock"></i> Saída: <strong><?= substr($info_horario['horario_partida'], 0, 5) ?></strong> (<?= ucfirst($info_horario['dia_semana']) ?>)
+
+                <div class="col-md-4">
+                    <label class="fw-bold mb-1">Selecione o Horário:</label>
+                    <select name="horario" id="horario_select" class="form-select" onchange="this.form.submit()">
+                        <?php if (empty($horarios_disponiveis)): ?>
+                            <option value="">Nenhum horário cadastrado</option>
+                        <?php else: ?>
+                            <?php foreach ($horarios_disponiveis as $h): ?>
+                                <option value="<?= $h['id_horario'] ?>" <?= $h['id_horario'] == $id_horario_atual ? 'selected' : '' ?>>
+                                    <?= substr($h['horario_partida'], 0, 5) ?> - <?= ucfirst($h['dia_semana']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <?php if($info_horario_selecionado): ?>
+                    <div class="col-md-4">
+                        <div class="alert alert-warning m-0 py-2 small border-0">
+                             <i class="bi bi-clock-history"></i> Saída selecionada: <strong><?= substr($info_horario_selecionado['horario_partida'], 0, 5) ?></strong>
+                        </div>
                     </div>
                 <?php endif; ?>
             </form>
@@ -166,23 +183,30 @@ $pontosJSON = json_encode($pontosArray);
                     <ul class="list-group list-group-flush">
                         <?php if (empty($pontosArray)): ?>
                             <li class="list-group-item text-center py-5 text-muted">
-                                Nenhuma viagem ou ponto cadastrado para esta linha ainda.
-                                <br><small>Cadastre os pontos no menu "Rotas".</small>
+                                Nenhuma rota ou ponto cadastrado para este horário.
+                                <br><small>Vincule pontos a este horário no painel administrativo.</small>
                             </li>
                         <?php else: ?>
                             <?php foreach ($pontosArray as $p): 
                                 $tipo = trim(strtolower($p['tipo_ponto']));
                                 $classeBorda = 'border-meio';
-                                if($tipo == 'inicio') $classeBorda = 'border-inicio';
-                                if($tipo == 'fim') $classeBorda = 'border-fim';
+                                $corIcone = 'text-primary';
+                                if($tipo == 'inicio') { $classeBorda = 'border-inicio'; $corIcone = 'text-success'; }
+                                if($tipo == 'fim') { $classeBorda = 'border-fim'; $corIcone = 'text-danger'; }
                             ?>
                             <li class="list-group-item py-3 <?= $classeBorda ?>">
-                                <div class="fw-bold text-dark">
-                                    <?= $p['nome'] ?> - <span class="text-muted text-uppercase small"><?= $tipo ?></span>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold text-dark"><?= htmlspecialchars($p['nome']) ?></div>
+                                        <?php if(!empty($p['horario_previsto'])): ?>
+                                            <small class="text-muted"><i class="bi bi-clock"></i> Previsão: <?= substr($p['horario_previsto'], 0, 5) ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                    <button class="btn btn-sm btn-light border rounded-circle" 
+                                            onclick="focarNoPonto(<?= $p['latitude'] ?>, <?= $p['longitude'] ?>, '<?= addslashes($p['nome']) ?>')">
+                                        <i class="bi bi-geo-alt-fill <?= $corIcone ?>"></i>
+                                    </button>
                                 </div>
-                                <?php if(!empty($p['horario_previsto'])): ?>
-                                    <small class="text-muted"><i class="bi bi-clock"></i> Passagem: <?= substr($p['horario_previsto'], 0, 5) ?></small>
-                                <?php endif; ?>
                             </li>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -209,6 +233,11 @@ $pontosJSON = json_encode($pontosArray);
         'fim':    new L.Icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png', shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', iconSize: [25, 41], iconAnchor: [12, 41] })
     };
 
+    function focarNoPonto(lat, lng, nome) {
+        map.flyTo([lat, lng], 17, { animate: true, duration: 1.5 });
+        L.popup().setLatLng([lat, lng]).setContent('<b>' + nome + '</b>').openOn(map);
+    }
+
     if (dadosPontos.length >= 2) {
         const waypoints = dadosPontos.map(p => L.latLng(p.latitude, p.longitude));
         const control = L.Routing.control({
@@ -231,8 +260,11 @@ $pontosJSON = json_encode($pontosArray);
             document.getElementById('info-rota').innerHTML = `
                 <div class="alert alert-primary shadow-sm border-0 small">
                     <i class="bi bi-info-circle-fill"></i> 
-                    Resumo: ${(s.totalDistance / 1000).toFixed(2)} km e ${Math.round(s.totalTime / 60)} min.
+                    Percurso: ${(s.totalDistance / 1000).toFixed(2)} km | Estima-se ${Math.round(s.totalTime / 60)} min de trajeto.
                 </div>`;
+            
+            const bounds = L.latLngBounds(waypoints);
+            map.fitBounds(bounds, {padding: [50, 50]});
         });
     } else if (dadosPontos.length === 1) {
         const p = dadosPontos[0];
