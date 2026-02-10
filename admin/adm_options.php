@@ -9,12 +9,9 @@ include '../admin/header.php';
 $titulo_pagina = "Painel Administrativo";
 ?>
 
-<div class="container mt-5">
-    <h1 class="text-primary mb-4">
-        <i class="bi bi-speedometer2"></i> Painel de Controle
-    </h1>
-    
-    </div>
+<main>
+    <?php include 'page_inicial_adm.php';  ?>
+</main>
 
 <?php 
 include 'footer.php'; 
