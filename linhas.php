@@ -133,7 +133,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
     <div class="container mb-5">
         
         <?php if ($view == 'lista'): ?>
-            <!-- VISÃO: LISTA DE TODAS AS LINHAS -->
+       
             <div class="row g-4">
                 <?php
                 $stmt = $pdo->query("SELECT * FROM tblinhas ORDER BY codigo ASC");
@@ -171,19 +171,18 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
             </div>
 
         <?php elseif ($view == 'detalhes' && $id_linha > 0): ?>
-            <!-- VISÃO: DETALHES DA LINHA (HORÁRIOS E ROTAS) -->
+       
             <?php
                 $stmtLinha = $pdo->prepare("SELECT * FROM tblinhas WHERE id_linha = ?");
                 $stmtLinha->execute([$id_linha]);
                 $dadosLinha = $stmtLinha->fetch();
 
                 if ($dadosLinha):
-                    // Busca todos os horários de partida disponíveis para esta linha
+          
                     $stmtH = $pdo->prepare("SELECT * FROM tbhorario_programados WHERE id_linha = ? ORDER BY horario_partida ASC");
                     $stmtH->execute([$id_linha]);
                     $listaHorarios = $stmtH->fetchAll();
-                    
-                    // Se não houver horário selecionado via GET, mas houver horários na tabela, seleciona o primeiro
+                
                     if ($id_horario == 0 && count($listaHorarios) > 0) {
                         $id_horario = $listaHorarios[0]['id_horario'];
                     }
@@ -232,7 +231,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
                                 
                                 <div class="itinerario-container">
                                     <?php
-                                    // NOVO SQL: Busca os pontos vinculados ao ID_HORARIO específico na tabela tbrotas
+                                 
                                     $sqlRotas = "SELECT p.*, r.ordem, r.horario_previsto, r.tipo_ponto 
                                                  FROM tbrotas r 
                                                  JOIN tbpontos p ON r.id_ponto = p.id_ponto 
@@ -244,7 +243,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 
                                     if (count($pontos) > 0):
                                         foreach ($pontos as $ponto):
-                                            // Define cores baseadas no tipo de ponto do novo SQL
+                                          
                                             $corBadge = 'info';
                                             if ($ponto['tipo_ponto'] == 'inicio') $corBadge = 'success';
                                             if ($ponto['tipo_ponto'] == 'fim') $corBadge = 'danger';
