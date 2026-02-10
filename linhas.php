@@ -260,9 +260,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
                                                             </span>
                                                         <?php endif; ?>
                                                     </div>
-                                                    <small class="text-muted d-block">
-                                                        Latitude: <?= $ponto['latitude'] ?> | Longitude: <?= $ponto['longitude'] ?>
-                                                    </small>
+                                                  
                                                 </div>
                                                 <span class="badge rounded-pill bg-<?= $corBadge ?> small">
                                                     <?= ucfirst($ponto['tipo_ponto']) ?>
