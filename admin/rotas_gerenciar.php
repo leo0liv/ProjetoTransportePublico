@@ -14,7 +14,6 @@ mysqli_select_db($conn, $database_conn);
 
 
 //  CRIAR NOVO HORÁRIO (INSERT)
-
 if (isset($_POST['criar_horario'])) {
     $dia = $_POST['dia_semana'];
     $hora = $_POST['horario_partida'];
@@ -28,7 +27,6 @@ if (isset($_POST['criar_horario'])) {
 
 
 //  EDITAR HORÁRIO (UPDATE)
-
 if (isset($_POST['editar_horario'])) {
     $id_edit = $_POST['id_horario'];
     $dia_edit = $_POST['dia_semana'];
@@ -44,7 +42,6 @@ if (isset($_POST['editar_horario'])) {
 
 
 //  EXCLUIR HORÁRIO (DELETE)
-
 if (isset($_GET['del'])) {
     $id_del = $conn->real_escape_string($_GET['del']);
     $conn->query("DELETE FROM tbhorario_programados WHERE id_horario = '$id_del'");
@@ -95,7 +92,7 @@ include '../admin/header.php';
                                 <?php echo substr($h['horario_partida'], 0, 5); ?>
                             </h3>
                         </div>
-                        <span class="badge bg-secondary mb-3"><?php echo ucfirst($h['dia_semana']); ?></span>
+                        <span class="badge bg-secondary mb-3"><?php echo $h['dia_semana']; ?></span>
                         
                         <p class="card-text text-muted small mb-4">
                             Clique em "Gerenciar Pontos" para definir o itinerário deste horário.
@@ -159,7 +156,11 @@ include '../admin/header.php';
                         <select name="dia_semana" class="form-select" required>
                             <option value="Segunda-Sexta">Segunda a Sexta</option>
                             <option value="Sabado">Sábado</option>
+<<<<<<< HEAD
                             <option value="Domingo/Feriado">Domingo/Feriado</option>
+=======
+                            <option value="Domingo/Feriados">Domingo/Feriados</option>
+>>>>>>> 5285c74afbece672e99edb8a626541ae4013a418
                         </select>
                     </div>
                     <div class="mb-3">
@@ -193,7 +194,7 @@ include '../admin/header.php';
                         <select name="dia_semana" id="edit_dia_semana" class="form-select" required>
                             <option value="Segunda-Sexta">Segunda a Sexta</option>
                             <option value="Sabado">Sábado</option>
-                            <option value="Domingo">Domingo/Feriado</option>
+                            <option value="Domingo/Feriados">Domingo/Feriados</option>
                         </select>
                     </div>
                     <div class="mb-3">

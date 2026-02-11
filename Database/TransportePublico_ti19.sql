@@ -42,7 +42,7 @@ CREATE TABLE tbveiculos(
 CREATE TABLE tbhorario_programados (
     id_horario INT PRIMARY KEY AUTO_INCREMENT,
     id_linha INT NOT NULL,
-    dia_semana VARCHAR(20) NOT NULL, -- Ex: 'Segunda-Sexta', 'Sabado'
+    dia_semana VARCHAR(50) NOT NULL, -- Ex: 'Segunda-Sexta', 'Sabado'
     horario_partida TIME NOT NULL,
     FOREIGN KEY (id_linha) REFERENCES tblinhas(id_linha) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
