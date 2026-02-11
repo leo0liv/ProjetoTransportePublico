@@ -109,7 +109,7 @@ $pontosJSON = json_encode($pontosArray);
                         <?php else: ?>
                             <?php foreach ($horarios_disponiveis as $h): ?>
                                 <option value="<?= $h['id_horario'] ?>" <?= $h['id_horario'] == $id_horario_atual ? 'selected' : '' ?>>
-                                    <?= substr($h['horario_partida'], 0, 5) ?> - <?= ucfirst($h['dia_semana']) ?>
+                                    <?= ucfirst($h['dia_semana']) ?>
                                 </option>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -119,7 +119,7 @@ $pontosJSON = json_encode($pontosArray);
                 <?php if($info_horario_selecionado): ?>
                     <div class="col-md-4">
                         <div class="alert alert-warning m-0 py-2 small border-0">
-                             <i class="bi bi-clock-history"></i> Saída selecionada: <strong><?= substr($info_horario_selecionado['horario_partida'], 0, 5) ?></strong>
+                             <i class="bi bi-clock-history"></i> Saída: <strong><?= substr($info_horario_selecionado['horario_partida'], 0, 5) ?></strong>
                         </div>
                     </div>
                 <?php endif; ?>
