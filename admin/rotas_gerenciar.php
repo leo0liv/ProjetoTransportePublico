@@ -156,11 +156,8 @@ include '../admin/header.php';
                         <select name="dia_semana" class="form-select" required>
                             <option value="Segunda-Sexta">Segunda a Sexta</option>
                             <option value="Sabado">Sábado</option>
-<<<<<<< HEAD
-                            <option value="Domingo/Feriado">Domingo/Feriado</option>
-=======
                             <option value="Domingo/Feriados">Domingo/Feriados</option>
->>>>>>> 5285c74afbece672e99edb8a626541ae4013a418
+
                         </select>
                     </div>
                     <div class="mb-3">
