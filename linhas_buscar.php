@@ -1,5 +1,5 @@
 <?php
-session_start(); // PASSO 1: Sempre a primeira linha!
+session_start(); 
 
 /**
  * CONFIGURAÇÃO DE CONEXÃO E LÓGICA DO SISTEMA
@@ -33,11 +33,9 @@ if (isset($_GET['buscar'])) {
     $busca = '';
 }
 
-// Lógica de navegação e variáveis
 $view = isset($_GET['view']) ? $_GET['view'] : 'lista';
 $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Buscamos os dados da linha para o título ANTES do HTML começar
 $dadosLinha = null;
 if ($view == 'detalhes' && $id_linha > 0) {
     $stmtLinha = $pdo->prepare("SELECT * FROM tblinhas WHERE id_linha = ?");
@@ -52,28 +50,18 @@ if ($view == 'detalhes' && $id_linha > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporte Público - Linhas</title>
-    
-        <!-- CSS específico -->
     <link rel="stylesheet" href="./css/meu_estilo.css">
-
-    <!-- Fonte local -->
     <link rel="stylesheet" href="./css/fonts.css">
-
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="./css/bootstrap.css">
-
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="./css/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    
 </head>
 <body class="d-flex flex-column min-vh-100">
 
     <?php include 'menu.php'; ?>
 
     <header class="header-bg bg-dark">
-        <div class="container">
+        <div class="container py-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="display-6 fw-bold text-white">
@@ -87,14 +75,9 @@ if ($view == 'detalhes' && $id_linha > 0) {
                             }
                         ?>
                     </h1>
-                    
                     <?php if (!empty($busca)): ?>
                         <p class="lead text-warning mb-0">
-                            <?php if ($view == 'lista'): ?>
-                                Resultado por buscar: "<strong><?= htmlspecialchars($busca) ?></strong>"
-                            <?php else: ?>
-                                <span class="text-warning-50">Busca: <?= htmlspecialchars($busca) ?></span>
-                            <?php endif; ?>
+                            Busca: "<strong><?= htmlspecialchars($busca) ?></strong>"
                         </p>
                     <?php endif; ?>
                 </div>
@@ -108,7 +91,7 @@ if ($view == 'detalhes' && $id_linha > 0) {
         </div>
     </header>
 
-    <main class="container mb-5 flex-grow-1">
+    <main class="container mb-5 flex-grow-1 mt-4">
         
         <?php if ($view == 'lista'): ?>
             <div class="row g-4">
@@ -126,10 +109,10 @@ if ($view == 'detalhes' && $id_linha > 0) {
                     foreach ($linhas as $linha):
                 ?>
                     <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 card-linha shadow-sm" onclick="location.href='?view=detalhes&id=<?= $linha['id_linha'] ?>'">
+                        <div class="card h-100 card-linha shadow-sm" style="cursor:pointer" onclick="location.href='?view=detalhes&id=<?= $linha['id_linha'] ?>'">
                             <div class="card-body">
                                 <div class="d-flex align-items-center mb-3">
-                                    <div class="badge-codigo me-3"><?= htmlspecialchars($linha['codigo']) ?></div>
+                                    <div class="badge bg-primary me-3 p-2"><?= htmlspecialchars($linha['codigo']) ?></div>
                                     <h5 class="card-title mb-0"><?= htmlspecialchars($linha['nome']) ?></h5>
                                 </div>
                                 <p class="text-muted mb-0 d-flex align-items-center">
@@ -153,27 +136,49 @@ if ($view == 'detalhes' && $id_linha > 0) {
                 <div class="col-lg-8 mx-auto">
                     <div class="card shadow-sm border-0">
                         <div class="card-header bg-white py-3">
-                            <h4 class="mb-0">Pontos de Parada</h4>
+                            <h4 class="mb-0">Pontos de Parada e Horários</h4>
                         </div>
                         <div class="card-body p-4">
                             <?php
-                            $sqlRotas = "SELECT p.*, r.ordem FROM tbrotas r JOIN tbpontos p ON r.id_ponto = p.id_ponto WHERE r.id_linha = ? ORDER BY r.ordem ASC";
+                            // NOVA CONSULTA: Liga Linha -> Horário Programado -> Rotas -> Pontos
+                            $sqlRotas = "SELECT 
+                                            p.nome, 
+                                            r.ordem, 
+                                            r.horario_previsto, 
+                                            r.tipo_ponto,
+                                            hp.dia_semana,
+                                            hp.horario_partida
+                                         FROM tbrotas r 
+                                         JOIN tbpontos p ON r.id_ponto = p.id_ponto 
+                                         JOIN tbhorario_programados hp ON r.id_horario = hp.id_horario
+                                         WHERE hp.id_linha = ? 
+                                         ORDER BY hp.horario_partida ASC, r.ordem ASC";
+                            
                             $stmtRotas = $pdo->prepare($sqlRotas);
                             $stmtRotas->execute([$id_linha]);
                             $pontos = $stmtRotas->fetchAll();
 
                             if (count($pontos) > 0):
+                                $ultimo_horario = '';
                                 foreach ($pontos as $ponto):
+                                    // Separador visual caso a linha tenha múltiplos horários de saída
+                                    if ($ultimo_horario != $ponto['horario_partida']) {
+                                        echo "<hr><h5 class='text-primary'>Saída: {$ponto['horario_partida']} ({$ponto['dia_semana']})</h5>";
+                                        $ultimo_horario = $ponto['horario_partida'];
+                                    }
                             ?>
-                                <div class="ponto-item">
-                                    <h6 class="mb-1 fw-bold"><?= htmlspecialchars($ponto['nome']) ?></h6>
-                                    <span class="badge rounded-pill bg-<?= $ponto['tipo_ponto'] == 'inicio' ? 'success' : ($ponto['tipo_ponto'] == 'fim' ? 'danger' : 'info') ?> small">
+                                <div class="ponto-item d-flex justify-content-between align-items-center border-bottom py-2">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold"><?= htmlspecialchars($ponto['nome']) ?></h6>
+                                        <small class="text-muted">Ordem: <?= $ponto['ordem'] ?> | Previsto: <?= $ponto['horario_previsto'] ?: '--:--' ?></small>
+                                    </div>
+                                    <span class="badge rounded-pill bg-<?= $ponto['tipo_ponto'] == 'inicio' ? 'success' : ($ponto['tipo_ponto'] == 'fim' ? 'danger' : 'info') ?>">
                                         <?= ucfirst($ponto['tipo_ponto']) ?>
                                     </span>
                                 </div>
                             <?php endforeach; ?>
                             <?php else: ?>
-                                <p class="text-center">Sem pontos cadastrados para esta rota.</p>
+                                <p class="text-center">Sem itinerários ou horários cadastrados para esta linha.</p>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -184,7 +189,6 @@ if ($view == 'detalhes' && $id_linha > 0) {
 
     <?php include 'rodape.php'; ?>
 
-    <!-- Bootstrap JS -->
     <script src="./js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
