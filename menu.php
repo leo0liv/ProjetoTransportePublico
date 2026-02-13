@@ -21,7 +21,7 @@
 
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container-fluid container-lg">
-          <a class="navbar-brand" href="./page_inicial.php">
+          <a class="navbar-brand" href="./index.php">
             <strong class="bi bi-bus-front text-warning"></strong>
             <strong>Transporte Público</strong>
           </a>
@@ -31,7 +31,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="page_inicial.php"><i class="bi bi-geo-alt"></i>&nbsp;Mapa</a>
+                <a class="nav-link active" aria-current="page" href="index.php"><i class="bi bi-geo-alt"></i>&nbsp;Mapa</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="linhas.php"><i class="bi bi-signpost-2"></i>&nbsp;Linhas</a>
