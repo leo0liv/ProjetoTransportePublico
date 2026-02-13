@@ -1,16 +1,23 @@
 <?php
-// OBRIGATÓRIO: Inicia a sessão para poder manipulá-la
+session_name("transporte_publico");
 session_start();
 
-// 1. Limpa todas as variáveis de sessão registradas (dados do usuário)
-session_unset();
+// Limpa todas as variáveis de sessão
+$_SESSION = array();
 
-// 2. Destrói a sessão atual (encerra a sessão no servidor)
+// Remove o cookie da sessão
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
+}
+
+// Destrói a sessão
 session_destroy();
 
-// 3. Redireciona o usuário para a página de login
-header("Location: login.php");
-
-// 4. Garante que o script pare de ser executado após o redirecionamento
-exit();
+// Redireciona
+header("Location: ../index.php");
+exit;
 ?>
