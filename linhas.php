@@ -32,7 +32,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
     <?php if(file_exists('menu.php')) include 'menu.php'; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transporte Público - Linhas e Horários</title>
+    <title>Transporte Público - Horários</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -48,86 +48,87 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        /* HEADER COM BUSCA */
         .header-bg {
             background-color: #212529;
             color: white;
-            padding: 20px 0;
-            margin-bottom: 20px;
+            padding: 15px 0;
+            margin-bottom: 25px;
         }
 
-        /* BARRA DE PESQUISA */
-        .search-container {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
+        .search-box-header {
+            position: relative;
+            max-width: 350px;
+            width: 100%;
         }
 
-        .search-input {
-            border: 2px solid #eee;
-            border-radius: 8px;
-            padding: 10px 15px 10px 45px;
-            font-size: 1rem;
+        .search-box-header input {
+            background-color: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding-left: 40px;
+            border-radius: 20px;
         }
 
-        .search-icon {
+        .search-box-header input:focus {
+            background-color: white;
+            color: black;
+            box-shadow: none;
+        }
+
+        .search-icon-header {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #999;
+            color: #ccc;
         }
 
-        /* HORÁRIOS E ABAS */
+        /* ABAS E HORARIOS */
         .nav-pills .nav-link.custom-tab {
             background-color: var(--cor-primaria);
             color: white;
-            margin: 0 4px;
-            border: 2px solid var(--cor-primaria);
+            margin: 0 2px;
             font-weight: 600;
         }
-
         .nav-pills .nav-link.custom-tab.active {
             background-color: white !important;
             color: var(--cor-primaria) !important;
+            border: 1px solid var(--cor-primaria);
         }
 
         .grid-horarios {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
             gap: 10px;
-            padding: 20px 0;
+            padding: 15px 0;
         }
-
         .horario-btn {
-            display: block;
             background: white;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 6px;
+            padding: 8px;
             text-align: center;
             text-decoration: none;
             color: #333;
             font-weight: bold;
         }
-
         .horario-btn.active {
             background-color: #eef2f7;
             border-color: var(--cor-primaria);
             color: var(--cor-primaria);
         }
 
-        /* BADGES DO ITINERÁRIO */
+        /* ITINERÁRIO */
         .status-badge {
             display: inline-block;
-            padding: 2px 10px;
+            padding: 2px 8px;
             font-size: 10px;
             font-weight: bold;
             text-transform: uppercase;
-            border-radius: 4px;
+            border-radius: 5px;
             color: white;
-            min-width: 55px;
+            min-width: 60px;
             text-align: center;
         }
         .bg-inicio { background-color: #198754; }
@@ -136,47 +137,48 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 
         .ponto-item {
             position: relative;
-            padding-left: 30px;
-            margin-bottom: 15px;
-            border-left: 2px dashed #adb5bd;
+            padding-left: 25px;
+            margin-bottom: 12px;
+            border-left: 2px dashed #ccc;
         }
-
-        footer { padding: 10px 0; font-size: 0.8rem; }
+        .ponto-item::before {
+            content: "";
+            position: absolute; left: -7px; top: 6px;
+            width: 12px; height: 12px;
+            background-color: var(--cor-primaria);
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
 
 <header class="header-bg">
-    <div class="container d-flex justify-content-between align-items-center">
-        <h1 class="h4 fw-bold mb-0">Transporte Coletivo</h1>
-        <?php if ($view == 'detalhes'): ?>
-            <a href="linhas.php" class="btn btn-sm btn-outline-light">Voltar para a Lista</a>
+    <div class="container d-flex justify-content-between align-items-center flex-wrap">
+        <h1 class="h5 fw-bold mb-0">Transporte Público</h1>
+        
+        <?php if ($view == 'lista'): ?>
+        <div class="search-box-header my-2">
+            <span class="material-icons search-icon-header">search</span>
+            <input type="text" id="inputPesquisa" class="form-control" placeholder="Procurar linha...">
+        </div>
+        <?php else: ?>
+            <a href="linhas.php" class="btn btn-sm btn-outline-light">Voltar</a>
         <?php endif; ?>
     </div>
 </header>
 
 <div class="container mb-5">
-
     <?php if ($view == 'lista'): ?>
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-                <div class="search-container position-relative">
-                    <span class="material-icons search-icon">search</span>
-                    <input type="text" id="inputPesquisa" class="form-control search-input" placeholder="Pesquisar por nome ou código da linha...">
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-4" id="listaLinhas">
+        <div class="row g-3" id="listaLinhas">
             <?php
             $stmt = $pdo->query("SELECT * FROM tblinhas ORDER BY codigo ASC");
             foreach ($stmt->fetchAll() as $linha):
             ?>
-                <div class="col-md-4 card-linha-container" data-busca="<?= mb_strtolower($linha['codigo'] . ' ' . $linha['nome']) ?>">
-                    <div class="card h-100 border-0 shadow-sm" style="border-left: 5px solid #1e3c72 !important; cursor:pointer;" onclick="location.href='?view=detalhes&id=<?= $linha['id_linha'] ?>'">
-                        <div class="card-body">
-                            <span class="badge bg-primary mb-2"><?= $linha['codigo'] ?></span>
-                            <h5 class="card-title fw-bold"><?= $linha['nome'] ?></h5>
+                <div class="col-md-4 item-linha" data-info="<?= mb_strtolower($linha['codigo'].' '.$linha['nome']) ?>">
+                    <div class="card h-100 border-0 shadow-sm" style="border-left: 5px solid var(--cor-primaria) !important; cursor:pointer;" onclick="location.href='?view=detalhes&id=<?= $linha['id_linha'] ?>'">
+                        <div class="card-body py-3">
+                            <span class="badge bg-primary mb-1"><?= $linha['codigo'] ?></span>
+                            <h6 class="card-title mb-0 fw-bold"><?= $linha['nome'] ?></h6>
                         </div>
                     </div>
                 </div>
@@ -204,28 +206,29 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
         ?>
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <div class="card shadow-sm border-0 p-4 mb-4">
-                        <h6 class="fw-bold text-muted mb-1">LINHA <?= $dadosLinha['codigo'] ?></h6>
+                    <div class="card shadow-sm border-0 p-4 mb-3">
+                        <small class="text-muted fw-bold">LINHA <?= $dadosLinha['codigo'] ?></small>
                         <h4 class="text-primary fw-bold text-uppercase mb-4"><?= $dadosLinha['nome'] ?></h4>
 
                         <ul class="nav nav-pills nav-justified mb-3" role="tablist">
-                            <li class="nav-item"><button class="nav-link custom-tab active" data-bs-toggle="pill" data-bs-target="#tab-uteis">Dia de semana</button></li>
-                            <li class="nav-item"><button class="nav-link custom-tab" data-bs-toggle="pill" data-bs-target="#tab-sab">Sábado</button></li>
-                            <li class="nav-item"><button class="nav-link custom-tab" data-bs-toggle="pill" data-bs-target="#tab-dom">Domingo/Feriado</button></li>
+                            <li class="nav-item"><button class="nav-link custom-tab active" data-bs-toggle="pill" data-bs-target="#t1">Dia de semana</button></li>
+                            <li class="nav-item"><button class="nav-link custom-tab" data-bs-toggle="pill" data-bs-target="#t2">Sábado</button></li>
+                            <li class="nav-item"><button class="nav-link custom-tab" data-bs-toggle="pill" data-bs-target="#t3">Domingo/Feriado</button></li>
                         </ul>
 
-                        <div class="tab-content border-top pt-3">
+                        <div class="tab-content border-top pt-2">
                             <?php 
-                            $abas = ['tab-uteis' => $uteis, 'tab-sab' => $sab, 'tab-dom' => $dom];
-                            foreach($abas as $idTab => $dados): 
+                            $secoes = ['t1' => $uteis, 't2' => $sab, 't3' => $dom];
+                            foreach($secoes as $idT => $dados): 
                             ?>
-                                <div class="tab-pane fade <?= $idTab == 'tab-uteis' ? 'show active' : '' ?>" id="<?= $idTab ?>">
+                                <div class="tab-pane fade <?= $idT == 't1' ? 'show active' : '' ?>" id="<?= $idT ?>">
                                     <div class="grid-horarios">
                                         <?php foreach($dados as $h): 
                                             $active = ($id_horario == $h['id_horario']) ? 'active' : '';
+                                            $asterisco = (isset($h['trajeto_diferenciado']) && $h['trajeto_diferenciado'] == 1) ? ' *' : '';
                                         ?>
                                             <a href="?view=detalhes&id=<?= $id_linha ?>&id_horario=<?= $h['id_horario'] ?>" class="horario-btn <?= $active ?>">
-                                                <?= date('H:i', strtotime($h['horario_partida'])) ?>
+                                                <?= date('H:i', strtotime($h['horario_partida'])) . $asterisco ?>
                                             </a>
                                         <?php endforeach; ?>
                                     </div>
@@ -236,21 +239,21 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 
                     <?php if ($id_horario > 0): ?>
                         <div class="card shadow-sm border-0 p-4">
-                            <h6 class="fw-bold text-uppercase text-secondary mb-4">Itinerário</h6>
+                            <h6 class="fw-bold text-secondary mb-4" style="font-size: 0.8rem">ITINERÁRIO DETALHADO</h6>
                             <?php
                             $stmtRotas = $pdo->prepare("SELECT p.nome, r.tipo_ponto, r.horario_previsto FROM tbrotas r JOIN tbpontos p ON r.id_ponto = p.id_ponto WHERE r.id_horario = ? ORDER BY r.ordem ASC");
                             $stmtRotas->execute([$id_horario]);
                             foreach ($stmtRotas->fetchAll() as $ponto):
                                 $tipo = mb_strtolower($ponto['tipo_ponto']);
-                                $classeCor = ($tipo == 'inicio') ? 'bg-inicio' : (($tipo == 'fim') ? 'bg-fim' : 'bg-meio');
+                                $cor = ($tipo == 'inicio') ? 'bg-inicio' : (($tipo == 'fim') ? 'bg-fim' : 'bg-meio');
                             ?>
                                 <div class="ponto-item">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="mb-0 fw-bold"><?= $ponto['nome'] ?></h6>
+                                            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;"><?= $ponto['nome'] ?></h6>
                                             <small class="text-muted"><?= date('H:i', strtotime($ponto['horario_previsto'])) ?></small>
                                         </div>
-                                        <div class="status-badge <?= $classeCor ?>"><?= $ponto['tipo_ponto'] ?></div>
+                                        <div class="status-badge <?= $cor ?>"><?= $ponto['tipo_ponto'] ?></div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -262,25 +265,16 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
     <?php endif; ?>
 </div>
 
-<footer class="bg-dark text-white text-center py-2 mt-auto">
-    <small>&copy; 2026 Transporte Público</small>
-</footer>
-
 <script>
 document.getElementById('inputPesquisa')?.addEventListener('input', function(e) {
     let termo = e.target.value.toLowerCase();
-    let cards = document.querySelectorAll('.card-linha-container');
-    
-    cards.forEach(card => {
-        let textoNoCard = card.getAttribute('data-busca');
-        if (textoNoCard.includes(termo)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
+    document.querySelectorAll('.item-linha').forEach(card => {
+        card.style.display = card.getAttribute('data-info').includes(termo) ? "block" : "none";
     });
 });
 </script>
+
+<?php if(file_exists('rodape.php')) include 'rodape.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
