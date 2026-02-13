@@ -26,7 +26,7 @@
                 <div class="col-md-2 mb-4">
                     <h5 class="fw-bold text-uppercase small">Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-secondary text-decoration-none small">Início</a></li>
+                        <li><a href="./index.php" class="text-secondary text-decoration-none small">Início</a></li>
                         <li><a href="#" class="text-secondary text-decoration-none small">Administrativo</a></li>
                         <li><a href="#" class="text-secondary text-decoration-none small">Sobre nós</a></li>
                     </ul>
