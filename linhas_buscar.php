@@ -2,7 +2,7 @@
 session_start(); 
 
 /**
- * CONFIGURAÇÃO DE CONEXÃO E LÓGICA DO SISTEMA
+ * CONFIGURAÇÃO DE CONEXÃO
  */
 $host = 'localhost';
 $db   = 'TransportePublico_ti19';
@@ -35,67 +35,122 @@ if (isset($_GET['buscar'])) {
 
 $view = isset($_GET['view']) ? $_GET['view'] : 'lista';
 $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-$dadosLinha = null;
-if ($view == 'detalhes' && $id_linha > 0) {
-    $stmtLinha = $pdo->prepare("SELECT * FROM tblinhas WHERE id_linha = ?");
-    $stmtLinha->execute([$id_linha]);
-    $dadosLinha = $stmtLinha->fetch();
-}
+$id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 ?>
 
 <!DOCTYPE html>
-<html lang="pt-br" class="h-100">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporte Público - Linhas</title>
+    
     <link rel="stylesheet" href="./css/meu_estilo.css">
-    <link rel="stylesheet" href="./css/fonts.css">
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        :root {
+            --cor-primaria: #1e3c72; 
+            --cor-fundo: #f8f9fa;
+            --cor-dark: #212529;
+            --cor-azul-claro: #3b82f6;
+        }
+
+        body { background-color: var(--cor-fundo); font-family: 'Segoe UI', sans-serif; }
+
+        /* HEADER ESTILO DARK (Conforme imagem_f62903.png) */
+        .header-bg-premium { background-color: var(--cor-dark); color: white; padding: 40px 0; }
+        
+        /* CARDS DE LINHA (Conforme image_f62c2b.png) */
+        .card-linha {
+            border: none;
+            border-left: 5px solid var(--cor-azul-claro) !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .card-linha:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+
+        /* ABAS DE HORÁRIO (Conforme image_f68ea1.png) */
+        .nav-pills-custom .nav-link {
+            background-color: #2c4a7c;
+            color: white;
+            margin: 0 5px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .nav-pills-custom .nav-link.active {
+            background-color: white !important;
+            color: #2c4a7c !important;
+            border: 2px solid #2c4a7c;
+        }
+
+        /* GRID DE HORÁRIOS */
+        .grid-horarios { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
+        .horario-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .horario-btn:hover { border-color: var(--cor-azul-claro); background: #f0f7ff; }
+
+        /* TIMELINE (Conforme image_f68e05.png) */
+        .timeline { position: relative; padding-left: 20px; }
+        .timeline::before {
+            content: ''; position: absolute; top: 10px; bottom: 0; left: 5px;
+            width: 2px; background: #dee2e6; border-left: 2px dashed #adb5bd;
+        }
+        .timeline-item { position: relative; margin-bottom: 25px; padding-left: 20px; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -20px; top: 6px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background-color: var(--cor-primaria); border: 2px solid white;
+        }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
 
     <?php include 'menu.php'; ?>
 
-    <header class="header-bg bg-dark">
-        <div class="container py-4">
+    <header class="header-bg-premium">
+        <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="display-6 fw-bold text-white">
+                    <h1 class="display-6 fw-bold">
                         <?php 
-                            if ($view == 'detalhes' && $dadosLinha) {
-                                echo 'Itinerário da Linha <span class="text-warning">' . htmlspecialchars($dadosLinha['codigo']) . '</span>';
-                            } elseif (!empty($busca)) {
-                                echo 'Resultado da Busca';
-                            } else {
-                                echo 'Todas as Linhas';
-                            }
+                            if ($view == 'detalhes' && $id_linha > 0) echo "Itinerário da Linha";
+                            elseif (!empty($busca)) echo "Resultado da Busca";
+                            else echo "Linhas Disponíveis";
                         ?>
                     </h1>
                     <?php if (!empty($busca)): ?>
-                        <p class="lead text-warning mb-0">
-                            Busca: "<strong><?= htmlspecialchars($busca) ?></strong>"
-                        </p>
+                        <p class="lead text-warning mb-0">Busca: "<strong><?= htmlspecialchars($busca) ?></strong>"</p>
                     <?php endif; ?>
                 </div>
 
                 <?php if ($view == 'detalhes'): ?>
-                    <a href="?view=lista" class="btn btn-outline-light d-flex align-items-center">
-                        <span class="material-icons me-1">arrow_back</span> Voltar
+                    <a href="?view=lista" class="btn btn-outline-light rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-2"></i>Voltar
                     </a>
                 <?php endif; ?>
             </div>
         </div>
     </header>
 
-    <main class="container mb-5 flex-grow-1 mt-4">
+    <main class="container py-5 flex-grow-1">
         
         <?php if ($view == 'lista'): ?>
             <div class="row g-4">
                 <?php
+                // Correção do erro de SQL (image_f69544.png)
                 if ($busca !== '') {
                     $sql = "SELECT * FROM tblinhas WHERE nome LIKE :t1 OR codigo LIKE :t2 ORDER BY codigo ASC";
                     $stmt = $pdo->prepare($sql);
@@ -103,85 +158,104 @@ if ($view == 'detalhes' && $id_linha > 0) {
                 } else {
                     $stmt = $pdo->query("SELECT * FROM tblinhas ORDER BY codigo ASC");
                 }
+                
                 $linhas = $stmt->fetchAll();
 
                 if (count($linhas) > 0):
                     foreach ($linhas as $linha):
                 ?>
-                    <div class="col-md-6 col-lg-4">
+                    <div class="col-md-4">
                         <div class="card h-100 card-linha shadow-sm" style="cursor:pointer" onclick="location.href='?view=detalhes&id=<?= $linha['id_linha'] ?>'">
                             <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="badge bg-primary me-3 p-2"><?= htmlspecialchars($linha['codigo']) ?></div>
-                                    <h5 class="card-title mb-0"><?= htmlspecialchars($linha['nome']) ?></h5>
-                                </div>
-                                <p class="text-muted mb-0 d-flex align-items-center">
-                                    <span class="material-icons size-sm me-1" style="font-size: 18px;">business</span>
-                                    <?= htmlspecialchars($linha['operadora'] ?: 'Não informada') ?>
-                                </p>
+                                <span class="badge bg-primary mb-2"><?= htmlspecialchars($linha['codigo']) ?></span>
+                                <h5 class="card-title fw-bold mb-0 text-dark"><?= htmlspecialchars($linha['nome']) ?></h5>
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
-                <?php else: ?>
+                <?php endforeach; else: ?>
                     <div class="col-12 text-center py-5">
-                        <p class="lead">Nenhuma linha encontrada.</p>
-                        <a href="index.php" class="btn btn-primary">Ver todas</a>
+                        <p class="lead">Nenhuma linha encontrada para "<?= htmlspecialchars($busca) ?>".</p>
+                        <a href="index.php" class="btn btn-primary">Ver todas as linhas</a>
                     </div>
                 <?php endif; ?>
             </div>
 
-        <?php elseif ($view == 'detalhes' && $id_linha > 0): ?>
+        <?php elseif ($view == 'detalhes' && $id_linha > 0): 
+            $stmtL = $pdo->prepare("SELECT * FROM tblinhas WHERE id_linha = ?");
+            $stmtL->execute([$id_linha]);
+            $dadosLinha = $stmtL->fetch();
+        ?>
             <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white py-3">
-                            <h4 class="mb-0">Pontos de Parada e Horários</h4>
-                        </div>
-                        <div class="card-body p-4">
-                            <?php
-                            // NOVA CONSULTA: Liga Linha -> Horário Programado -> Rotas -> Pontos
-                            $sqlRotas = "SELECT 
-                                            p.nome, 
-                                            r.ordem, 
-                                            r.horario_previsto, 
-                                            r.tipo_ponto,
-                                            hp.dia_semana,
-                                            hp.horario_partida
-                                         FROM tbrotas r 
-                                         JOIN tbpontos p ON r.id_ponto = p.id_ponto 
-                                         JOIN tbhorario_programados hp ON r.id_horario = hp.id_horario
-                                         WHERE hp.id_linha = ? 
-                                         ORDER BY hp.horario_partida ASC, r.ordem ASC";
-                            
-                            $stmtRotas = $pdo->prepare($sqlRotas);
-                            $stmtRotas->execute([$id_linha]);
-                            $pontos = $stmtRotas->fetchAll();
+                <div class="col-lg-10 mx-auto">
+                    <div class="card shadow-sm border-0 p-4 mb-4" style="border-radius: 12px;">
+                        <h6 class="text-muted fw-bold mb-1">LINHA <?= $dadosLinha['codigo'] ?></h6>
+                        <h2 class="text-primary fw-bold mb-4"><?= mb_strtoupper($dadosLinha['nome']) ?></h2>
 
-                            if (count($pontos) > 0):
-                                $ultimo_horario = '';
-                                foreach ($pontos as $ponto):
-                                    // Separador visual caso a linha tenha múltiplos horários de saída
-                                    if ($ultimo_horario != $ponto['horario_partida']) {
-                                        echo "<hr><h5 class='text-primary'>Saída: {$ponto['horario_partida']} ({$ponto['dia_semana']})</h5>";
-                                        $ultimo_horario = $ponto['horario_partida'];
-                                    }
+                        <?php
+                        $stmtH = $pdo->prepare("SELECT * FROM tbhorario_programados WHERE id_linha = ? ORDER BY horario_partida ASC");
+                        $stmtH->execute([$id_linha]);
+                        $todosHorarios = $stmtH->fetchAll();
+
+                        // Separa horários por categoria
+                        $uteis = []; $sabados = []; $domingos = [];
+                        foreach($todosHorarios as $h) {
+                            $dia = mb_strtolower($h['dia_semana']);
+                            if(strpos($dia, 'sab') !== false) $sabados[] = $h;
+                            elseif(strpos($dia, 'dom') !== false || strpos($dia, 'fer') !== false) $domingos[] = $h;
+                            else $uteis[] = $h;
+                        }
+                        ?>
+
+                        <ul class="nav nav-pills nav-justified nav-pills-custom mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#dia-util">Dia de semana</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#sabado">Sábado</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#domingo">Domingo/Feriado</button></li>
+                        </ul>
+
+                        <div class="tab-content border-top pt-4">
+                            <?php 
+                            $categorias = ['dia-util' => $uteis, 'sabado' => $sabados, 'domingo' => $domingos];
+                            foreach($categorias as $idCat => $listaH): 
                             ?>
-                                <div class="ponto-item d-flex justify-content-between align-items-center border-bottom py-2">
-                                    <div>
-                                        <h6 class="mb-0 fw-bold"><?= htmlspecialchars($ponto['nome']) ?></h6>
-                                        <small class="text-muted">Ordem: <?= $ponto['ordem'] ?> | Previsto: <?= $ponto['horario_previsto'] ?: '--:--' ?></small>
+                                <div class="tab-pane fade <?= $idCat == 'dia-util' ? 'show active' : '' ?>" id="<?= $idCat ?>">
+                                    <div class="grid-horarios">
+                                        <?php foreach($listaH as $h): ?>
+                                            <a href="?view=detalhes&id=<?= $id_linha ?>&id_horario=<?= $h['id_horario'] ?>" 
+                                               class="horario-btn <?= $id_horario == $h['id_horario'] ? 'border-primary bg-light text-primary' : '' ?>">
+                                                <?= date('H:i', strtotime($h['horario_partida'])) ?>
+                                            </a>
+                                        <?php endforeach; if(empty($listaH)) echo "<p class='text-muted'>Sem horários registrados.</p>"; ?>
                                     </div>
-                                    <span class="badge rounded-pill bg-<?= $ponto['tipo_ponto'] == 'inicio' ? 'success' : ($ponto['tipo_ponto'] == 'fim' ? 'danger' : 'info') ?>">
-                                        <?= ucfirst($ponto['tipo_ponto']) ?>
-                                    </span>
                                 </div>
                             <?php endforeach; ?>
-                            <?php else: ?>
-                                <p class="text-center">Sem itinerários ou horários cadastrados para esta linha.</p>
-                            <?php endif; ?>
                         </div>
                     </div>
+
+                    <?php if ($id_horario > 0): ?>
+                        <div class="card shadow-sm border-0 p-4 p-md-5" style="border-radius: 12px;">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-geo-alt-fill text-primary me-2"></i>Pontos de Parada e Horários</h5>
+                            <div class="timeline">
+                                <?php
+                                $stmtRotas = $pdo->prepare("SELECT p.nome, r.ordem, r.horario_previsto, r.tipo_ponto 
+                                                          FROM tbrotas r 
+                                                          JOIN tbpontos p ON r.id_ponto = p.id_ponto 
+                                                          WHERE r.id_horario = ? 
+                                                          ORDER BY r.ordem ASC");
+                                $stmtRotas->execute([$id_horario]);
+                                foreach ($stmtRotas->fetchAll() as $ponto):
+                                    $corBadge = ($ponto['tipo_ponto'] == 'inicio') ? 'success' : (($ponto['tipo_ponto'] == 'fim') ? 'danger' : 'info');
+                                ?>
+                                    <div class="timeline-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0 fw-bold"><?= htmlspecialchars($ponto['nome']) ?></h6>
+                                            <small class="text-muted">Ordem: <?= $ponto['ordem'] ?> | Previsto: <?= date('H:i', strtotime($ponto['horario_previsto'])) ?></small>
+                                        </div>
+                                        <span class="badge rounded-pill bg-<?= $corBadge ?>"><?= ucfirst($ponto['tipo_ponto']) ?></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         <?php endif; ?>

@@ -152,20 +152,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 </head>
 <body>
 
-<header class="header-bg">
-    <div class="container d-flex justify-content-between align-items-center flex-wrap">
-        <h1 class="h5 fw-bold mb-0">Transporte Público</h1>
-        
-        <?php if ($view == 'lista'): ?>
-        <div class="search-box-header my-2">
-            <span class="material-icons search-icon-header">search</span>
-            <input type="text" id="inputPesquisa" class="form-control" placeholder="Procurar linha...">
-        </div>
-        <?php else: ?>
-            <a href="linhas.php" class="btn btn-sm btn-outline-light">Voltar</a>
-        <?php endif; ?>
-    </div>
-</header>
+<br>
 
 <div class="container mb-5">
     <?php if ($view == 'lista'): ?>
