@@ -1,8 +1,10 @@
 <?php
 // CONEXÃO E FUNÇÕES
-require_once '../connections/db_connect.php';
-
 include 'verificar_login.php'; 
+
+require_once ('../connections/db_connect.php');
+
+
 
 function queryValue($conn, $sql) {
     $res = $conn->query($sql);

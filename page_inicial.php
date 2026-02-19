@@ -80,7 +80,6 @@ $pontosJSON = json_encode($pontosArray);
     </style>
 </head>
 <body class="bg-light">
- <?php  include 'menu.php'; ?>
 <main class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-warning"><i class="bi bi-map text-warning"></i> Mapa de Rotas</h1>

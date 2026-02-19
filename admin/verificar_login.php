@@ -1,16 +1,25 @@
 <?php
 // verificar_login.php
-session_start();
 
-// Verifica se a sessão 'logado' NÃO está definida ou se é FALSE
-if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== TRUE) {
-    // Se não estiver logado, destrói a sessão atual e redireciona
+// 1. VERIFICAÇÃO INTELIGENTE DA SESSÃO
+// Só inicia a sessão se ela ainda NÃO estiver ativa.
+// Isso elimina os erros de "Warning" e "Notice" da sua tela.
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_name("transporte_publico");
+    session_start();
+}
+
+// 2. Verifica se a variável 'login_usuario' existe
+if (!isset($_SESSION['login_usuario'])) {
+    // Se não estiver logado, limpa tudo e chuta para o login
     session_unset();
     session_destroy();
     
-    // Redireciona
+    // Redireciona para o login
     header("Location: login.php");
     exit();
 }
-// Se chegou aqui, o usuário está logado e o script continua
+
+// 3. (Opcional) Segurança extra
+// session_regenerate_id(true); 
 ?>

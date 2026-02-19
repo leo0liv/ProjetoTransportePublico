@@ -44,6 +44,13 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
         <li class="nav-item">
           <a class="nav-link" href="motoristas_lista.php">Motoristas</a>
         </li>
+        
+        <li class="nav-item">
+            <a class="nav-link text-warning" href="usuarios_insere.php">
+                <i class="bi bi-person-plus"></i> Novo Usuário
+            </a>
+        </li>
+
       </ul>
       
       <ul class="navbar-nav">
@@ -67,8 +74,4 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
 </nav>
 
 <main class="container" style="padding-top: 20px;">
-
-    </main>
-    <script src="../js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    ```
