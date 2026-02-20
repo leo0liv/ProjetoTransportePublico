@@ -14,9 +14,16 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporte Público - Horários</title>
 
+    <!-- CSS específico -->
     <link rel="stylesheet" href="./css/meu_estilo.css">
+
+    <!-- Fonte local -->
     <link rel="stylesheet" href="./css/fonts.css">
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="./css/bootstrap.css">
+
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="./css/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
@@ -218,6 +225,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 </div>
 
 <?php if(file_exists('rodape.php')) include 'rodape.php'; ?>
+<!-- Bootstrap JS -->
 <script src="./js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
