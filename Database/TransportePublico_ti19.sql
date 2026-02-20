@@ -51,6 +51,7 @@ CREATE TABLE tbhorario_programados (
 -- (Vincula os pontos a um Horário de Saída específico)
 CREATE TABLE tbrotas (
     id_rota INT PRIMARY KEY AUTO_INCREMENT,
+    id_linha INT NOT NULL,   -- Adicionado para funcionar com o excluir_linha.php
     id_horario INT NOT NULL, -- Vínculo com a viagem específica
     id_ponto INT NOT NULL,   -- Vínculo com o ponto físico
     ordem INT NOT NULL,      -- Sequência (1º, 2º, 3º...)
@@ -59,6 +60,7 @@ CREATE TABLE tbrotas (
     tipo_ponto VARCHAR(20) DEFAULT 'meio', -- 'inicio', 'meio', 'fim' nesta rota específica
 
     -- Constraints
+    FOREIGN KEY (id_linha) REFERENCES tblinhas(id_linha) ON DELETE CASCADE,
     FOREIGN KEY (id_horario) REFERENCES tbhorario_programados(id_horario) ON DELETE CASCADE,
     FOREIGN KEY (id_ponto) REFERENCES tbpontos(id_ponto) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -90,7 +92,8 @@ CREATE TABLE tbusuarios (
     id_usuario INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    senha_hash VARCHAR(255) NOT NULL
+    senha VARCHAR(100) NOT NULL, -- Mudado para texto puro
+    nivel_usuario VARCHAR(20) NOT NULL DEFAULT 'comum' -- Adicionado o nível
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 10. Tabela de Motoristas
@@ -115,6 +118,6 @@ CREATE TABLE tbmotoristas_alocados (
     FOREIGN KEY (id_veiculo)   REFERENCES tbveiculos(id_veiculo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 12. Inserção do Usuário Padrão
-INSERT INTO tbusuarios (id_usuario, nome, email, senha_hash) 
-VALUES (1, 'Administrador Master', 'admin@transporte.com', '$2y$10$O9lMhHkR5L5h.6S.mE7vU.G/yX8S8WpL8R7Pq7z2Y.O8X7S8WpL8');
+-- 12. Inserção do Usuário Padrão (Admin)
+INSERT INTO tbusuarios (id_usuario, nome, email, senha, nivel_usuario) 
+VALUES (1, 'Administrador Master', 'admin@transporte.com', '123456', 'admin');
