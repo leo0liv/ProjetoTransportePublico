@@ -1,25 +1,6 @@
 <?php
-/**
- * CONFIGURAÇÃO DE CONEXÃO E LÓGICA DO SISTEMA
- */
-$host = 'localhost';
-$db   = 'TransportePublico_ti19';
-$user = 'TransportePublico_ti19';
-$pass = 'senacti19';
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
-}
+// CONEXÃO E FUNÇÕES
+require_once './connections/db_connect.php';
 
 $view = isset($_GET['view']) ? $_GET['view'] : 'lista';
 $id_linha = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -41,16 +22,26 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
     
     <style>
         :root {
-            --cor-primaria: #1e3c72; /* Cor Azul Original */
+            --cor-primaria: #1e3c72;
             --cor-fundo: #f4f7f6;
         }
-        body { background-color: var(--cor-fundo); font-family: 'Segoe UI', sans-serif; }
+        body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--cor-fundo); 
+            font-family: 'Segoe UI', sans-serif; 
+        }
+
+        .container.my-5 {
+            flex: 1;
+        }
         
         .nav-pills .nav-link.custom-tab {
             background-color: var(--cor-primaria);
             color: white;
             font-weight: 600;
-            /* Mantendo o espaçamento solicitado */
             margin: 0 5px; 
             border: 1px solid var(--cor-primaria);
         }
@@ -94,7 +85,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
             text-align: center;
         }
         .bg-inicio { background-color: #198754; }
-        .bg-meio { background-color: #0dcaf0; }
+        .bg-meio { background-color: #4169E1; }
         .bg-fim { background-color: #dc3545; }
         .ponto-item {
             position: relative;
