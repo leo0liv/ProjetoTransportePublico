@@ -21,7 +21,7 @@
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container-fluid container-lg">
           <a class="navbar-brand" href="./index.php">
-            <strong class="bi bi-bus-front text-warning"></strong>
+            <strong class="bi bi-bus-front text-primary"></strong>
             <strong>Transporte Público</strong>
           </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@
                         <i class="bi bi-search"></i>
                     </button>&nbsp;
                 </form>
-                <a href="./admin/adm_options.php" class="btn btn-secondary btn-info">
+                <a href="./admin/adm_options.php" class="btn btn-primary">
                     <strong class="bi bi-gear text-white">&nbsp;Admin</strong>
                 </a>
             </div>
