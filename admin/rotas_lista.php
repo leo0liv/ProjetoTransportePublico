@@ -22,8 +22,20 @@ $resultado = $conn->query($sql);
 // Inclui o menu/topo
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-4">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+    .hover-card { transition: transform 0.2s; }
+    .hover-card:hover { transform: translateY(-5px); }
+    
+</style>
+<body>
+    <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="text-primary fw-bold">
@@ -95,12 +107,10 @@ include '../admin/header.php';
     </div>
 </div>
 
-<style>
-    .hover-card { transition: transform 0.2s; }
-    .hover-card:hover { transform: translateY(-5px); }
-</style>
+
 
 <?php 
 $conn->close();
 include '../admin/footer.php'; 
 ?>
+</body>

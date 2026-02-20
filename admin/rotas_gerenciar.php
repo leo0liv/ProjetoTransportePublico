@@ -55,8 +55,22 @@ $horarios = $conn->query("SELECT * FROM tbhorario_programados WHERE id_linha = '
 
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        transition: transform 0.2s;
+    }
+</style>
+<body>
+    <div class="container mt-5">
     
     <?php if (isset($_GET['msg'])): ?>
         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
@@ -261,12 +275,6 @@ include '../admin/header.php';
     });
 </script>
 
-<style>
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-        transition: transform 0.2s;
-    }
-</style>
-
 <?php include '../admin/footer.php'; ?>
+</body>
+

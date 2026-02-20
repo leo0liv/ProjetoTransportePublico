@@ -36,7 +36,6 @@ include '../admin/header.php';
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
-            background-color: var(--cor-fundo); 
             font-family: 'Segoe UI', sans-serif; 
         }
 </style>

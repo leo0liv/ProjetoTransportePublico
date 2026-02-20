@@ -57,8 +57,7 @@ include '../admin/header.php';
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            margin: 0;
-            background-color: var(--cor-fundo); 
+            margin: 0; 
             font-family: 'Segoe UI', sans-serif; 
         }
 </style>

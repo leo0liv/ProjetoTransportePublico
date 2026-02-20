@@ -73,8 +73,17 @@ $todos_pontos = $conn->query("SELECT * FROM tbpontos ORDER BY nome");
 
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="text-muted mb-0">Itinerário da Saída:</h4>
@@ -304,3 +313,4 @@ include '../admin/header.php';
 </script>
 
 <?php include '../admin/footer.php'; ?>
+</body>
