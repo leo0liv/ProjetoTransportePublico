@@ -62,7 +62,7 @@ include '../admin/header.php';
                         <th>Nome do Ponto</th>
                         <th>Latitude</th>
                         <th>Longitude</th>
-                        <th class="text-end">Ações</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,7 +72,7 @@ include '../admin/header.php';
                             <td><strong><?php echo $row['nome']; ?></strong></td>
                             <td><?php echo $row['latitude']; ?></td>
                             <td><?php echo $row['longitude']; ?></td>
-                            <td class="text-end">
+                            <td>
                                 <a href="pontos_atualiza.php?id=<?php echo $row['id_ponto']; ?>" class="btn btn-sm btn-info text-white me-1" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
