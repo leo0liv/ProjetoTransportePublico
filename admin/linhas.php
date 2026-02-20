@@ -91,7 +91,7 @@ include '../admin/header.php';
                             <td><?php echo $row['nome']; ?></td>
                             <td><?php echo $row['operadora']; ?></td>
                             <td>
-                                <a href="editar_linha.php?id=<?php echo $row['id_linha']; ?>" class="btn btn-sm btn-info text-white me-2" title="Editar">
+                                <a href="editar_linha.php?id=<?php echo $row['id_linha']; ?>" class="btn btn-sm btn-warning text-white me-2" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 <button class="btn btn-sm btn-danger delete-btn" data-id="<?php echo $row['id_linha'];?>" data-nome="<?php echo $row['nome'];?>" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" title="Excluir">
