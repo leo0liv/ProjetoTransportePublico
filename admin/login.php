@@ -28,12 +28,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
 
         if ($resultado->num_rows > 0) {
             // Sucesso! Define as variáveis de sessão
-            $_SESSION['login_usuario'] = $linha['email'];
-            $_SESSION['nome_usuario']  = $linha['nome'];
-            $_SESSION['nivel_usuario'] = 'sup'; 
+            $_SESSION['logado']         = TRUE; 
+            $_SESSION['login_usuario']  = $linha['email'];
+            $_SESSION['nome_usuario']   = $linha['nome'];
+            
+            // LÊ O NÍVEL DIRETAMENTE DO BANCO DE DADOS (admin ou comum)
+            $_SESSION['nivel_usuario']  = $linha['nivel_usuario']; 
+            
             $_SESSION['nome_da_sessao'] = session_name();
             
-            // --- MUDANÇA AQUI: Redireciona para a Área Administrativa ---
+            // Redireciona para a Área Administrativa
             header("Location: adm_options.php");
             exit;
         } else {
@@ -53,34 +57,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
     <title>Login Administrativo</title>
     <link rel="stylesheet" href="../css/bootstrap.css">
     <link rel="stylesheet" href="../css/bootstrap-icons.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .login-container {
-            max-width: 400px;
-            margin-top: 100px;
-            padding: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            background-color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/meu_estilo.css">
 </head>
-<body>
+<body class="bg-light">
  
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12 login-container">
-           
+    <div class="row justify-content-center mt-5">
+        
+        <div class="col-md-6 col-lg-4 bg-white p-4 shadow rounded mt-5">
+            
             <h3 class="text-center text-primary mb-4">
                 <i class="bi bi-person-lock"></i> Acesso Administrativo
             </h3>
  
-
- 
             <form action="login.php" method="POST">
-               
+                
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
                     <input type="email" class="form-control" id="email" name="email" required>

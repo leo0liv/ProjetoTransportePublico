@@ -45,11 +45,13 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
           <a class="nav-link" href="motoristas_lista.php">Motoristas</a>
         </li>
         
+        <?php if (isset($_SESSION['nivel_usuario']) && $_SESSION['nivel_usuario'] === 'admin'): ?>
         <li class="nav-item">
-            <a class="nav-link text-warning" href="usuarios_insere.php">
-                <i class="bi bi-person-plus"></i> Novo Usuário
+            <a class="nav-link text-warning fw-bold" href="usuarios_lista.php">
+                <i class="bi bi-people-fill"></i> Gerenciar Usuários
             </a>
         </li>
+        <?php endif; ?>
 
       </ul>
       
@@ -74,4 +76,8 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
 </nav>
 
 <main class="container" style="padding-top: 20px;">
-    ```
+
+    </main>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

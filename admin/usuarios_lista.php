@@ -1,13 +1,15 @@
 <?php
 // usuarios_lista.php
-include 'verificar_login.php'; 
+
+// 1. PROTEÇÃO: Apenas administradores podem ver a lista de usuários
+include 'verificar_admin.php'; 
 include("../connections/db_connect.php");
 
 $database_conn = "TransportePublico_ti19";
 mysqli_select_db($conn, $database_conn);
 
-// Selecionar todos os usuários
-$consulta = "SELECT id_usuario, nome, email FROM tbusuarios ORDER BY nome ASC";
+// Selecionar todos os usuários, incluindo o nível
+$consulta = "SELECT id_usuario, nome, email, nivel_usuario FROM tbusuarios ORDER BY nome ASC";
 $lista    = $conn->query($consulta);
 $row      = $lista->fetch_assoc();
 $totalRows = $lista->num_rows;
@@ -47,6 +49,7 @@ include '../admin/header.php';
                             <th>ID</th>
                             <th>Nome</th>
                             <th>E-mail</th>
+                            <th>Permissão</th>
                             <th class="text-end">Ações</th>
                         </tr>
                     </thead>
@@ -56,12 +59,24 @@ include '../admin/header.php';
                                 <td><?php echo $row['id_usuario']; ?></td>
                                 <td class="fw-bold"><?php echo $row['nome']; ?></td>
                                 <td><?php echo $row['email']; ?></td>
+                                <td>
+                                    <?php if(isset($row['nivel_usuario']) && $row['nivel_usuario'] == 'admin'): ?>
+                                        <span class="badge bg-danger">Administrador</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Comum</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="text-end">
+                                    <a href="usuarios_atualiza.php?id=<?php echo $row['id_usuario']; ?>" class="btn btn-sm btn-info text-white me-2" title="Editar Usuário">
+                                        <i class="bi bi-pencil-fill"></i> Editar
+                                    </a>
+                                    
                                     <button class="btn btn-sm btn-danger delete-btn" 
                                             data-id="<?php echo $row['id_usuario']; ?>" 
                                             data-nome="<?php echo $row['nome']; ?>" 
                                             data-bs-toggle="modal" 
-                                            data-bs-target="#confirmDeleteModal">
+                                            data-bs-target="#confirmDeleteModal"
+                                            title="Excluir Usuário">
                                         <i class="bi bi-trash"></i> Excluir
                                     </button>
                                 </td>
@@ -111,5 +126,7 @@ include '../admin/header.php';
         });
     });
 </script>
+<br>
+<br>
 
 <?php include '../admin/footer.php'; ?>

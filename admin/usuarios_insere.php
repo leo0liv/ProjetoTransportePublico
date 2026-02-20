@@ -1,8 +1,8 @@
 <?php
 // usuarios_insere.php
 
-// 1. Proteção de Login
-include 'verificar_login.php'; 
+// 1. PROTEÇÃO: Somente Administradores podem acessar esta página
+include 'verificar_admin.php'; 
 
 // 2. Conexão com Banco
 include("../connections/db_connect.php");
@@ -20,6 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome  = $conn->real_escape_string($_POST['nome']);
     $email = $conn->real_escape_string($_POST['email']);
     $senha = $conn->real_escape_string($_POST['senha']);
+    
+    // PEGANDO O NÍVEL DO USUÁRIO DO FORMULÁRIO
+    $nivel = $conn->real_escape_string($_POST['nivel_usuario']);
 
     // Verifica se o E-mail já existe
     $sql_check = "SELECT id_usuario FROM tbusuarios WHERE email = '$email'";
@@ -29,11 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensagem = "Erro: O e-mail <strong>$email</strong> já está cadastrado.";
         $tipo_alerta = "warning";
     } else {
-        // Insere no banco (Senha texto puro, conforme seu padrão)
-        $sql_insert = "INSERT INTO tbusuarios (nome, email, senha) VALUES (?, ?, ?)";
+        // INSERINDO NO BANCO COM A COLUNA nivel_usuario
+        $sql_insert = "INSERT INTO tbusuarios (nome, email, senha, nivel_usuario) VALUES (?, ?, ?, ?)";
         
         if ($stmt = $conn->prepare($sql_insert)) {
-            $stmt->bind_param("sss", $nome, $email, $senha);
+            // "ssss" indica que são 4 strings (nome, email, senha, nivel)
+            $stmt->bind_param("ssss", $nome, $email, $senha, $nivel);
             
             if ($stmt->execute()) {
                 $mensagem = "Usuário <strong>$nome</strong> cadastrado com sucesso!";
@@ -97,6 +101,16 @@ include '../admin/header.php';
                         </div> 
                     </div> 
 
+                    <div class="mb-3">
+                        <label for="nivel_usuario" class="form-label">Nível de Permissão:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                            <select name="nivel_usuario" id="nivel_usuario" class="form-select" required>
+                                <option value="comum">Comum (Apenas Visualiza/Edita Outras Áreas)</option>
+                                <option value="admin">Administrador (Pode Gerenciar Usuários)</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="d-grid gap-2 mt-4">
                          <button type="submit" class="btn btn-primary text-white">
                             <i class="bi bi-save"></i> Salvar Usuário
