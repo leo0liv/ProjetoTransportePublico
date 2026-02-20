@@ -43,8 +43,17 @@ if (isset($_GET['id'])) {
 $titulo_pagina = "Editar Usuário";
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h2 class="text-primary mb-4"><i class="bi bi-person-lines-fill"></i> Editar Usuário</h2>
@@ -93,3 +102,4 @@ include '../admin/header.php';
 </div>
 
 <?php $conn->close(); include '../admin/footer.php'; ?>
+</body>
