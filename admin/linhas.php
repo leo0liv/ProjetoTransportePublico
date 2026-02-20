@@ -30,8 +30,18 @@ $titulo_pagina = "Linhas de Transporte - Lista";
 // O include abaixo foi ajustado para usar o caminho CORRETO (../header.php)
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--cor-fundo); 
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     
     <h2 class="text-primary mb-4">
         <i class="bi bi-road-set"></i> Gerenciamento de Linhas de Transporte
@@ -152,3 +162,4 @@ include '../admin/header.php';
 // O include abaixo foi ajustado para usar o caminho CORRETO (../footer.php)
 include '../admin/footer.php'; 
 ?>
+</body>
