@@ -30,7 +30,7 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
         
         <li class="nav-item">
           <a class="nav-link" href="linhas.php">
-            <i class="bi bi-signpost-split"></i> Linhas
+            <i class="bi bi-signpost-2-fill"></i> Linhas
           </a>
         </li>
 
@@ -46,7 +46,7 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
         </li>
         <li class="nav-item">
           <a class="nav-link" href="pontos_lista.php">
-            <i class="bi bi-geo-alt"></i> Pontos
+            <i class="bi bi-geo-alt-fill"></i> Pontos
           </a>
         </li>
         <li class="nav-item">

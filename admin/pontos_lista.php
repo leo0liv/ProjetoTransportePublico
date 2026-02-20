@@ -28,7 +28,7 @@ include '../admin/header.php';
 <body>
     <div class="container mt-5">
     <h2 class="text-primary mb-4">
-        <i class="bi bi-geo-alt"></i> Gerenciamento de Pontos Físicos
+        <i class="bi bi-geo-alt-fill"></i> Gerenciamento de Pontos Físicos
     </h2>
 
     <?php if (isset($_GET['msg'])): ?>

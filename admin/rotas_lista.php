@@ -35,18 +35,12 @@ include '../admin/header.php';
     
 </style>
 <body>
-    <div class="container mt-4">
+    <div class="container mt-5">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-primary fw-bold">
+        <h2 class="text-primary mb-4">
             <i class="bi bi-diagram-3-fill"></i> Gerenciamento de Rotas
         </h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Rotas</li>
-            </ol>
-        </nav>
     </div>
 
     <div class="alert alert-info shadow-sm d-flex align-items-center" role="alert">

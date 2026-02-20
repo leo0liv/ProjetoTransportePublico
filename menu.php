@@ -30,10 +30,10 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="index.php"><i class="bi bi-geo-alt"></i>&nbsp;Mapa</a>
+                <a class="nav-link active" aria-current="page" href="index.php"><i class="bi bi-geo-alt-fill"></i>&nbsp;Mapa</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="linhas.php"><i class="bi bi-signpost-2"></i>&nbsp;Linhas</a>
+                <a class="nav-link" href="linhas.php"><i class="bi bi-signpost-2-fill"></i>&nbsp;Linhas</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="sobre.php"><i class="bi bi-people-fill"></i>&nbsp;Sobre nós</a>
