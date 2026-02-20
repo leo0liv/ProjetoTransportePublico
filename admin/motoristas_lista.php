@@ -29,8 +29,17 @@ $conn->close();
 $titulo_pagina = "Motoristas - Lista";
 include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     
     <h2 class="text-primary mb-4">
         <i class="bi bi-person-badge-fill"></i> Gerenciamento de Motoristas
@@ -165,3 +174,4 @@ include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
 <?php 
 include '../admin/footer.php'; // Inclui o script JS do Bootstrap
 ?>
+</body>

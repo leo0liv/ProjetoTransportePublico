@@ -68,8 +68,17 @@ $conn->close();
 $titulo_pagina = "Inserir Motorista";
 include '../admin/header.php';
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             
@@ -188,3 +197,4 @@ include '../admin/header.php';
 <?php 
 include '../admin/footer.php'; 
 ?>
+</body>
