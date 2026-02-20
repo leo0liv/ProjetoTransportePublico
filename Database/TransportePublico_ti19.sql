@@ -121,3 +121,11 @@ CREATE TABLE tbmotoristas_alocados (
 -- 12. Inserção do Usuário Padrão (Admin)
 INSERT INTO tbusuarios (id_usuario, nome, email, senha, nivel_usuario) 
 VALUES (1, 'Administrador Master', 'admin@transporte.com', '123456', 'admin');
+
+USE TransportePublico_ti19;
+ 
+-- 
+ALTER TABLE tbrotas DROP FOREIGN KEY tbrotas_ibfk_1;
+ 
+--
+ALTER TABLE tbrotas DROP COLUMN id_linha;
