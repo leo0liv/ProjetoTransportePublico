@@ -34,8 +34,8 @@
                     <h5 class="fw-bold text-uppercase small">Links</h5>
                     <ul class="list-unstyled">
                         <li><a href="./index.php" class="text-secondary text-decoration-none small">Início</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none small">Administrativo</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none small">Sobre nós</a></li>
+                        <li><a href="./admin/login.php" class="text-secondary text-decoration-none small">Administrativo</a></li>
+                        <li><a href="./sobre.php" class="text-secondary text-decoration-none small">Sobre nós</a></li>
                     </ul>
                 </div>
 
