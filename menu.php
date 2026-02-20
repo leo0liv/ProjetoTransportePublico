@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="./css/bootstrap-icons.css">
 </head>
 <body>
-
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container-fluid container-lg">
           <a class="navbar-brand" href="./index.php">
@@ -35,6 +34,9 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="linhas.php"><i class="bi bi-signpost-2"></i>&nbsp;Linhas</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="sobre.php"><i class="bi bi-people-fill"></i>&nbsp;Sobre nós</a>
               </li>
             </ul>
             <div class="d-flex">
@@ -59,8 +61,7 @@
           </div>
         </div>
       </nav>
-
-    <!-- Bootstrap JS -->
-    <script src="./js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="./js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
