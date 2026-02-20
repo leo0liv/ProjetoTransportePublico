@@ -16,8 +16,17 @@ $conn->close();
 $titulo_pagina = "Pontos de Ônibus - Lista";
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <h2 class="text-primary mb-4">
         <i class="bi bi-geo-alt"></i> Gerenciamento de Pontos Físicos
     </h2>
@@ -119,3 +128,4 @@ include '../admin/header.php';
 </script>
 
 <?php include '../admin/footer.php'; ?>
+</body>
