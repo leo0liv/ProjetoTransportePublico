@@ -29,7 +29,6 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <?php if(file_exists('menu.php')) include 'menu.php'; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporte Público - Horários</title>
@@ -42,49 +41,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
             --cor-primaria: #1e3c72; 
             --cor-fundo: #f4f7f6;
         }
-
-        body { 
-            background-color: var(--cor-fundo); 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* HEADER COM BUSCA */
-        .header-bg {
-            background-color: #212529;
-            color: white;
-            padding: 15px 0;
-            margin-bottom: 25px;
-        }
-
-        .search-box-header {
-            position: relative;
-            max-width: 350px;
-            width: 100%;
-        }
-
-        .search-box-header input {
-            background-color: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding-left: 40px;
-            border-radius: 20px;
-        }
-
-        .search-box-header input:focus {
-            background-color: white;
-            color: black;
-            box-shadow: none;
-        }
-
-        .search-icon-header {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #ccc;
-        }
-
-        /* ABAS E HORARIOS */
+        body { background-color: var(--cor-fundo); font-family: 'Segoe UI', sans-serif; }
         .nav-pills .nav-link.custom-tab {
             background-color: var(--cor-primaria);
             color: white;
@@ -96,7 +53,6 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
             color: var(--cor-primaria) !important;
             border: 1px solid var(--cor-primaria);
         }
-
         .grid-horarios {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
@@ -118,8 +74,6 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
             border-color: var(--cor-primaria);
             color: var(--cor-primaria);
         }
-
-        /* ITINERÁRIO */
         .status-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -134,7 +88,6 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
         .bg-inicio { background-color: #198754; }
         .bg-meio { background-color: #0dcaf0; }
         .bg-fim { background-color: #dc3545; }
-
         .ponto-item {
             position: relative;
             padding-left: 25px;
@@ -152,16 +105,16 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
 </head>
 <body>
 
-<br>
+<?php if(file_exists('menu.php')) include 'menu.php'; ?>
 
-<div class="container mb-5">
+<div class="container my-5">
     <?php if ($view == 'lista'): ?>
-        <div class="row g-3" id="listaLinhas">
+        <div class="row g-3">
             <?php
             $stmt = $pdo->query("SELECT * FROM tblinhas ORDER BY codigo ASC");
             foreach ($stmt->fetchAll() as $linha):
             ?>
-                <div class="col-md-4 item-linha" data-info="<?= mb_strtolower($linha['codigo'].' '.$linha['nome']) ?>">
+                <div class="col-md-4">
                     <div class="card h-100 border-0 shadow-sm" style="border-left: 5px solid var(--cor-primaria) !important; cursor:pointer;" onclick="location.href='?view=detalhes&id=<?= $linha['id_linha'] ?>'">
                         <div class="card-body py-3">
                             <span class="badge bg-primary mb-1"><?= $linha['codigo'] ?></span>
@@ -184,11 +137,20 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
                 $listaHorarios = $stmtH->fetchAll();
 
                 $uteis = []; $sab = []; $dom = [];
+                $aba_ativa = 't1'; // Padrão: Dia de semana
+
                 foreach($listaHorarios as $h) {
                     $d = mb_strtolower($h['dia_semana']);
-                    if(strpos($d, 'sab') !== false) $sab[] = $h;
-                    elseif(strpos($d, 'dom') !== false || strpos($d, 'fer') !== false) $dom[] = $h;
-                    else $uteis[] = $h;
+                    if(strpos($d, 'sab') !== false) {
+                        $sab[] = $h;
+                        if ($id_horario == $h['id_horario']) $aba_ativa = 't2'; // Define aba Sábado se o ID bater
+                    } elseif(strpos($d, 'dom') !== false || strpos($d, 'fer') !== false) {
+                        $dom[] = $h;
+                        if ($id_horario == $h['id_horario']) $aba_ativa = 't3'; // Define aba Domingo se o ID bater
+                    } else {
+                        $uteis[] = $h;
+                        if ($id_horario == $h['id_horario']) $aba_ativa = 't1';
+                    }
                 }
         ?>
             <div class="row">
@@ -198,9 +160,15 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
                         <h4 class="text-primary fw-bold text-uppercase mb-4"><?= $dadosLinha['nome'] ?></h4>
 
                         <ul class="nav nav-pills nav-justified mb-3" role="tablist">
-                            <li class="nav-item"><button class="nav-link custom-tab active" data-bs-toggle="pill" data-bs-target="#t1">Dia de semana</button></li>
-                            <li class="nav-item"><button class="nav-link custom-tab" data-bs-toggle="pill" data-bs-target="#t2">Sábado</button></li>
-                            <li class="nav-item"><button class="nav-link custom-tab" data-bs-toggle="pill" data-bs-target="#t3">Domingo/Feriado</button></li>
+                            <li class="nav-item">
+                                <button class="nav-link custom-tab <?= $aba_ativa == 't1' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#t1">Dia de semana</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link custom-tab <?= $aba_ativa == 't2' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#t2">Sábado</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link custom-tab <?= $aba_ativa == 't3' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#t3">Domingo/Feriado</button>
+                            </li>
                         </ul>
 
                         <div class="tab-content border-top pt-2">
@@ -208,16 +176,16 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
                             $secoes = ['t1' => $uteis, 't2' => $sab, 't3' => $dom];
                             foreach($secoes as $idT => $dados): 
                             ?>
-                                <div class="tab-pane fade <?= $idT == 't1' ? 'show active' : '' ?>" id="<?= $idT ?>">
+                                <div class="tab-pane fade <?= $aba_ativa == $idT ? 'show active' : '' ?>" id="<?= $idT ?>">
                                     <div class="grid-horarios">
                                         <?php foreach($dados as $h): 
                                             $active = ($id_horario == $h['id_horario']) ? 'active' : '';
-                                            $asterisco = (isset($h['trajeto_diferenciado']) && $h['trajeto_diferenciado'] == 1) ? ' *' : '';
                                         ?>
                                             <a href="?view=detalhes&id=<?= $id_linha ?>&id_horario=<?= $h['id_horario'] ?>" class="horario-btn <?= $active ?>">
-                                                <?= date('H:i', strtotime($h['horario_partida'])) . $asterisco ?>
+                                                <?= date('H:i', strtotime($h['horario_partida'])) ?>
                                             </a>
                                         <?php endforeach; ?>
+                                     <?php if(empty($dados)) echo "<p class='text-muted fw-bold fs-4 text-nowrap'>Nenhum horário disponível.</p>"; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -237,7 +205,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
                                 <div class="ponto-item">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;"><?= $ponto['nome'] ?></h6>
+                                            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;"><?= htmlspecialchars($ponto['nome']) ?></h6>
                                             <small class="text-muted"><?= date('H:i', strtotime($ponto['horario_previsto'])) ?></small>
                                         </div>
                                         <div class="status-badge <?= $cor ?>"><?= $ponto['tipo_ponto'] ?></div>
@@ -252,17 +220,7 @@ $id_horario = isset($_GET['id_horario']) ? (int)$_GET['id_horario'] : 0;
     <?php endif; ?>
 </div>
 
-<script>
-document.getElementById('inputPesquisa')?.addEventListener('input', function(e) {
-    let termo = e.target.value.toLowerCase();
-    document.querySelectorAll('.item-linha').forEach(card => {
-        card.style.display = card.getAttribute('data-info').includes(termo) ? "block" : "none";
-    });
-});
-</script>
-
 <?php if(file_exists('rodape.php')) include 'rodape.php'; ?>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
