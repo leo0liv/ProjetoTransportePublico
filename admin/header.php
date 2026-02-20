@@ -20,7 +20,7 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <div class="container-fluid">
     <a class="navbar-brand" href="adm_options.php">
-        <i class="bi bi-bus-front"></i> TPT Admin
+        <i class="bi bi-bus-front text-primary"></i> RB Admin
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -29,25 +29,35 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         
         <li class="nav-item">
-          <a class="nav-link" href="linhas.php">Linhas</a>
+          <a class="nav-link" href="linhas.php">
+            <i class="bi bi-signpost-split"></i> Linhas
+          </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="rotas_lista.php">Rotas</a>
+            <a class="nav-link" href="rotas_lista.php">
+              <i class="bi bi-diagram-3-fill"></i> Rotas
+            </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="veiculos_lista.php">Veículos</a>
+          <a class="nav-link" href="veiculos_lista.php">
+            <i class="bi bi-bus-front-fill"></i> Veículos
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pontos_lista.php">Pontos</a>
+          <a class="nav-link" href="pontos_lista.php">
+            <i class="bi bi-geo-alt"></i> Pontos
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="motoristas_lista.php">Motoristas</a>
+          <a class="nav-link" href="motoristas_lista.php">
+            <i class="bi bi-person-badge-fill"></i> Motoristas
+          </a>
         </li>
         
         <?php if (isset($_SESSION['nivel_usuario']) && $_SESSION['nivel_usuario'] === 'admin'): ?>
         <li class="nav-item">
-            <a class="nav-link text-warning fw-bold" href="usuarios_lista.php">
+            <a class="nav-link text-info fw-bold" href="usuarios_lista.php">
                 <i class="bi bi-people-fill"></i> Gerenciar Usuários
             </a>
         </li>

@@ -52,7 +52,7 @@ include 'header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
     <div class="container mt-5">
         
         <h2 class="text-primary mb-4">
-            <i class="bi bi-bus-fill"></i> Gerenciamento de Veículos
+            <i class="bi bi-bus-front-fill"></i> Gerenciamento de Veículos
         </h2>
 
         <?php 

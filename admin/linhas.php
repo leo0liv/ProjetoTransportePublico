@@ -43,7 +43,7 @@ include '../admin/header.php';
     <div class="container mt-5">
     
     <h2 class="text-primary mb-4">
-        <i class="bi bi-road-set"></i> Gerenciamento de Linhas de Transporte
+        <i class="bi bi-signpost-split"></i> Gerenciamento de Linhas de Transporte
     </h2>
 
     <?php 
