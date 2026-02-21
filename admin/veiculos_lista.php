@@ -37,7 +37,7 @@ $totalRows  =   ($lista)->num_rows;
 $conn->close();
 
 $titulo_pagina = "Veículos - Lista";
-include 'header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
+include '../admin/header.php'; 
 ?>
 <style>
     body { 
