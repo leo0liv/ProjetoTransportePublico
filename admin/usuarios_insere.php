@@ -72,7 +72,7 @@ include '../admin/header.php';
     <div class="row justify-content-center">
         <div class="col-md-6">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-person-plus-fill"></i> Novo Usuário
             </h2>
             
@@ -120,8 +120,8 @@ include '../admin/header.php';
                             </select>
                         </div>
                     </div>
-                    <div class="d-grid gap-2 mt-4">
-                         <button type="submit" class="btn btn-primary text-white">
+                    <div class="d-flex justify-content-between pt-3">
+                         <button type="submit" class="btn btn-success text-white">
                             <i class="bi bi-save"></i> Salvar Usuário
                          </button>
                          <a href="usuarios_lista.php" class="btn btn-secondary">
