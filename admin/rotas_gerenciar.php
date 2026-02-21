@@ -113,12 +113,12 @@ include '../admin/header.php';
                         </p>
                         
                         <div class="d-flex gap-2">
-                            <a href="rotas_pontos.php?id_horario=<?php echo $h['id_horario']; ?>&id_linha=<?php echo $id_linha; ?>" class="btn btn-outline-primary w-100 fw-bold">
+                            <a href="rotas_pontos.php?id_horario=<?php echo $h['id_horario']; ?>&id_linha=<?php echo $id_linha; ?>" class="btn btn-primary w-100">
                                 <i class="bi bi-map"></i> Gerenciar Pontos
                             </a>
 
                             <button type="button" 
-                                    class="btn btn-info text-white" 
+                                    class="btn btn-warning text-white" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modalEditarHorario"
                                     data-id="<?php echo $h['id_horario']; ?>"
@@ -129,13 +129,13 @@ include '../admin/header.php';
                             </button>
 
                             <button type="button"
-                                    class="btn btn-outline-danger" 
+                                    class="btn btn-danger" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modalExcluirHorario"
                                     data-id="<?php echo $h['id_horario']; ?>"
                                     data-texto="<?php echo substr($h['horario_partida'], 0, 5) . ' (' . ucfirst($h['dia_semana']) . ')'; ?>"
                                     title="Excluir">
-                                <i class="bi bi-trash"></i>
+                                <i class="bi bi-trash-fill"></i>
                             </button>
                         </div>
                     </div>
@@ -191,7 +191,7 @@ include '../admin/header.php';
 <div class="modal fade" id="modalEditarHorario" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header bg-warning text-white">
                 <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square"></i> Editar Horário</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -215,7 +215,7 @@ include '../admin/header.php';
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-info text-white fw-bold px-4">Salvar Alterações</button>
+                    <button type="submit" class="btn btn-warning text-white fw-bold px-4">Salvar Alterações</button>
                 </div>
             </form>
         </div>
