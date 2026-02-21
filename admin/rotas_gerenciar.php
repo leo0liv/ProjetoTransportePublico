@@ -88,8 +88,8 @@ include '../admin/header.php';
             <a href="rotas_lista.php" class="btn btn-outline-secondary me-2">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
-            <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovoHorario">
-                <i class="bi bi-plus-lg"></i> Novo Horário de Saída
+            <button class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovoHorario">
+                <i class="bi bi-plus-circle-fill"></i> Novo Horário de Saída
             </button>
         </div>
     </div>
@@ -158,7 +158,7 @@ include '../admin/header.php';
 <div class="modal fade" id="modalNovoHorario" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header bg-success text-white">
                 <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle"></i> Novo Horário</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -181,7 +181,7 @@ include '../admin/header.php';
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary fw-bold px-4">Salvar</button>
+                    <button type="submit" class="btn btn-success px-4">Salvar</button>
                 </div>
             </form>
         </div>
@@ -215,7 +215,7 @@ include '../admin/header.php';
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning text-white fw-bold px-4">Salvar Alterações</button>
+                    <button type="submit" class="btn btn-warning text-white px-4">Salvar Alterações</button>
                 </div>
             </form>
         </div>

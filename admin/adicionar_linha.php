@@ -67,7 +67,7 @@ include '../admin/header.php';
     <div class="row justify-content-center">
         <div class="col-md-6">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-plus-circle-fill"></i> Cadastrar Nova Linha
             </h2>
             
@@ -138,7 +138,7 @@ include '../admin/header.php';
                             type="submit" 
                             name="enviar"
                             id="enviar"
-                            class="btn btn-primary"
+                            class="btn btn-success"
                          >
                             <i class="bi bi-save-fill"></i> Cadastrar Linha
                          </button>
