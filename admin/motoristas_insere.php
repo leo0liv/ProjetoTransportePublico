@@ -82,7 +82,7 @@ include '../admin/header.php';
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-person-plus-fill"></i> Cadastrar Novo Motorista
             </h2>
             
@@ -181,7 +181,7 @@ include '../admin/header.php';
                             type="submit" 
                             name="enviar"
                             id="enviar"
-                            class="btn btn-primary"
+                            class="btn btn-success"
                          >
                             <i class="bi bi-save-fill"></i> Cadastrar Motorista
                          </button>

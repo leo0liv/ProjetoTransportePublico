@@ -73,7 +73,7 @@ include '../admin/header.php';
                             <td><?php echo $row['latitude']; ?></td>
                             <td><?php echo $row['longitude']; ?></td>
                             <td>
-                                <a href="pontos_atualiza.php?id=<?php echo $row['id_ponto']; ?>" class="btn btn-sm btn-info text-white me-1" title="Editar">
+                                <a href="pontos_atualiza.php?id=<?php echo $row['id_ponto']; ?>" class="btn btn-sm btn-warning text-white me-1" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 

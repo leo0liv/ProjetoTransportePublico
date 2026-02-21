@@ -135,7 +135,7 @@ include '../admin/header.php';
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <h2 class="text-info mb-4">
+            <h2 class="text-warning mb-4">
                 <i class="bi bi-person-badge-fill"></i> Editar Motorista
             </h2>
             
@@ -255,7 +255,7 @@ include '../admin/header.php';
                             type="submit" 
                             name="enviar"
                             id="enviar"
-                            class="btn btn-info text-white"
+                            class="btn btn-warning text-white"
                          >
                             <i class="bi bi-arrow-repeat"></i> Atualizar Motorista
                          </button>

@@ -105,7 +105,7 @@ include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
                             <td><?php echo $data_nasc_formatada; ?></td>
                             <td><?php echo $row['telefone']; ?></td>
                             <td>
-                                <a href="motoristas_atualiza.php?id=<?php echo $row['id_motorista']; ?>" class="btn btn-sm btn-info text-white me-2" title="Editar">
+                                <a href="motoristas_atualiza.php?id=<?php echo $row['id_motorista']; ?>" class="btn btn-sm btn-warning text-white me-2" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 <button class="btn btn-sm btn-danger delete-btn" data-id="<?php echo $row['id_motorista'];?>" data-nome="<?php echo $row['nome'];?>" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" title="Excluir">

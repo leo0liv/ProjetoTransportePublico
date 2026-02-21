@@ -52,7 +52,7 @@ include '../admin/header.php';
     <div class="row justify-content-center">
         <div class="col-md-7">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-geo-alt-fill"></i> Cadastrar Novo Ponto
             </h2>
             
@@ -119,7 +119,7 @@ include '../admin/header.php';
                     </div>
 
                     <div class="d-flex justify-content-between pt-3">
-                         <button type="submit" class="btn btn-primary">
+                         <button type="submit" class="btn btn-success">
                             <i class="bi bi-save-fill"></i> Salvar Ponto
                          </button>
                          <a href="pontos_lista.php" class="btn btn-secondary">
