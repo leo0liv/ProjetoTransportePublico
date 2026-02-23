@@ -4,9 +4,7 @@ $titulo_pagina = "Gerenciamento de Rotas";
 include 'verificar_login.php'; 
 include("../connections/db_connect.php");
 
-// 2. Consulta ao Banco de Dados
-// CORREÇÃO: Agora contamos quantos HORÁRIOS (viagens) a linha tem,
-// pois os pontos estão ligados aos horários, e não mais diretamente à linha.
+// Consulta ao Banco de Dados
 $sql = "
     SELECT 
         L.id_linha, 

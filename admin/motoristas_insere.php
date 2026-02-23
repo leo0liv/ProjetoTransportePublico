@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tabela_insert  = "tbmotoristas";
     $campos_insert  = "nome, cpf, foto_url, data_nascimento, telefone";
     
-    // 1. Tratamento da Imagem (simples upload, sem validação profunda)
+    // Tratamento da Imagem (simples upload, sem validação profunda)
     $nome_img = '';
     if (isset($_FILES['foto_url']) && $_FILES['foto_url']['error'] == UPLOAD_ERR_OK) {
         $nome_img = time() . '_' . basename($_FILES['foto_url']['name']); // Nome único
@@ -32,14 +32,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($tmp_img, $dir_img);
     }
     
-    // 2. Recebe e sanitiza os dados
+    // Recebe e sanitiza os dados
     $nome              = $conn->real_escape_string($_POST['nome']);
     $cpf               = $conn->real_escape_string($_POST['cpf']);
     $data_nascimento   = $conn->real_escape_string($_POST['data_nascimento']); 
     $telefone          = $conn->real_escape_string($_POST['telefone']);     
     $foto_url          = $nome_img;
 
-    // 3. Query de Inserção
+    // Query de Inserção
     $insertSQL  = "
                     INSERT INTO " . $tabela_insert . "
                         (" . $campos_insert . ")

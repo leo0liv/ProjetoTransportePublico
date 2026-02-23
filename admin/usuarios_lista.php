@@ -1,7 +1,7 @@
 <?php
 // usuarios_lista.php
 
-// 1. PROTEÇÃO: Apenas administradores podem ver a lista de usuários
+// PROTEÇÃO: Apenas administradores podem ver a lista de usuários
 include 'verificar_admin.php'; 
 include("../connections/db_connect.php");
 

@@ -1,17 +1,17 @@
 <?php
 // usuarios_insere.php
 
-// 1. PROTEÇÃO: Somente Administradores podem acessar esta página
+// PROTEÇÃO: Somente Administradores podem acessar esta página
 include 'verificar_admin.php'; 
 
-// 2. Conexão com Banco
+// Conexão com Banco
 include("../connections/db_connect.php");
 
 $database_conn = "TransportePublico_ti19";
 $mensagem      = '';
 $tipo_alerta   = '';
 
-// 3. Processar o formulário
+// Processar o formulário
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     mysqli_select_db($conn, $database_conn);

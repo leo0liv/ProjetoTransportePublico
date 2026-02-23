@@ -7,7 +7,7 @@ include("../connections/db_connect.php");
 $database_conn = "TransportePublico_ti19";
 mysqli_select_db($conn, $database_conn);
 
-// CONSULTA: Removemos o campo 'tipo_ponto' pois ele não existe mais/não é usado aqui
+// CONSULTA
 $consulta = "SELECT id_ponto, nome, latitude, longitude FROM tbpontos ORDER BY nome ASC";
 $lista    = $conn->query($consulta);
 $totalRows = ($lista)->num_rows;

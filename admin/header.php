@@ -1,7 +1,7 @@
 <?php
 // Nota: A variável $titulo_pagina deve ser definida no topo de cada página.
 $titulo = $titulo_pagina ?? "Transporte Público - Admin"; 
-// Este arquivo assume que session_start() já foi chamado (por exemplo, dentro de verificar_login.php)
+// Este arquivo assume que session_start() já foi chamado
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">

@@ -14,14 +14,14 @@ $tipo_alerta    = '';
 $id_linha_filtro = null;
 
 
-// 1. Lógica para identificar a Linha (GET ou POST)
+// Lógica para identificar a Linha (GET ou POST)
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_linha_filtro = $conn->real_escape_string($_GET['id']);
 } else if (isset($_POST['id_linha']) && is_numeric($_POST['id_linha'])) {
     $id_linha_filtro = $conn->real_escape_string($_POST['id_linha']);
 }
 
-// 2. Processar a ATUALIZAÇÃO (POST)
+// Processar a ATUALIZAÇÃO (POST)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_linha_filtro) {
     
     mysqli_select_db($conn, $database_conn);
@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_linha_filtro) {
     }
 }
  
-// 3. Consulta para buscar os dados ATUAIS da linha (para preencher o formulário)
+// Consulta para buscar os dados ATUAIS da linha (para preencher o formulário)
 if ($id_linha_filtro) {
     mysqli_select_db($conn, $database_conn);
     

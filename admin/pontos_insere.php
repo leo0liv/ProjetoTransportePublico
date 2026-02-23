@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     mysqli_select_db($conn, $database_conn);
 
-    // Recebe e sanitiza os dados (SEM O TIPO_PONTO)
+    // Recebe e sanitiza os dados
     $nome       = $conn->real_escape_string($_POST['nome']);
     $latitude   = floatval($_POST['latitude']);
     $longitude  = floatval($_POST['longitude']);     

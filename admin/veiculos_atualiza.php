@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-// Variável para o nome do seu banco de dados (ajuste se necessário)
+// Variável para o nome do seu banco de dados
 $database_conn = "TransportePublico_ti19";
 
 // Variáveis Globais
@@ -19,14 +19,14 @@ $tipo_alerta     = '';
 $id_veiculo_filtro = null;
 
 
-// 1. Lógica para carregar os dados (GET ou POST)
+// Lógica para carregar os dados (GET ou POST)
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_veiculo_filtro = $conn->real_escape_string($_GET['id']);
 } else if (isset($_POST['id_veiculo']) && is_numeric($_POST['id_veiculo'])) {
     $id_veiculo_filtro = $conn->real_escape_string($_POST['id_veiculo']);
 }
 
-// 2. Processar a ATUALIZAÇÃO (POST)
+// Processar a ATUALIZAÇÃO (POST)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_veiculo_filtro) {
     
     mysqli_select_db($conn, $database_conn);
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_veiculo_filtro) {
     }
 }
  
-// 3. Consulta para buscar os dados ATUAIS do veículo (para preencher o formulário)
+// Consulta para buscar os dados ATUAIS do veículo (para preencher o formulário)
 if ($id_veiculo_filtro) {
     mysqli_select_db($conn, $database_conn);
     
@@ -82,7 +82,7 @@ if ($id_veiculo_filtro) {
 }
 
 
-// 4. Consulta para buscar todas as Linhas (Chave Estrangeira)
+// Consulta para buscar todas as Linhas (Chave Estrangeira)
 mysqli_select_db($conn, $database_conn);
 $consulta_linhas = "
                     SELECT id_linha, codigo, nome

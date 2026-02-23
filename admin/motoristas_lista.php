@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-// Variável para o nome do seu banco de dados (ajuste se necessário)
+// Variável para o nome do seu banco de dados
 $database_conn = "TransportePublico_ti19";
 
 // Selecionar o banco de dados (USE)

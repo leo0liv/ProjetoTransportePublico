@@ -1,16 +1,15 @@
 <?php
 /**
  * SISTEMA GESTÃO OPERACIONAL - PROCESSAMENTO DE TURNOS
- * Versão Segura e Validada
  */
 
 session_start();
 
-// 1. Configurações de Acesso
+// Configurações de Acesso
 $database_conn = "TransportePublico_ti19";
 $caminho_db    = "../connections/db_connect.php";
 
-// 2. Segurança: Só administradores podem processar
+// Segurança: Só administradores podem processar
 if (!isset($_SESSION['admin_logado']) && !isset($_SESSION['logado'])) {
     die("Acesso Negado: Sessão Inválida.");
 }
@@ -26,20 +25,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_select_db($conn, $database_conn);
 
-    // 3. Sanitização e Captura de Dados
+    // Sanitização e Captura de Dados
     $id_motorista = filter_input(INPUT_POST, 'id_motorista', FILTER_SANITIZE_NUMBER_INT);
     $id_veiculo   = filter_input(INPUT_POST, 'id_veiculo', FILTER_SANITIZE_NUMBER_INT);
     $hora_inicio  = date("Y-m-d H:i:s");
 
-    // 4. Validação
+    // Validação
     if (!$id_motorista || !$id_veiculo) {
         header("Location: monitoramentos.html?erro=campos_obrigatorios");
         exit();
     }
 
-    // 5. Execução (Transação Segura)
+    // Execução (Transação Segura)
     try {
-        // Exemplo de query real (Ajustar nomes de tabelas conforme o teu SQL)
+        // Exemplo de query real
         $sql = "INSERT INTO tbturnos (id_motorista, id_veiculo, hora_inicio, status) 
                 VALUES (?, ?, ?, 'Ativo')";
         

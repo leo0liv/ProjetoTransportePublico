@@ -15,7 +15,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     
     $id_linha = $conn->real_escape_string($_GET['id']);
 
-    // 1. --- VERIFICAÇÃO DE ASSOCIAÇÕES (CHAVE ESTRANGEIRA) ---
+    // VERIFICAÇÃO DE ASSOCIAÇÕES (CHAVE ESTRANGEIRA)
     
     // Verifica se existem veículos associados a esta linha
     $sql_check_veiculos = "SELECT COUNT(*) AS total FROM tbveiculos WHERE id_linha = '$id_linha'";
@@ -28,7 +28,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $total_rotas = $res_rotas->fetch_assoc()['total'];
 
     
-    // 2. --- LÓGICA DE AVISO (SE HOUVER ASSOCIAÇÕES) ---
+    // LÓGICA DE AVISO (SE HOUVER ASSOCIAÇÕES)
     
     if ($total_veiculos > 0 || $total_rotas > 0) {
         $msg_erro = "A Linha não pode ser excluída!";
@@ -45,7 +45,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         exit();
     }
     
-    // 3. --- EXECUÇÃO DO DELETE (SE NÃO HOUVER ASSOCIAÇÕES) ---
+    // EXECUÇÃO DO DELETE (SE NÃO HOUVER ASSOCIAÇÕES)
     
     // Consulta DELETE
     $sql_delete = "DELETE FROM tblinhas WHERE id_linha = '$id_linha'";

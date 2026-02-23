@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-// Variável para o nome do seu banco de dados (ajuste se necessário)
+// Variável para o nome do seu banco de dados
 $database_conn = "TransportePublico_ti19";
 
 // Variáveis Globais
@@ -17,7 +17,7 @@ $tipo_alerta    = '';
 $id_motorista_filtro = null;
 
 
-// 1. Lógica para identificar o Motorista (GET ou POST)
+// Lógica para identificar o Motorista (GET ou POST)
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_motorista_filtro = $conn->real_escape_string($_GET['id']);
 } else if (isset($_POST['id_motorista']) && is_numeric($_POST['id_motorista'])) {
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_motorista_filtro) {
 
     $nome_img = $foto_atual; // Por padrão, mantém a foto atual
 
-    // 2.1. Tratamento da NOVA Imagem (se um arquivo foi enviado)
+    // Tratamento da NOVA Imagem (se um arquivo foi enviado)
     if (isset($_FILES['foto_url']) && $_FILES['foto_url']['error'] == UPLOAD_ERR_OK) {
         
         // Define o diretório de destino
@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_motorista_filtro) {
         }
     }
     
-    // 2.2. Consulta SQL para atualização dos dados
+    // Consulta SQL para atualização dos dados
     $updateSQL  = "
                     UPDATE " . $tabela . "
                     SET nome = '$nome',
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_motorista_filtro) {
     }
 }
  
-// 3. Consulta para buscar os dados ATUAIS do motorista (para preencher o formulário)
+// Consulta para buscar os dados ATUAIS do motorista
 if ($id_motorista_filtro) {
     mysqli_select_db($conn, $database_conn);
     

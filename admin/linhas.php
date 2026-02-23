@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-// Variável para o nome do seu banco de dados (ajuste se necessário)
+// Variável para o nome do seu banco de dados
 $database_conn = "TransportePublico_ti19";
 
 // Selecionar o banco de dados (USE)
@@ -27,7 +27,7 @@ $totalRows  =   ($lista)->num_rows;
 $conn->close();
 
 $titulo_pagina = "Linhas de Transporte - Lista";
-// O include abaixo foi ajustado para usar o caminho CORRETO (../header.php)
+
 include '../admin/header.php'; 
 ?>
 <style>
@@ -158,7 +158,6 @@ include '../admin/header.php';
 </script>
 
 <?php 
-// O include abaixo foi ajustado para usar o caminho CORRETO (../footer.php)
 include '../admin/footer.php'; 
 ?>
 </body>

@@ -1,12 +1,12 @@
 <?php
-// 1. Incluir o arquivo de conexão
+// Incluir o arquivo de conexão
 require_once("../connections/db_connect.php");
 
-// 2. Configura a sessão
+// Configura a sessão
 session_name("transporte_publico");
 session_start();
 
-// 3. Processa o login
+// Processa o login
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
     
     $email_login = $_POST['email'];
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
         die("Erro: Conexão com banco de dados não encontrada.");
     }
 
-    // 4. CONSULTA SIMPLES (Sem Hash)
+    // CONSULTA SIMPLES (Sem Hash)
     $sql = "SELECT * FROM tbusuarios WHERE email = ? AND senha = ?";
     
     if ($stmt = $conn->prepare($sql)) {
