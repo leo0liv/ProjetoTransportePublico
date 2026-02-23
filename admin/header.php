@@ -10,10 +10,17 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $titulo; ?></title>
 
-    <link rel="stylesheet" href="../css/bootstrap.css">
-    <link rel="stylesheet" href="../css/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/meu_estilo.css">
-    <link rel="stylesheet" href="../css/fonts.css"> 
+    <!-- CSS específico -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/meu_estilo.css">
+
+    <!-- Fonte local -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/fonts.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap-icons.css">
 </head>
 <body>
 
@@ -86,8 +93,9 @@ $titulo = $titulo_pagina ?? "Transporte Público - Admin";
 </nav>
 
 <main class="container" style="padding-top: 20px;">
+</main>
 
-    </main>
-    <script src="../js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="/ProjetoTransportePublico/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

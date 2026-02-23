@@ -168,10 +168,8 @@ include '../admin/header.php';
             });
         });
     </script>
-
     <?php 
-    include '../admin/footer.php'; 
+        include '../admin/footer.php'; 
     ?>
-    <script src="../js/bootstrap.bundle.min.js"></script>
 </body> 
 <?php

@@ -55,16 +55,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Administrativo</title>
-    <link rel="stylesheet" href="../css/bootstrap.css">
-    <link rel="stylesheet" href="../css/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/meu_estilo.css">
+    <!-- CSS específico -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/meu_estilo.css">
+
+    <!-- Fonte local -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/fonts.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap-icons.css">
 </head>
+
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+        }
+    .afastamento{
+        margin-bottom: 80px;
+    }
+</style>
+
+
 <body class="bg-light">
- 
+ <?php 
+include '../menu.php'; 
+?>
 <div class="container">
     <div class="row justify-content-center mt-5">
         
-        <div class="col-md-6 col-lg-4 bg-white p-4 shadow rounded mt-5">
+        <div class="col-md-6 col-lg-4 bg-white p-4 shadow rounded mt-5 afastamento">
             
             <h3 class="text-center text-primary mb-4">
                 <i class="bi bi-person-lock"></i> Acesso Administrativo
@@ -94,6 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
     </div>
 </div>
  
-<script src="../js/bootstrap.bundle.min.js"></script>
+<script src="/ProjetoTransportePublico/js/bootstrap.bundle.min.js"></script>
+<?php 
+include '../rodape.php'; 
+?>
 </body>
+
 </html>

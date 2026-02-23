@@ -131,7 +131,7 @@
 
     <div class="row justify-content-center">
         <div class="col-12"> 
-            <div class="project-section bg-white p-4 p-md-5 rounded-4 shadow-sm mb-5">
+            <div class=" card project-section bg-white p-4 p-md-5 rounded-4 shadow-sm mb-5">
                 <div class="text-center mb-5">
                     <h3 class="fw-bold mb-4">Sobre o Projeto</h3>
                     <p class="lead text-muted mx-auto mb-4" style="max-width: 900px;">
