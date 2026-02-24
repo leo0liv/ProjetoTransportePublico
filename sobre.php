@@ -59,7 +59,7 @@
     <div class="row g-4 mb-5"> <div class="col-12 col-md-6 col-lg-3">
             <div class="card card-team h-100 text-center p-3 shadow-sm">
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="https://via.placeholder.com/150" class="rounded-circle img-team shadow-sm" alt="Foto Leo">
+                    <img src="https://media.licdn.com/dms/image/v2/D4E35AQHnJlTa96dOWQ/profile-framedphoto-shrink_200_200/B4EZyRvOssGYAY-/0/1771971603492?e=1772578800&v=beta&t=AuBMxCkzDsiq7jJQ4PQ97eSig9ZkNY43escAJSzR0AA" class="rounded-circle img-team shadow-sm" alt="Foto Leo">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Leo</h5>
@@ -67,7 +67,7 @@
                     <p class="card-text text-muted small">Desenvolvedor Web em Itapetininga, SP. Focado em PHP, JavaScript e bancos de dados, unindo tecnologia à utilidade pública.</p>
                     <div class="d-flex justify-content-center gap-3 social-links mt-3">
                         <a href="https://github.com/leo0liv" title="GitHub"><i class="bi bi-github"></i></a>
-                        <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://www.linkedin.com/in/leonardo-jos%C3%A9-05646a338/" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
                         <a href="#" title="Currículo"><i class="bi bi-file-earmark-person-fill"></i></a>
                     </div>
                 </div>
@@ -77,7 +77,7 @@
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card card-team h-100 text-center p-3 shadow-sm">
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="https://via.placeholder.com/150" class="rounded-circle img-team shadow-sm" alt="Foto Gabriel">
+                    <img src="/ProjetoTransportePublico/img/Gabriel.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Gabriel">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Gabriel</h5>
@@ -95,7 +95,7 @@
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card card-team h-100 text-center p-3 shadow-sm">
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="https://via.placeholder.com/150" class="rounded-circle img-team shadow-sm" alt="Foto Pedro">
+                    <img src="/ProjetoTransportePublico/img/Zene.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Pedro">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Pedro</h5>
@@ -113,7 +113,7 @@
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card card-team h-100 text-center p-3 shadow-sm">
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="https://via.placeholder.com/150" class="rounded-circle img-team shadow-sm" alt="Foto Kaue">
+                    <img src="/ProjetoTransportePublico/img/Kaue.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Kaue">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Kaue</h5>
