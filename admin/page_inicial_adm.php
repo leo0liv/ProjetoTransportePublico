@@ -100,7 +100,7 @@ $pontosJSON = json_encode($pontosArray);
 
 <main class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-info"><i class="bi bi-speedometer2 text-info"></i> Painel de Controle</h1>
+        <h1 class="text-primary"><i class="bi bi-speedometer2 text-primary"></i> Painel de Controle</h1>
         <span class="badge bg-dark">Itapetininga - SP</span>
     </div>
 

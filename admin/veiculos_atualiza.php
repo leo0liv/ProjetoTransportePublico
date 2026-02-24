@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-// Variável para o nome do seu banco de dados (ajuste se necessário)
+// Variável para o nome do seu banco de dados
 $database_conn = "TransportePublico_ti19";
 
 // Variáveis Globais
@@ -19,14 +19,14 @@ $tipo_alerta     = '';
 $id_veiculo_filtro = null;
 
 
-// 1. Lógica para carregar os dados (GET ou POST)
+// Lógica para carregar os dados (GET ou POST)
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_veiculo_filtro = $conn->real_escape_string($_GET['id']);
 } else if (isset($_POST['id_veiculo']) && is_numeric($_POST['id_veiculo'])) {
     $id_veiculo_filtro = $conn->real_escape_string($_POST['id_veiculo']);
 }
 
-// 2. Processar a ATUALIZAÇÃO (POST)
+// Processar a ATUALIZAÇÃO (POST)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_veiculo_filtro) {
     
     mysqli_select_db($conn, $database_conn);
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_veiculo_filtro) {
     }
 }
  
-// 3. Consulta para buscar os dados ATUAIS do veículo (para preencher o formulário)
+// Consulta para buscar os dados ATUAIS do veículo (para preencher o formulário)
 if ($id_veiculo_filtro) {
     mysqli_select_db($conn, $database_conn);
     
@@ -82,7 +82,7 @@ if ($id_veiculo_filtro) {
 }
 
 
-// 4. Consulta para buscar todas as Linhas (Chave Estrangeira)
+// Consulta para buscar todas as Linhas (Chave Estrangeira)
 mysqli_select_db($conn, $database_conn);
 $consulta_linhas = "
                     SELECT id_linha, codigo, nome
@@ -104,12 +104,21 @@ $conn->close();
 $titulo_pagina = "Editar Veículo";
 include 'header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <h2 class="text-info mb-4">
+            <h2 class="text-warning mb-4">
                 <i class="bi bi-pencil-fill"></i> Editar Veículo
             </h2>
             
@@ -202,7 +211,7 @@ include 'header.php';
                             type="submit" 
                             name="enviar"
                             id="enviar"
-                            class="btn btn-info text-white"
+                            class="btn btn-warning text-white"
                          >
                             <i class="bi bi-arrow-repeat"></i> Atualizar Veículo
                          </button>
@@ -224,3 +233,4 @@ if (isset($lista_linhas)) {
 }
 include '../admin/footer.php'; 
 ?>
+</body>

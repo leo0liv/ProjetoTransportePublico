@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-// Variável para o nome do seu banco de dados (ajuste se necessário)
+// Variável para o nome do seu banco de dados
 $database_conn = "TransportePublico_ti19";
 
 // Selecionar o banco de dados (USE)
@@ -27,14 +27,23 @@ $totalRows  =   ($lista)->num_rows;
 $conn->close();
 
 $titulo_pagina = "Linhas de Transporte - Lista";
-// O include abaixo foi ajustado para usar o caminho CORRETO (../header.php)
+
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     
     <h2 class="text-primary mb-4">
-        <i class="bi bi-road-set"></i> Gerenciamento de Linhas de Transporte
+        <i class="bi bi-signpost-2-fill"></i> Gerenciamento de Linhas de Transporte
     </h2>
 
     <?php 
@@ -82,7 +91,7 @@ include '../admin/header.php';
                             <td><?php echo $row['nome']; ?></td>
                             <td><?php echo $row['operadora']; ?></td>
                             <td>
-                                <a href="editar_linha.php?id=<?php echo $row['id_linha']; ?>" class="btn btn-sm btn-info text-white me-2" title="Editar">
+                                <a href="editar_linha.php?id=<?php echo $row['id_linha']; ?>" class="btn btn-sm btn-warning text-white me-2" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 <button class="btn btn-sm btn-danger delete-btn" data-id="<?php echo $row['id_linha'];?>" data-nome="<?php echo $row['nome'];?>" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" title="Excluir">
@@ -149,6 +158,6 @@ include '../admin/header.php';
 </script>
 
 <?php 
-// O include abaixo foi ajustado para usar o caminho CORRETO (../footer.php)
 include '../admin/footer.php'; 
 ?>
+</body>

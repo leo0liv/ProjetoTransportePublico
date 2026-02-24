@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tabela_insert  = "tbmotoristas";
     $campos_insert  = "nome, cpf, foto_url, data_nascimento, telefone";
     
-    // 1. Tratamento da Imagem (simples upload, sem validação profunda)
+    // Tratamento da Imagem (simples upload, sem validação profunda)
     $nome_img = '';
     if (isset($_FILES['foto_url']) && $_FILES['foto_url']['error'] == UPLOAD_ERR_OK) {
         $nome_img = time() . '_' . basename($_FILES['foto_url']['name']); // Nome único
@@ -32,14 +32,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($tmp_img, $dir_img);
     }
     
-    // 2. Recebe e sanitiza os dados
+    // Recebe e sanitiza os dados
     $nome              = $conn->real_escape_string($_POST['nome']);
     $cpf               = $conn->real_escape_string($_POST['cpf']);
     $data_nascimento   = $conn->real_escape_string($_POST['data_nascimento']); 
     $telefone          = $conn->real_escape_string($_POST['telefone']);     
     $foto_url          = $nome_img;
 
-    // 3. Query de Inserção
+    // Query de Inserção
     $insertSQL  = "
                     INSERT INTO " . $tabela_insert . "
                         (" . $campos_insert . ")
@@ -68,12 +68,21 @@ $conn->close();
 $titulo_pagina = "Inserir Motorista";
 include '../admin/header.php';
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-person-plus-fill"></i> Cadastrar Novo Motorista
             </h2>
             
@@ -172,7 +181,7 @@ include '../admin/header.php';
                             type="submit" 
                             name="enviar"
                             id="enviar"
-                            class="btn btn-primary"
+                            class="btn btn-success"
                          >
                             <i class="bi bi-save-fill"></i> Cadastrar Motorista
                          </button>
@@ -188,3 +197,4 @@ include '../admin/header.php';
 <?php 
 include '../admin/footer.php'; 
 ?>
+</body>

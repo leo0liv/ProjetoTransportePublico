@@ -1,17 +1,17 @@
 <?php
 // usuarios_insere.php
 
-// 1. PROTEÇÃO: Somente Administradores podem acessar esta página
+// PROTEÇÃO: Somente Administradores podem acessar esta página
 include 'verificar_admin.php'; 
 
-// 2. Conexão com Banco
+// Conexão com Banco
 include("../connections/db_connect.php");
 
 $database_conn = "TransportePublico_ti19";
 $mensagem      = '';
 $tipo_alerta   = '';
 
-// 3. Processar o formulário
+// Processar o formulário
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     mysqli_select_db($conn, $database_conn);
@@ -58,12 +58,21 @@ $conn->close();
 $titulo_pagina = "Adicionar Usuário";
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-person-plus-fill"></i> Novo Usuário
             </h2>
             
@@ -111,8 +120,8 @@ include '../admin/header.php';
                             </select>
                         </div>
                     </div>
-                    <div class="d-grid gap-2 mt-4">
-                         <button type="submit" class="btn btn-primary text-white">
+                    <div class="d-flex justify-content-between pt-3">
+                         <button type="submit" class="btn btn-success text-white">
                             <i class="bi bi-save"></i> Salvar Usuário
                          </button>
                          <a href="usuarios_lista.php" class="btn btn-secondary">
@@ -126,3 +135,4 @@ include '../admin/header.php';
 </div>
 
 <?php include '../admin/footer.php'; ?>
+</body>

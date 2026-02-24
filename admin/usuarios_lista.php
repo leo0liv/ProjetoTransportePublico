@@ -1,7 +1,7 @@
 <?php
 // usuarios_lista.php
 
-// 1. PROTEÇÃO: Apenas administradores podem ver a lista de usuários
+// PROTEÇÃO: Apenas administradores podem ver a lista de usuários
 include 'verificar_admin.php'; 
 include("../connections/db_connect.php");
 
@@ -19,15 +19,38 @@ $conn->close();
 $titulo_pagina = "Lista de Usuários";
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+   <div class="container mt-5">
     
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary">
-            <i class="bi bi-people-fill"></i> Gerenciar Usuários
-        </h2>
+    <h2 class="text-primary mb-4">
+        <i class="bi bi-people-fill"></i> Gerenciar Usuários
+    </h2>
+
+    <?php 
+    if (isset($_GET['msg'])) {
+        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' . htmlspecialchars($_GET['msg']) . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+    }
+    if (isset($_GET['msg_erro'])) {
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' . htmlspecialchars($_GET['msg_erro']) . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+    }
+    ?>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="alert alert-info py-2 m-0">
+            Total de Usuários Cadastrados: 
+            <span class="badge bg-primary rounded-pill"><?php echo $totalRows; ?></span>
+        </div>
         <a href="usuarios_insere.php" class="btn btn-success">
-            <i class="bi bi-plus-lg"></i> Adicionar Usuário
+            <i class="bi bi-person-plus-fill"></i> Adicionar Novo Usuário
         </a>
     </div>
 
@@ -41,16 +64,16 @@ include '../admin/header.php';
     ?>
 
     <?php if ($totalRows > 0) { ?>
-        <div class="card shadow-sm">
-            <div class="card-body p-0">
-                <table class="table table-hover table-striped mb-0 align-middle">
+        <div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover caption-top shadow-sm">
                     <thead class="table-dark">
                         <tr>
                             <th>ID</th>
                             <th>Nome</th>
                             <th>E-mail</th>
                             <th>Permissão</th>
-                            <th class="text-end">Ações</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,9 +89,9 @@ include '../admin/header.php';
                                         <span class="badge bg-secondary">Comum</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="text-end">
-                                    <a href="usuarios_atualiza.php?id=<?php echo $row['id_usuario']; ?>" class="btn btn-sm btn-info text-white me-2" title="Editar Usuário">
-                                        <i class="bi bi-pencil-fill"></i> Editar
+                                <td>
+                                    <a href="usuarios_atualiza.php?id=<?php echo $row['id_usuario']; ?>" class="btn btn-sm btn-warning text-white me-2" title="Editar Usuário">
+                                        <i class="bi bi-pencil-fill"></i>
                                     </a>
                                     
                                     <button class="btn btn-sm btn-danger delete-btn" 
@@ -77,7 +100,7 @@ include '../admin/header.php';
                                             data-bs-toggle="modal" 
                                             data-bs-target="#confirmDeleteModal"
                                             title="Excluir Usuário">
-                                        <i class="bi bi-trash"></i> Excluir
+                                        <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -129,4 +152,5 @@ include '../admin/header.php';
 <br>
 <br>
 
-<?php include '../admin/footer.php'; ?>
+<?php include '../admin/footer.php'; ?> 
+</body>

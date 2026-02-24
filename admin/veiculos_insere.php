@@ -65,12 +65,21 @@ $conn->close();
 $titulo_pagina = "Inserir Veículo";
 include '../admin/header.php';
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-plus-circle-fill"></i> Cadastrar Novo Veículo
             </h2>
             
@@ -143,7 +152,7 @@ include '../admin/header.php';
                             type="submit" 
                             name="enviar"
                             id="enviar"
-                            class="btn btn-primary"
+                            class="btn btn-success"
                          >
                             <i class="bi bi-bus-fill"></i> Cadastrar Veículo
                          </button>
@@ -163,3 +172,4 @@ if (isset($lista_fk)) {
 }
 include '../admin/footer.php'; 
 ?>
+</body>

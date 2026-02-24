@@ -32,11 +32,20 @@ $dados = $conn->query($sql_busca)->fetch_assoc();
 
 include '../admin/header.php';
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+   <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-7">
-            <h2 class="text-primary mb-4"><i class="bi bi-pencil-square"></i> Editar Ponto</h2>
+            <h2 class="text-warning mb-4"><i class="bi bi-pencil-square"></i> Editar Ponto</h2>
             
             <?php if ($mensagem) echo "<div class='alert alert-danger'>$mensagem</div>"; ?>
 
@@ -61,7 +70,7 @@ include '../admin/header.php';
                     </div>
 
                     <div class="d-flex justify-content-between pt-3">
-                         <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Salvar Alterações</button>
+                         <button type="submit" class="btn btn-warning text-white"><i class="bi bi-check-lg"></i> Salvar Alterações</button>
                          <a href="pontos_lista.php" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </form>
@@ -70,4 +79,5 @@ include '../admin/header.php';
     </div>
 </div>
 
-<?php include '../admin/footer.php'; ?>
+<?php include '../admin/footer.php'; ?> 
+</body>

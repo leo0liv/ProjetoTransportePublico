@@ -6,6 +6,8 @@ $username_conn  =   "TransportePublico_ti19";
 $password_conn  =   "senacti19";
 $charset_conn   =   "utf8";
 
+
+// 1. CONEXÃO MYSQLI
 $conn  =   
     new mysqli(
         $hostname_conn,
@@ -20,5 +22,16 @@ mysqli_set_charset($conn,$charset_conn);
 if($conn->connect_error){
     echo "Error: ".$conn->connect_error;
 };
-// Não deixar espaços vazios depois do fechamento do PHP pois causa erro HEADER
+
+// 2. CONEXÃO PDO
+try {
+    $dsn = "mysql:host=$hostname_conn;dbname=$database_conn;charset=$charset_conn";
+    $pdo = new PDO($dsn, $username_conn, $password_conn, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ]);
+} catch (PDOException $e) {
+    echo "Error PDO: " . $e->getMessage();
+}
 ?>

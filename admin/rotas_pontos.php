@@ -73,8 +73,17 @@ $todos_pontos = $conn->query("SELECT * FROM tbpontos ORDER BY nome");
 
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="text-muted mb-0">Itinerário da Saída:</h4>
@@ -154,7 +163,7 @@ include '../admin/header.php';
                                     <th>Ponto</th>
                                     <th>Horário</th>
                                     <th>Tipo</th>
-                                    <th class="text-end pe-3">Ações</th>
+                                    <th class="pe-3">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -171,8 +180,8 @@ include '../admin/header.php';
                                                 else echo '<span class="badge bg-info text-dark">Meio</span>';
                                                 ?>
                                             </td>
-                                            <td class="text-end pe-3">
-                                                <button class="btn btn-primary btn-sm rounded-1 btn-editar"
+                                            <td class="pe-3">
+                                                <button class="btn btn-warning text-white btn-sm rounded-1 btn-editar"
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#modalEditar"
                                                         data-id="<?php echo $rota['id_rota']; ?>"
@@ -231,7 +240,7 @@ include '../admin/header.php';
 <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow">
-      <div class="modal-header bg-primary text-white">
+      <div class="modal-header bg-warning text-white">
         <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square"></i> Editar Ponto da Rota</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -262,7 +271,7 @@ include '../admin/header.php';
           </div>
           <div class="modal-footer bg-light">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary px-4">Salvar Alterações</button>
+            <button type="submit" class="btn btn-warning text-white px-4">Salvar Alterações</button>
           </div>
       </form>
     </div>
@@ -304,3 +313,4 @@ include '../admin/header.php';
 </script>
 
 <?php include '../admin/footer.php'; ?>
+</body>

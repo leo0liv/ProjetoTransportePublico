@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-// Variável para o nome do seu banco de dados (ajuste se necessário)
+// Variável para o nome do seu banco de dados
 $database_conn = "TransportePublico_ti19";
 
 // Selecionar o banco de dados (USE)
@@ -29,8 +29,17 @@ $conn->close();
 $titulo_pagina = "Motoristas - Lista";
 include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     
     <h2 class="text-primary mb-4">
         <i class="bi bi-person-badge-fill"></i> Gerenciamento de Motoristas
@@ -96,7 +105,7 @@ include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
                             <td><?php echo $data_nasc_formatada; ?></td>
                             <td><?php echo $row['telefone']; ?></td>
                             <td>
-                                <a href="motoristas_atualiza.php?id=<?php echo $row['id_motorista']; ?>" class="btn btn-sm btn-info text-white me-2" title="Editar">
+                                <a href="motoristas_atualiza.php?id=<?php echo $row['id_motorista']; ?>" class="btn btn-sm btn-warning text-white me-2" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 <button class="btn btn-sm btn-danger delete-btn" data-id="<?php echo $row['id_motorista'];?>" data-nome="<?php echo $row['nome'];?>" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" title="Excluir">
@@ -165,3 +174,4 @@ include '../admin/header.php'; // Inclui a estrutura Bootstrap 5 e Navbar
 <?php 
 include '../admin/footer.php'; // Inclui o script JS do Bootstrap
 ?>
+</body>

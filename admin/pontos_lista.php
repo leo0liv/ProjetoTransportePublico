@@ -7,7 +7,7 @@ include("../connections/db_connect.php");
 $database_conn = "TransportePublico_ti19";
 mysqli_select_db($conn, $database_conn);
 
-// CONSULTA: Removemos o campo 'tipo_ponto' pois ele não existe mais/não é usado aqui
+// CONSULTA
 $consulta = "SELECT id_ponto, nome, latitude, longitude FROM tbpontos ORDER BY nome ASC";
 $lista    = $conn->query($consulta);
 $totalRows = ($lista)->num_rows;
@@ -16,10 +16,19 @@ $conn->close();
 $titulo_pagina = "Pontos de Ônibus - Lista";
 include '../admin/header.php'; 
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <h2 class="text-primary mb-4">
-        <i class="bi bi-geo-alt"></i> Gerenciamento de Pontos Físicos
+        <i class="bi bi-geo-alt-fill"></i> Gerenciamento de Pontos Físicos
     </h2>
 
     <?php if (isset($_GET['msg'])): ?>
@@ -53,7 +62,7 @@ include '../admin/header.php';
                         <th>Nome do Ponto</th>
                         <th>Latitude</th>
                         <th>Longitude</th>
-                        <th class="text-end">Ações</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,8 +72,8 @@ include '../admin/header.php';
                             <td><strong><?php echo $row['nome']; ?></strong></td>
                             <td><?php echo $row['latitude']; ?></td>
                             <td><?php echo $row['longitude']; ?></td>
-                            <td class="text-end">
-                                <a href="pontos_atualiza.php?id=<?php echo $row['id_ponto']; ?>" class="btn btn-sm btn-info text-white me-1" title="Editar">
+                            <td>
+                                <a href="pontos_atualiza.php?id=<?php echo $row['id_ponto']; ?>" class="btn btn-sm btn-warning text-white me-1" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 
@@ -119,3 +128,4 @@ include '../admin/header.php';
 </script>
 
 <?php include '../admin/footer.php'; ?>
+</body>

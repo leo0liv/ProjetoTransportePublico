@@ -64,25 +64,59 @@ $pontosJSON = json_encode($pontosArray);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Mobilidade - Itapetininga</title>
+    <!-- CSS específico -->
     <link rel="stylesheet" href="./css/meu_estilo.css">
+
+    <!-- Fonte local -->
+    <link rel="stylesheet" href="./css/fonts.css">
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="./css/bootstrap.css">
+
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="./css/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
-        #map { height: 500px; width: 100%; border-radius: 8px; z-index: 1; }
-        .scroll-lista { max-height: 440px; overflow-y: auto; }
-        .list-group-item { border-left: 4px solid transparent; transition: background 0.2s; }
-        .list-group-item:hover { background-color: #f8f9fa; }
-        .border-inicio { border-left-color: #198754 !important; } 
-        .border-meio { border-left-color: #0d6efd !important; }   
-        .border-fim { border-left-color: #dc3545 !important; }   
+        :root {
+            --cor-primaria: #1e3c72; 
+            --cor-fundo: #f4f7f6;
+        }
+        #map { 
+            height: 500px; 
+            width: 100%; 
+            border-radius: 8px; 
+            z-index: 1; 
+        }
+        .scroll-lista { 
+            max-height: 440px; 
+            overflow-y: auto; 
+        }
+        .list-group-item { 
+            border-left: 4px solid transparent; 
+            transition: background 0.2s; 
+        }
+        .list-group-item:hover { 
+            background-color: #f8f9fa; 
+        }
+        .border-inicio { 
+            border-left-color: #198754 !important; 
+        } 
+        .border-meio { 
+            border-left-color: #0d6efd !important; 
+        }   
+        .border-fim { 
+            border-left-color: #dc3545 !important; 
+        }
+        .cor-primaria{
+            color: var(--cor-primaria);
+        }   
     </style>
 </head>
 <body class="bg-light">
 <main class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-warning"><i class="bi bi-map text-warning"></i> Mapa de Rotas</h1>
+        <h1 class="text-primary"><i class="bi bi-map text-primary"></i> Mapa de Rotas</h1>
         <span class="badge bg-dark">Itapetininga - SP</span>
     </div>
 
@@ -185,6 +219,7 @@ $pontosJSON = json_encode($pontosArray);
     </div>
 </main>
 
+<!-- Bootstrap JS -->
 <script src="./js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>

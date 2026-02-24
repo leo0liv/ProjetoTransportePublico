@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     mysqli_select_db($conn, $database_conn);
 
-    // Recebe e sanitiza os dados (SEM O TIPO_PONTO)
+    // Recebe e sanitiza os dados
     $nome       = $conn->real_escape_string($_POST['nome']);
     $latitude   = floatval($_POST['latitude']);
     $longitude  = floatval($_POST['longitude']);     
@@ -38,12 +38,21 @@ $conn->close();
 $titulo_pagina = "Inserir Ponto de Ônibus";
 include '../admin/header.php';
 ?>
-
-<div class="container mt-5">
+<style>
+    body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif; 
+        }
+</style>
+<body>
+    <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-7">
             
-            <h2 class="text-primary mb-4">
+            <h2 class="text-success mb-4">
                 <i class="bi bi-geo-alt-fill"></i> Cadastrar Novo Ponto
             </h2>
             
@@ -110,7 +119,7 @@ include '../admin/header.php';
                     </div>
 
                     <div class="d-flex justify-content-between pt-3">
-                         <button type="submit" class="btn btn-primary">
+                         <button type="submit" class="btn btn-success">
                             <i class="bi bi-save-fill"></i> Salvar Ponto
                          </button>
                          <a href="pontos_lista.php" class="btn btn-secondary">
@@ -124,3 +133,4 @@ include '../admin/header.php';
 </div>
 
 <?php include '../admin/footer.php'; ?>
+</body>

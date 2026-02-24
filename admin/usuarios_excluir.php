@@ -10,7 +10,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     
     $id_usuario = $conn->real_escape_string($_GET['id']);
     
-    // 1. SEGURANÇA: Verificar se o usuário não está tentando excluir a si mesmo
+    // SEGURANÇA: Verificar se o usuário não está tentando excluir a si mesmo
     // Buscamos o email do usuário que será excluído
     $sql_busca = "SELECT email FROM tbusuarios WHERE id_usuario = '$id_usuario'";
     $result_busca = $conn->query($sql_busca);
@@ -24,7 +24,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         exit();
     }
 
-    // 2. Executa a exclusão
+    // Executa a exclusão
     $sql_delete = "DELETE FROM tbusuarios WHERE id_usuario = '$id_usuario'";
     
     if ($conn->query($sql_delete) === TRUE) {
