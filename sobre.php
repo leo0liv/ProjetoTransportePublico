@@ -103,7 +103,7 @@
                     <p class="card-text text-muted small">Desenvolvedor de junior html , php avançado, JavaScript basico, SCSS</p>
                     <div class="d-flex justify-content-center gap-3 social-links mt-3">
                         <a href="https://github.com/pdrfxptrem" title="GitHub"><i class="bi bi-github"></i></a>
-                        <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://www.linkedin.com/in/pedro-zene-59a29a3b3 " title="LinkedIn"><i class="bi bi-linkedin"></i></a>
                         <a href="#" title="Currículo"><i class="bi bi-file-earmark-person-fill"></i></a>
                     </div>
                 </div>
