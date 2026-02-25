@@ -82,10 +82,10 @@
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Gabriel</h5>
                     <p class="text-primary small mb-2">Desenvolvedor Full Stack</p>
-                    <p class="card-text text-muted small">Sobre mim</p>
+                    <p class="card-text text-muted small">Desenvolvedor Web em Itapetininga, SP. Focado em Bootstrap, JavaScript basico, C# e bancos de dados</p>
                     <div class="d-flex justify-content-center gap-3 social-links mt-3">
                         <a href="https://github.com/saponoel" title="GitHub"><i class="bi bi-github"></i></a>
-                        <a href="#" title="LinkedIn"><i class="bi bi-youtube"></i></a>
+                        <a href="https://www.youtube.com/@sapponoel" title="Youtube"><i class="bi bi-youtube"></i></a>
                         <a href="#" title="Currículo"><i class="bi bi-file-earmark-person-fill"></i></a>
                     </div>
                 </div>
