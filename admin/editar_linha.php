@@ -5,7 +5,7 @@ include 'verificar_login.php';
 // Incluir a conexão
 include("../connections/db_connect.php");
 
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 $tabela         = "tblinhas";
 $campo_filtro   = "id_linha";
 $linha_atual    = null;

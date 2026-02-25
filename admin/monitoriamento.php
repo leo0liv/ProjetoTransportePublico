@@ -6,7 +6,7 @@
 session_start();
 
 // Configurações de Acesso
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 $caminho_db    = "../connections/db_connect.php";
 
 // Segurança: Só administradores podem processar

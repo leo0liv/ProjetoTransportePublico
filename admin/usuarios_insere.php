@@ -7,7 +7,7 @@ include 'verificar_admin.php';
 // Conexão com Banco
 include("../connections/db_connect.php");
 
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 $mensagem      = '';
 $tipo_alerta   = '';
 

@@ -6,7 +6,7 @@ include '../admin/verificar_login.php';
 include("../connections/db_connect.php");
 
 // Variável para o nome do seu banco de dados (ajuste se necessário)
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 
 // Selecionar o banco de dados (USE)
 mysqli_select_db($conn, $database_conn);

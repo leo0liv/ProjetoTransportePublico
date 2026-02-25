@@ -2,7 +2,7 @@
 include 'verificar_admin.php';
 include("../connections/db_connect.php");
 
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 
 mysqli_select_db($conn, $database_conn);
 

@@ -9,7 +9,7 @@ if (!isset($_GET['id_linha'])) {
 }
 
 $id_linha = $conn->real_escape_string($_GET['id_linha']);
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 mysqli_select_db($conn, $database_conn);
 
 

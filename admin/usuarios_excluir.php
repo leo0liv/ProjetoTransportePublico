@@ -3,7 +3,7 @@
 include 'verificar_login.php';
 include("../connections/db_connect.php");
 
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 mysqli_select_db($conn, $database_conn);
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {

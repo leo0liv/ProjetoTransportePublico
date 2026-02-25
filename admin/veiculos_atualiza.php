@@ -6,7 +6,7 @@ include 'verificar_login.php';
 include("../connections/db_connect.php");
 
 // Variável para o nome do seu banco de dados
-$database_conn = "TransportePublico_ti19";
+//$database_conn = "TransportePublico_ti19";
 
 // Variáveis Globais
 $tabela_veiculo  = "tbveiculos";
