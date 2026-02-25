@@ -6,21 +6,21 @@
     <title>Menu - Público</title>
 
     <!-- CSS específico -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/meu_estilo.css">
+    <link rel="stylesheet" href="css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/fonts.css">
+    <link rel="stylesheet" href="css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/bootstrap-icons.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container-fluid container-lg">
-          <a class="navbar-brand" href="/ProjetoTransportePublico/index.php">
+          <a class="navbar-brand" href="index.php">
             <strong class="bi bi-bus-front text-primary"></strong>
             <strong>Transporte Público</strong>
           </a>
@@ -30,13 +30,13 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/ProjetoTransportePublico/index.php"><i class="bi bi-geo-alt-fill"></i>&nbsp;Mapa</a>
+                <a class="nav-link active" aria-current="page" href="index.php"><i class="bi bi-geo-alt-fill"></i>&nbsp;Mapa</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/ProjetoTransportePublico/linhas.php"><i class="bi bi-signpost-2-fill"></i>&nbsp;Linhas</a>
+                <a class="nav-link" href="linhas.php"><i class="bi bi-signpost-2-fill"></i>&nbsp;Linhas</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/ProjetoTransportePublico/sobre.php"><i class="bi bi-people-fill"></i>&nbsp;Sobre nós</a>
+                <a class="nav-link" href="sobre.php"><i class="bi bi-people-fill"></i>&nbsp;Sobre nós</a>
               </li>
             </ul>
             <div class="d-flex">
@@ -54,7 +54,7 @@
                         <i class="bi bi-search"></i>
                     </button>&nbsp;
                 </form>
-                <a href="/ProjetoTransportePublico/admin/adm_options.php" class="btn btn-primary">
+                <a href="admin/adm_options.php" class="btn btn-primary">
                     <strong class="bi bi-gear text-white">&nbsp;Admin</strong>
                 </a>
             </div>
@@ -62,6 +62,6 @@
         </div>
       </nav>
 <!-- Bootstrap JS -->
-<script src="/ProjetoTransportePublico/js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

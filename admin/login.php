@@ -56,16 +56,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Administrativo</title>
     <!-- CSS específico -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/meu_estilo.css">
+    <link rel="stylesheet" href="../css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/fonts.css">
+    <link rel="stylesheet" href="../css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/bootstrap-icons.css">
 </head>
 
 <style>
@@ -83,9 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
 
 
 <body class="bg-light">
- <?php 
-include '../menu.php'; 
-?>
 <div class="container">
     <div class="row justify-content-center mt-5">
         
@@ -119,10 +116,7 @@ include '../menu.php';
     </div>
 </div>
  
-<script src="/ProjetoTransportePublico/js/bootstrap.bundle.min.js"></script>
-<?php 
-include '../rodape.php'; 
-?>
+<script src="../js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -7,7 +7,7 @@
     <title>Restrito - Acesso Negado</title>
     
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/ProjetoTransportePublico/css/bootstrap.css">
+    <link rel="stylesheet" href="../css/bootstrap.css">
     <script src="https://kit.fontawesome.com/2495680ceb.js" crossorigin="anonymous"></script>
 </head>
 <body class="d-flex align-items-center justify-content-center vh-100 m-0" 
@@ -74,6 +74,6 @@
         };
     </script>
     <!-- Bootstrap JS -->
-    <script src="/ProjetoTransportePublico/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

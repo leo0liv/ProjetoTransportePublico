@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporte Público</title>
 
     <!-- CSS específico -->
-    <link rel="stylesheet" href="./css/meu_estilo.css">
+    <link rel="stylesheet" href="css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="./css/fonts.css">
+    <link rel="stylesheet" href="css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="./css/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -28,6 +28,6 @@
     <?php include 'rodape.php';  ?>
 
 <!-- Bootstrap JS -->
-<script src="./js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

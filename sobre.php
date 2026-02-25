@@ -6,16 +6,16 @@
     <title>Sobre Nós - Nossa Equipe</title>
     
     <!-- CSS específico -->
-    <link rel="stylesheet" href="./css/meu_estilo.css">
+    <link rel="stylesheet" href="css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="./css/fonts.css">
+    <link rel="stylesheet" href="css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="./css/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/bootstrap-icons.css">
 
     <style>
         .card-team {
@@ -77,7 +77,7 @@
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card card-team h-100 text-center p-3 shadow-sm">
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="/ProjetoTransportePublico/img/Gabriel.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Gabriel">
+                    <img src="img/Gabriel.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Gabriel">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Gabriel</h5>
@@ -95,7 +95,7 @@
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card card-team h-100 text-center p-3 shadow-sm">
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="/ProjetoTransportePublico/img/Zene.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Pedro">
+                    <img src="img/Zene.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Pedro">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Pedro</h5>
@@ -113,7 +113,7 @@
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card card-team h-100 text-center p-3 shadow-sm">
                 <div class="d-flex justify-content-center mt-3">
-                    <img src="/ProjetoTransportePublico/img/Kaue.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Kaue">
+                    <img src="img/Kaue.jpg" class="rounded-circle img-team shadow-sm" alt="Foto Kaue">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Kaue</h5>
@@ -279,7 +279,7 @@
 <?php include 'rodape.php'; ?>
 
 <!-- Bootstrap JS -->
-<script src="./js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 
 
 </body>

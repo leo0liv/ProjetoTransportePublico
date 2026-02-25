@@ -1,6 +1,6 @@
 <?php
 // CONEXÃO E FUNÇÕES
-require_once './connections/db_connect.php';
+require_once 'connections/db_connect.php';
 
 function int_param($v) { return (int)$v; }
 
@@ -65,16 +65,16 @@ $pontosJSON = json_encode($pontosArray);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Mobilidade - Itapetininga</title>
     <!-- CSS específico -->
-    <link rel="stylesheet" href="./css/meu_estilo.css">
+    <link rel="stylesheet" href="css/meu_estilo.css">
 
     <!-- Fonte local -->
-    <link rel="stylesheet" href="./css/fonts.css">
+    <link rel="stylesheet" href="css/fonts.css">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="./css/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
@@ -220,7 +220,7 @@ $pontosJSON = json_encode($pontosArray);
 </main>
 
 <!-- Bootstrap JS -->
-<script src="./js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
