@@ -54,6 +54,15 @@ include '../admin/header.php';
         </a>
     </div>
 
+    <?php 
+    if (isset($_GET['msg'])) {
+        echo '<div class="alert alert-success alert-dismissible fade show">' . htmlspecialchars($_GET['msg']) . '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>';
+    }
+    if (isset($_GET['msg_erro'])) {
+        echo '<div class="alert alert-danger alert-dismissible fade show">' . htmlspecialchars($_GET['msg_erro']) . '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>';
+    }
+    ?>
+
     <?php if ($totalRows > 0) { ?>
         <div>
             <div class="table-responsive">

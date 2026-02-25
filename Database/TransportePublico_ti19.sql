@@ -119,8 +119,17 @@ CREATE TABLE tbmotoristas_alocados (
 INSERT INTO tbusuarios (id_usuario, nome, email, senha, nivel_usuario) 
 VALUES (1, 'Administrador Master', 'admin@transporte.com', '123456', 'admin');
 
+<<<<<<< HEAD
+USE TransportePublico_ti19;
+ 
+-- 
+ALTER TABLE tbrotas DROP FOREIGN KEY tbrotas_ibfk_1;
+ 
+--
+=======
 -- Remove a trava de segurança que está bloqueando a inserção
 ALTER TABLE tbrotas DROP FOREIGN KEY tbrotas_ibfk_1;
  
 -- Remove a coluna que não deveria estar aí
+>>>>>>> 26529d29be367f7df515236976914456da29c69f
 ALTER TABLE tbrotas DROP COLUMN id_linha;
