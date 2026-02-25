@@ -5,7 +5,8 @@ include("../connections/db_connect.php");
 $id_horario = $_GET['id_horario'];
 $id_linha   = $_GET['id_linha'];
 
-mysqli_select_db($conn, "TransportePublico_ti19");
+mysqli_select_db($conn, $database_conn);
+
 
 
 //  ADICIONAR PONTO (INSERT)
