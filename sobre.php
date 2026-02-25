@@ -118,7 +118,7 @@
                 <div class="card-body">
                     <h5 class="card-title fw-bold">Kaue</h5>
                     <p class="text-primary small mb-2">Desenvolvedor Full Stack</p>
-                    <p class="card-text text-muted small"></p>
+                    <p class="card-text text-muted small">Desenvolvedor junior html, php Basico JavaScript Basico, Scss Bootstrap, muito foco </p>
                     <div class="d-flex justify-content-center gap-3 social-links mt-3">
                         <a href="https://github.com/kaue123475" title="GitHub"><i class="bi bi-github"></i></a>
                         <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
