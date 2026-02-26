@@ -4,8 +4,6 @@ include 'verificar_login.php';
 
 require_once ('../connections/db_connect.php');
 
-
-
 function queryValue($conn, $sql) {
     $res = $conn->query($sql);
     return ($res) ? ($res->fetch_assoc()['t'] ?? 0) : 0;
