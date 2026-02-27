@@ -2,9 +2,9 @@
 -- Backup Geral do banco de dados TransportePublico_ti19 (Atualizado)
 
 -- Configuração de Usuário e Banco
-DROP USER IF EXISTS 'TransportePublico_ti19'@'localhost';
-CREATE USER IF NOT EXISTS 'TransportePublico_ti19'@'localhost' IDENTIFIED BY 'senacti19';
-GRANT ALL PRIVILEGES ON *.* TO 'TransportePublico_ti19'@'localhost' WITH GRANT OPTION;
+DROP USER IF EXISTS 'iwanez83_TransportePublico_ti19'@'localhost';
+CREATE USER IF NOT EXISTS 'iwanez83_TransportePublico_ti19'@'localhost' IDENTIFIED BY 'senacti19';
+GRANT ALL PRIVILEGES ON *.* TO 'iwanez83_TransportePublico_ti19'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
 DROP DATABASE IF EXISTS TransportePublico_ti19;
